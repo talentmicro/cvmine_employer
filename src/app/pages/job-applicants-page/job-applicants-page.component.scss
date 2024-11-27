@@ -1,0 +1,145 @@
+@import "../../common/featured-jobs/featured-jobs.component";
+
+.table-container {
+    overflow-x: auto;
+}
+
+.mat-mdc-header-row {
+    background-color: rgb(13, 99, 174) !important;
+    color: white !important;
+    font-weight: bold !important;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.mat-mdc-table {
+    -moz-box-shadow: 0px 2px 4px gray;
+    -webkit-box-shadow: 0px 2px 4px gray;
+    box-shadow: 0px 2px 4px gray;
+}
+
+.search {
+    border: 2px solid #001964;
+}
+
+::ng-deep.mat-mdc-text-field-wrapper {
+    border-radius: 20px !important;
+}
+
+.mat-paginator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.mat-select-trigger {
+    background-color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+}
+
+.status-indicator {
+    padding: 4px 8px;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+
+    &.applied {
+        background-color: #4ebdf0;
+        color: white;
+    }
+
+    &.shortlisted {
+        background-color: #db9d00;
+        color: white;
+    }
+
+    &.interviewed {
+        background-color: navy;
+        color: white;
+    }
+
+    &.offered {
+        background-color: orangered;
+        color: white;
+    }
+
+    &.hired {
+        background-color: green;
+        color: white;
+    }
+
+    &.dropped {
+        background-color: red;
+        color: white;
+    }
+}
+
+.applicant-name-column {
+    min-width: 270px!important;
+}
+
+.filter-field {
+    width: 100%;
+    // max-width: 400px;
+    margin: 0 auto;
+}
+  
+.mat-form-field {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 8px;
+}
+  
+.mat-select-panel {
+    max-height: 300px;
+    overflow-y: auto;
+}
+  
+.mat-option {
+    font-size: 14px;
+    padding: 10px 16px;
+}
+  
+.mat-icon-status {
+    color: #6c757d;
+}
+
+.search-field {
+    width: 100%;
+    // max-width: 500px;
+  }
+  
+.mat-form-field {
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+  
+.mat-form-field-appearance-outline .mat-form-field-outline {
+    border-color: #d1d1d1;
+}
+  
+.mat-form-field-appearance-outline .mat-form-field-outline:hover {
+    border-color: #3f51b5;
+}
+  
+.mat-input-element {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+  
+.mat-icon-search {
+    color: #6c757d;
+}
+  
+.mat-icon-button {
+    padding: 8px;
+}

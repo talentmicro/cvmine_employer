@@ -1,0 +1,224 @@
+<app-navbar />
+
+<div class="container ptb-20">
+    <div class="row d-flex justify-content-center">
+        <div class="col-12 col-lg-10">
+            <mat-horizontal-stepper [linear]="true" #stepper>
+                <!-- Steps 2 -->
+                <mat-step [stepControl]="firstStepForm" label="Step 1">
+                    <form [formGroup]="firstStepForm">
+                        <div *ngIf="!editMode">
+                            <div class="row align-items-center mb-3">
+                                <div class="col-12 col-lg-6">
+                                    <mat-label for="fetchExistingJob" class="form-label">Do you want to get details from existing posted job?</mat-label>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <mat-radio-group
+                                        formControlName="fetchExisting"
+                                        id="fetchExistingJob"
+                                        aria-label="Fetch Existing Job"
+                                        class="d-flex flex-row gap-3">
+                                        <mat-radio-button value="no">No</mat-radio-button>
+                                        <mat-radio-button value="yes">Yes</mat-radio-button>
+                                    </mat-radio-group>
+                                </div>
+                            </div>
+                        
+                            <div *ngIf="firstStepForm.get('fetchExisting')?.value === 'yes'" class="mb-3">
+                                <mat-form-field class="col-12 col-lg-6" appearance="fill">
+                                    <mat-label>Select Job</mat-label>
+                                    <input
+                                        type="text"
+                                        placeholder="Select or search job"
+                                        matInput
+                                        [matAutocomplete]="jobAuto"
+                                        formControlName="existingJob" />
+                                    <mat-autocomplete #jobAuto="matAutocomplete">
+                                        <mat-option *ngFor="let job of jobsList" [value]="job">
+                                            {{ job }}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                        
+                            <mat-divider class="mb-3"></mat-divider>
+                        </div>
+                    
+                        <mat-form-field class="col-12 mb-3">
+                            <mat-label>Job Title</mat-label>
+                            <input matInput placeholder="Enter job title" formControlName="jobTitle" />
+                            <mat-error *ngIf="firstStepForm.get('jobTitle')?.hasError('required')">
+                                Job title is required.
+                            </mat-error>
+                        </mat-form-field>
+                    
+                        <mat-form-field class="col-12 mb-3">
+                            <mat-label>Job Description</mat-label>
+                            <textarea
+                                matInput
+                                rows="5"
+                                placeholder="Enter job description"
+                                formControlName="jobDescription"
+                            ></textarea>
+                            <mat-error *ngIf="firstStepForm.get('jobDescription')?.hasError('required')">
+                                Job description is required.
+                            </mat-error>
+                        </mat-form-field>
+                    </form>
+                </mat-step>
+              
+                <!-- Steps 2 -->
+                <mat-step [stepControl]="secondStepForm" label="Step 2">
+                    <form [formGroup]="secondStepForm">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <mat-form-field appearance="fill" class="w-100">
+                                    <mat-label>Job Type</mat-label>
+                                    <mat-select formControlName="jobType" multiple>
+                                        <mat-option *ngFor="let type of jobTypes" [value]="type">
+                                            {{ type }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="secondStepForm.get('jobType')?.hasError('required')">
+                                        At least one job type is required.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                  
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <mat-form-field appearance="fill" class="w-100">
+                                    <mat-label>Job Location</mat-label>
+                                    <mat-select formControlName="jobLocation" multiple>
+                                        <mat-chip-listbox>
+                                            <mat-chip *ngFor="let location of selectedLocations" [removable]="true" (removed)="removeLocation(location)">
+                                                {{ location }}
+                                                <mat-icon matChipRemove>cancel</mat-icon>
+                                            </mat-chip>
+                                        </mat-chip-listbox>
+                                        <mat-option *ngFor="let location of jobLocations" [value]="location">
+                                            {{ location }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="secondStepForm.get('jobLocation')?.hasError('required')">
+                                        At least one location must be selected.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                  
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <mat-form-field class="w-100">
+                                    <mat-label>Skills</mat-label>
+                                    <mat-chip-grid #reactiveChipGrid aria-label="Enter reactive form keywords" formControlName="skills">
+                                        @for (keyword of reactiveKeywords(); track keyword) {
+                                            <mat-chip-row (removed)="removeReactiveKeyword(keyword)">
+                                                {{keyword}}
+                                                <button matChipRemove aria-label="'remove reactive form' + keyword">
+                                                    <mat-icon>cancel</mat-icon>
+                                                </button>
+                                            </mat-chip-row>
+                                        }
+                                    </mat-chip-grid>
+                                    <input placeholder="New skill..." [matChipInputFor]="reactiveChipGrid"
+                                        (matChipInputTokenEnd)="addReactiveKeyword($event)" />
+                                    <mat-error *ngIf="secondStepForm.get('skills')?.hasError('required')">
+                                        Skills are required.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                  
+                        <div class="row mb-3">
+                            <div class="col-12 col-lg-6">
+                                <mat-form-field appearance="fill" class="w-100">
+                                    <mat-label>Experience</mat-label>
+                                    <mat-select formControlName="experience">
+                                        <mat-option *ngFor="let exp of experienceLevels" [value]="exp">
+                                            {{ exp }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="secondStepForm.get('experience')?.hasError('required')">
+                                        Experience level is required.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                  
+                            <div class="col-12 col-lg-6 d-flex align-items-center">
+                                <mat-form-field appearance="fill" class="flex-grow-1">
+                                    <mat-label>Salary Range</mat-label>
+                                    <input matInput formControlName="salaryRange" placeholder="Enter range" />
+                                    <mat-error *ngIf="secondStepForm.get('salaryRange')?.hasError('required')">
+                                        Salary range is required.
+                                    </mat-error>
+                                </mat-form-field>
+    
+                                <mat-form-field appearance="fill" class="w-25">
+                                    <mat-label>Currency</mat-label>
+                                    <mat-select formControlName="currency">
+                                        <mat-option *ngFor="let curr of currencies" [value]="curr">
+                                            {{ curr }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="secondStepForm.get('currency')?.hasError('required')">
+                                        Currency is required.
+                                    </mat-error>
+                                </mat-form-field>
+                            
+                                <mat-form-field appearance="fill" class="w-25">
+                                    <mat-label>Period</mat-label>
+                                    <mat-select formControlName="period">
+                                        <mat-option *ngFor="let per of period" [value]="per">
+                                            {{ per }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="secondStepForm.get('period')?.hasError('required')">
+                                        Period is required.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                  
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <mat-form-field appearance="fill" class="w-100">
+                                    <mat-label>Notice Period</mat-label>
+                                    <mat-select formControlName="noticePeriod">
+                                        <mat-option *ngFor="let period of noticePeriods" [value]="period">
+                                            {{ period }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="secondStepForm.get('noticePeriod')?.hasError('required')">
+                                        Notice period is required.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step label="Step 3"></mat-step>
+            </mat-horizontal-stepper>
+              
+            <!-- Footer Buttons -->
+            <div class="p-3 bg-light text-center mb-2 d-flex justify-content-between">
+                <button mat-stroked-button color="primary" 
+                    (click)="stepper.previous()" 
+                    [disabled]="stepper.selectedIndex === 0"
+                    style="background-color: rgb(235, 63, 63); color: whitesmoke;">Back</button>
+                <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="stepper.next()"
+                    style="background-color: rgb(13, 99, 174); color: whitesmoke;">
+                    Next
+                </button>
+            </div>              
+        </div>
+    </div>
+</div>
+
+<app-footer />
+
+<app-back-to-top />
