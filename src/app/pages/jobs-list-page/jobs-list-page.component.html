@@ -1,15 +1,17 @@
 <app-navbar />
 <div class="container my-2">
+    <p-toast />
     <div class="row align-items-center mb-10">
         <div class="col-12 table-container">
             <p-table #dt2 [value]="jobsList" dataKey="id" styleClass="p-datatable-striped"
                 [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-                [loading]="loading" [paginator]="true"
+                [paginator]="true"
                 [globalFilterFields]="['job_name', 'status']"
+                [(selection)]="selectedJobs"
                 [tableStyle]="{ 'min-width': '75rem' }" >
                 <ng-template pTemplate="caption">
-                    <div class="row">
-                        <div class="flex col-8 col-lg-5">
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-12 col-lg-5">
                             <p-iconField iconPosition="right" class="ml-auto">
                                 <p-inputIcon>
                                     <i class="pi pi-search"></i>
@@ -21,10 +23,17 @@
                                     placeholder="Search keyword" />
                             </p-iconField>
                         </div>
+                        <div class="col-12 col-lg-6 text-end">
+                            <!-- <p-button label="Expand All" icon="pi pi-plus" text (onClick)="expandAll()" />
+                            <p-button label="Collapse All" icon="pi pi-minus" text (onClick)="collapseAll()" /> -->
+                            <button class="post-button" routerLink="/job/add">Post a Job</button>
+                        </div>
                     </div>
                 </ng-template>
             <ng-template pTemplate="header">
                 <tr>
+                    <th class="table-head" style="width: 4rem"></th>
+                    <th class="table-head" style="width: 4rem"><p-tableHeaderCheckbox /></th>
                     <th class="table-head" pSortableColumn="job_name" style="min-width: 350px!important">
                         Job Title <p-sortIcon field="code" />
                     </th>
@@ -35,23 +44,25 @@
                     <th class="table-head" style="width:7%">Hired</th>
                     <th class="table-head" style="width:7%">Dropped</th>
                     <th class="table-head text-center" style="width:18%">Status</th>
-                    <th class="table-head" style="width:10%">Options</th>
+                    <th class="table-head" style="width:9%">Options</th>
                 </tr>
                 <tr>
-                    <th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row">
                         <p-columnFilter 
                             type="text"
                             field="job_name" 
                             placeholder="Search by Job Title" 
                             ariaLabel="Filter Job" />
                     </th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row"></th>
+                    <th class="table-filter-row text-center">
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown 
@@ -62,30 +73,46 @@
                                     [showClear]="true">
                                         <ng-template let-option pTemplate="item">
                                             <p-tag 
-                                                [value]="option.value" 
+                                                [value]="option.label" 
                                                 [severity]="getSeverity(option.value)" />
                                         </ng-template>
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th></th>
+                    <th class="table-filter-row"></th>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-job>
+            <ng-template pTemplate="body" let-job let-expanded="expanded">
                 <tr>
+                    <td>
+                        <p-button type="button" pRipple [pRowToggler]="job" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                    </td>
+                    <td>
+                        <p-tableCheckbox [value]="job" />
+                    </td>
                     <td class="p-1">
                         <div class="row">
-                            <span style="font-size: 18px"><b>
+                            <span><b>
                                 <a [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}">
-                                    {{job.job_name}} | {{job.job_code}}
+                                    <div class="row">
+                                        <div style="font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" class="col-8" pTooltip="{{job.job_name}}" tooltipPosition="top" [autoHide]="false">
+                                            {{job.job_name}}
+                                        </div>
+                                        |
+                                        <div style="font-size: 16px" class="col-3">
+                                            {{job.job_code}}
+                                        </div>
+                                    </div>
                                 </a>
                             </b></span>
                         </div>
                         <div class="row">
                             <span class="col-6 fs-12">
                                 <i class="fa-solid fa-location-dot pe-2" style="color: gray"></i>
-                                {{job.location.join(', ')}}
+                                <!-- {{job.location.join(', ')}} -->
+                                {{job.location}}
+
                             </span>
                             <span class="col-6 fs-12">
                                 <i class="fa-regular fa-calendar-days pe-2" style="color: gray"></i>
@@ -93,57 +120,71 @@
                             </span>
                         </div>
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 text-end">
                         <i class="fa-solid fa-sm fa-users-between-lines pe-2"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}">
                             {{job.total_applications}}
                         </a> 
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 text-end">
                         <i class="fa-solid fa-user-clock fa-sm pe-2" style="color: #db9d00"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'shortlisted'}">
                             {{job.shortlisted_applications}}
                         </a> 
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 text-end">
                         <i class="fa-solid fa-user-pen fa-sm pe-2" style="color: navy;"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'interviewed'}">
                             {{job.interviewed_applications}}
                         </a>
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 text-end">
                         <i class="fa-solid fa-user-tag fa-sm pe-2" style="color: orangered;"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'offered'}">
                             {{job.offered_applications}}
                         </a> 
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 text-end">
                         <i class="fa-solid fa-sm fa-user-check pe-2" style="color: green"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'hired'}">
                             {{job.hired_applications}}
                         </a>
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 text-end">
                         <i class="fa-solid fa-sm fa-user-xmark pe-2" style="color: red"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'dropped'}">
                             {{job.dropped_applications}}
                         </a>
                     </td>
                     <td class="p-1 text-center">
-                        <p-dropdown [options]="jobStatuses" 
+                        <p-dropdown [options]="jobStatuses"
                             [(ngModel)]="job.status" 
-                            optionLabel="value"
+                            optionLabel="label"
+                            optionValue="label"
                             placeholder="Select Status"
-                            (onChange)="onJobStatusChange(job)" />
+                            (onChange)="onJobStatusChange(job)">
+                            <ng-template let-option pTemplate="item">
+                                <p-tag 
+                                    [value]="option.label" 
+                                    [severity]="getSeverity(option.value)" />
+                            </ng-template>
+                        </p-dropdown>
                     </td>
                     <td class="p-1 text-center">
-                            <!-- <a [routerLink]="['/job/edit', job.job_code]"> -->
-                                <p-button [rounded]="true" [text]="true" [raised]="true" class="p-2" [routerLink]="['/job/edit', job.job_code]">
-
-                                <i class="fa-solid fa-lg fa-pen-to-square"></i>
-                            </p-button>
-
-                            <!-- </a>  -->
+                        <p-button [rounded]="true" [text]="true" [raised]="true" class="p-2" [routerLink]="['/job/edit', job.job_code]">
+                            <i class="fa-solid fa-lg fa-pen-to-square"></i>
+                        </p-button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="rowexpansion" let-product>
+                <tr>
+                    <td colspan="12">
+                        <div class="p-3 text-center">
+                            <!-- <ng-template [value]="job" dataKey="id"> -->
+                                <p>There are no details for this job.</p>
+                            <!-- </ng-template> -->
+                        </div>
                     </td>
                 </tr>
             </ng-template>

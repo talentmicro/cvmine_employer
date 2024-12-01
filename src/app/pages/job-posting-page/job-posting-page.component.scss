@@ -3,3 +3,8 @@ button[disabled] {
     cursor: not-allowed;
     opacity: 0.6;
 }
+
+.error-text {
+    color: #f44336;
+    font-size: 0.875rem;
+}

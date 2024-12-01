@@ -469,7 +469,19 @@
     color: white !important;
 }
 
-.p-dropdown-items {
-    padding: 0 !important;
-    margin: 0 !important;
+.table-filter-row {
+    background-color: rgb(193, 219, 243);
+}
+
+// .p-button {
+//     background-color: rgb(255, 113, 18) !important;
+//     border-radius: 10px !important;
+// }
+.post-button {
+    background-color: rgb(255, 113, 18);
+    border-radius: 1.5rem;
+    padding: 0.6rem 1rem;
+    border: none;
+    color: white;
+    font-weight: 500;
 }

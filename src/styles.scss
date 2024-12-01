@@ -1474,8 +1474,86 @@ select {
     
 }
 
+.navbar-area {
+    height: 62px;
+    flex: 0 0 auto !important;
+}
+
 .container {
-    // height: 90%;
-    // flex: 1 0 auto !important;
-    height: calc(100% - 124px)
+    height: calc(100% - 124px);
+    min-width: 95%;
+}
+
+footer {
+    height: 62px;
+}
+// app-navbar {
+//     flex: 0 0 auto;
+//     height: 62px;
+// }
+
+// /* Container grows to fill available space */
+// .container {
+//     flex: 1 0 auto;
+// }
+
+// /* Footer is pinned at the bottom */
+// app-footer {
+//     flex: 0 0 auto;
+//     position: fixed; /* Ensure it's not overlapping */
+//     bottom: 0 !important;
+//     width: 100%; /* Ensure it spans the full width */
+//     height: 62px;
+// }
+
+.p-inputtext {
+    padding: 0.5rem 0.5rem !important;
+}
+
+.p-dropdown-panel .p-dropdown-items {
+    padding: 0.5rem 0 !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    padding: 0.5rem 1rem !important;
+}
+
+.p-tooltip {
+padding: 0.25rem !important;
+}
+.p-tooltip-text {
+    padding: 0.25rem 0.5rem !important;
+}
+
+.p-autocomplete-panel .p-autocomplete-items {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.p-dropdown {
+    width: 100%;
+}
+
+.p-autocomplete {
+    width: 100%;
+}
+
+.p-multiselect {
+    width: 100%;
+}
+
+.p-multiselect-panel .p-multiselect-items {
+    padding: 0.5rem 0;
+}
+
+.p-multiselect-label {
+    width: 100%;
+}
+
+.p-stepper-nav {
+    padding-left: 0.5rem !important;
+}
+
+.p-paginator {
+    margin-top: 1rem;
 }

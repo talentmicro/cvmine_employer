@@ -1,6 +1,6 @@
 <app-navbar />
-
 <div class="container my-3">
+    <p-toast />
     <div class="section-title style-one text-center mb-35">
         <h2>
             <strong>Login</strong> Account
@@ -15,10 +15,10 @@
                             Employee Id
                         </label>
                         <input pInputText formControlName="employeeId" name="employeeId" id="employeeId" 
-                            placeholder="Enter employee Id" class="bg-white border-0 w-100 round-4">
+                            placeholder="Enter employee Id">
                         <small *ngIf="loginForm.get('employeeId')?.hasError('required') && loginForm.get('employeeId')?.touched" 
                             class="error-text">
-                            employeeId is required.
+                            EmployeeId is required.
                         </small>
                         <small *ngIf="loginForm.get('employeeId')?.hasError('employeeId') && loginForm.get('employeeId')?.touched" 
                             class="error-text">
@@ -29,7 +29,7 @@
                         <label class="text-dark" for="password_1">
                             Password
                         </label>
-                        <input pInputText formControlName="password" [type]="isPasswordVisible ? 'text' : 'password'" name="password" id="password" placeholder="Enter password" class="pwd_1 bg-white border-0 w-100 round-4">
+                        <input pInputText formControlName="password" [type]="isPasswordVisible ? 'text' : 'password'" name="password" id="password" placeholder="Enter password">
                         <button type="button" (click)="togglePasswordVisibility()" class="pwd_open position-absolute p-0 border-0 bg-transparent transition">
                             <i [ngClass]="isPasswordVisible ? 'ri-eye-line' : 'ri-eye-off-line'"></i>
                         </button>

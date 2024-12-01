@@ -5,22 +5,30 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../common/navbar/navbar.component';
 import { FooterComponent } from '../../common/footer/footer.component';
 import { BackToTopComponent } from '../../common/back-to-top/back-to-top.component';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MatOptionModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDividerModule } from '@angular/material/divider';
 import { jobListings } from '../job-listings-page/job-listings';
-import { jobTypes, jobLocations, period, noticePeriods, experienceLevels, currencies } from './data';
+import { currencyList, countryList, noticePeriods, durationList, experienceLevels, jobTypeList, skillsList } from '../data';
+import { ImportsModule } from '../../imports';
+import { ApiService } from '../services/api.service';
+import { LoadingService } from '../../common/loading-spinner/loading.service';
+import { MessageService } from 'primeng/api';
+import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { MultiSelectFilterOptions } from 'primeng/multiselect';
+
+interface Job {
+    id: number;
+    job_code: string;
+    job_name: string;
+    total_applications: number;
+    shortlisted_applications: number;
+    interviewed_applications: number;
+    offered_applications: number;
+    hired_applications: number;
+    dropped_applications: number;
+    published_date: string;
+    status: string;
+}
 
 @Component({
     selector: 'app-job-posting-page',
@@ -34,41 +42,76 @@ import { jobTypes, jobLocations, period, noticePeriods, experienceLevels, curren
         BackToTopComponent,
         ReactiveFormsModule,
         FormsModule,
-        MatCheckboxModule,
-        MatStepperModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSelectModule,
-        MatRadioModule,
-        MatAutocompleteModule,
-        MatChipsModule,
-        MatOptionModule,
-        MatDividerModule
+        ImportsModule
     ],
+    providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class JobPostingPageComponent {
     firstStepForm: FormGroup;
     secondStepForm: FormGroup;
+    thirdStepForm: FormGroup;
     editMode: boolean = false;
-    currentStep: number = 0;
+    existing: any[] = [
+        { name: 'Yes', key: 'yes' },
+        { name: 'No', key: 'no' },
+    ];
+    selectedExistingJobDetails: any = {};
+    // jobsList: Array<{ job_code: number; job_name: string }> = [];
+    jobsList: Array<Job> = [];
+    filteredJobsList: Array<{ job_code: number; job_name: string }> = [];
+    jobTypes: any[] = [];
+    period: any[] = [];
+    jobLocations: any[] = [];
+    // selectedCountries!: any[];
+    // filterCountryValue = '';
+    noticePeriods: any[] = [];
+    currencies: any[] = [];
+    experienceLevels: any[] = [];
+    selectedLocations: any[] = [];
+    defaultSelectedJobTypes = [1, 9];
+    difficultyOptions = [
+        { label: 'Easy', value: 'easy' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Hard', value: 'hard' },
+    ];
+    skills: any = [];
+    requestBody = {
+        "search": "",
+        "sellerCode": null,
+        "fromDate": null,
+        "toDate": null,
+        "updatedFromDate": null,
+        "updatedToDate": null,
+        "publishingType": null,
+        "accessTypeId": null,
+        "startPage": 1,
+        "limit": 40,
+        "bookmarks": [],
+        "userList": [],
+        "productCode": [],
+        "status": null,
+        "dateFilterType": null,
+        "jobType": null,
+        "count": 0,
+        "loadBalancerValue": null,
+        "updatedBy": [],
+        "customFilter": [],
+        "lock_status": null,
+        "clientAM": null,
+        "contactAM": null,
+        "hiringManagers": null,
+        "jobExtendedDataFilter": null,
+        "campusTypes": null
+    }
 
-    jobsList: Array<{ job_code: string; job_name: string }> = [];
-    jobTypes: string[] = [];
-    period: string[] = [];
-    jobLocations: string[] = [];
-    noticePeriods: string[] = [];
-    currencies: string[] = [];
-    experienceLevels: string[] = [];
-
-    selectedLocations: string[] = [];
-    readonly reactiveKeywords = signal(['angular', 'how-to', 'tutorial', 'accessibility']);
-    readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-    announcer = inject(LiveAnnouncer);
-
-    constructor(private fb: FormBuilder, private route: ActivatedRoute) {
+    constructor(
+        private fb: FormBuilder, 
+        private route: ActivatedRoute,
+        private loadingSpinnerService: LoadingService,
+        private apiService: ApiService,
+        private messageService: MessageService
+    ) {
         this.firstStepForm = this.fb.group({
             fetchExisting: ['no'],
             existingJob: [''],
@@ -76,38 +119,155 @@ export class JobPostingPageComponent {
             jobDescription: ['', Validators.required],
         });
         this.secondStepForm = this.fb.group({
-            jobType: [[], Validators.required],
+            jobType: [this.defaultSelectedJobTypes, Validators.required],
             jobLocation: [[], Validators.required],
             skills: [[], Validators.required],
             experience: ['', Validators.required],
-            salaryRange: ['', Validators.required],
+            salaryRange: ['', [Validators.required, this.salaryRangeValidator]],
             currency: ['', Validators.required],
             period: ['', Validators.required],
             noticePeriod: ['', Validators.required],
         });
-
-        // this.setupValueSync();
+        this.thirdStepForm = this.fb.group({
+            question: ['', Validators.required],
+            deciderResponse: [false],
+            additionalResponse: [false],
+            useTalliteGPT: [false],
+            noOfQuestion: [''],
+            difficulty: [''],
+            requiredAssessmentScore: [''],
+            questions: this.fb.array([]),
+        });
     }
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
+            // this.getAllJobListings();
             this.editMode = !!params['id'];
             if (this.editMode) {
                 this.loadJobDetails(params['id']);
                 this.removeAddSpecificControls();
             }
-            this.jobTypes = jobTypes;
-            this.jobLocations = jobLocations;
+            this.jobsList = jobListings;
+            this.jobTypes = jobTypeList;
+            this.jobLocations = countryList;
             this.experienceLevels = experienceLevels;
             this.noticePeriods = noticePeriods;
-            this.period = period;
-            this.currencies = currencies;
+            this.period = durationList;
+            this.currencies = currencyList;
+            this.skills = skillsList;
         });
+    }
+
+    getAllJobListings(): void {
+        this.loadingSpinnerService.show();
+        this.apiService.getJobListings(this.requestBody).subscribe({
+            next: (response) => {
+                this.loadingSpinnerService.hide();
+                if (response.status && response.data && response.data.list) {
+                    this.jobsList = response.data.list.map((item: any) => ({
+                        job_code: item.productCode,
+                        job_name: item.productName,
+                    }));
+                }
+            },
+            error: (error: any) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error fetching job data' });
+                this.loadingSpinnerService.hide();
+            },
+        });
+    }
+
+    filterJobs(event: AutoCompleteCompleteEvent) {
+        let filtered: any[] = [];
+        let query = event.query;
+        console.log(query)
+        for (let i = 0; i < (this.jobsList as any[]).length; i++) {
+            let job = (this.jobsList as any[])[i];
+            if (job.job_name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+                filtered.push(job);
+            }
+        }
+        console.log(filtered)
+        this.filteredJobsList = filtered;
+    }
+
+    onJobSelected(event: any) {
+        this.loadingSpinnerService.show();
+        const selectedJob = event;
+        console.log(selectedJob.value.job_code);
+        let body = {
+            "sellerCode": 0,
+            "productCode": selectedJob.value.job_code,
+            "productType": 1
+        }
+        if (selectedJob) {
+            this.apiService.getJobDetails(body).subscribe({
+                next: (response) => {
+                    if (response.status && response.data) {
+                        this.loadingSpinnerService.hide();
+                        this.selectedExistingJobDetails = response.data;
+                    }
+                },
+                error: (error: any) => {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                    this.loadingSpinnerService.hide();
+                },
+            });
+        }
     }
 
     private removeAddSpecificControls(): void {
         this.firstStepForm.removeControl('fetchExisting');
         this.firstStepForm.removeControl('existingJob');
+    }
+
+    salaryRangeValidator(control: AbstractControl): ValidationErrors | null {
+        const salaryRangePattern = /^\d{1,3}(,\d{3})*(\d+)?(\s*-\s*\d{1,3}(,\d{3})*(\d+)?)?$/;
+        const value = control.value;
+        return salaryRangePattern.test(value) ? null : { invalidSalaryRange: true };
+    }
+
+    get questionFormArray(): FormArray {
+        return this.thirdStepForm.get('questions') as FormArray;
+    }
+    
+    addQuestion() {
+        const { question, deciderResponse, additionalResponse } = this.thirdStepForm.value;
+        if (this.thirdStepForm.valid) {
+            const questionGroup = this.fb.group({
+                id: [this.questionFormArray.length + 1],
+                question: [question],
+                deciderResponse: [deciderResponse],
+                additionalResponse: [additionalResponse],
+            });
+            this.questionFormArray.push(questionGroup);
+            this.thirdStepForm.patchValue({ question: '', deciderResponse: false, additionalResponse: false });
+        }
+    }
+    
+    editQuestion(index: number) {
+        const questionGroup = this.questionFormArray.at(index);
+        this.thirdStepForm.patchValue({
+            question: questionGroup.get('question')?.value,
+            deciderResponse: questionGroup.get('deciderResponse')?.value,
+            additionalResponse: questionGroup.get('additionalResponse')?.value,
+        });
+        this.questionFormArray.removeAt(index);
+    }
+    
+    deleteQuestion(index: number) {
+        this.questionFormArray.removeAt(index);
+    }
+    
+    toggleTalliteGPT() {
+        if (!this.thirdStepForm.get('useTalliteGPT')?.value) {
+            this.thirdStepForm.patchValue({
+                noOfQuestion: '',
+                difficulty: '',
+                requiredAssessmentScore: '',
+            });
+        }
     }
 
     private loadJobDetails(id: string): void {
@@ -141,39 +301,6 @@ export class JobPostingPageComponent {
             'Project Manager': { title: 'Project Manager', description: 'Lead and manage projects.' },
         };
         return mockJobs[jobName] || null;
-    }
-    
-    removeLocation(location: string): void {
-        const index = this.selectedLocations.indexOf(location);
-        if (index >= 0) {
-            this.selectedLocations.splice(index, 1);
-        }
-    }
-
-    removeReactiveKeyword(keyword: string) {
-        this.reactiveKeywords.update(keywords => {
-          const index = keywords.indexOf(keyword);
-          if (index < 0) {
-            return keywords;
-          }
-    
-          keywords.splice(index, 1);
-          this.announcer.announce(`removed ${keyword} from reactive form`);
-          return [...keywords];
-        });
-      }
-    
-      addReactiveKeyword(event: MatChipInputEvent): void {
-        const value = (event.value || '').trim();
-    
-        // Add our keyword
-        if (value) {
-          this.reactiveKeywords.update(keywords => [...keywords, value]);
-          this.announcer.announce(`added ${value} to reactive form`);
-        }
-    
-        // Clear the input value
-        event.chipInput!.clear();
     }
 
 }

@@ -1,10 +1,10 @@
 <app-navbar />
 
-<div class="container ptb-20">
+<div class="container my-5">
+    <p-toast />
     <div class="row d-flex justify-content-center">
         <div class="col-12 col-lg-10">
-            <mat-horizontal-stepper [linear]="true" #stepper>
-                <!-- Steps 2 -->
+            <!-- <mat-horizontal-stepper [linear]="true" #stepper>
                 <mat-step [stepControl]="firstStepForm" label="Step 1">
                     <form [formGroup]="firstStepForm">
                         <div *ngIf="!editMode">
@@ -67,7 +67,6 @@
                     </form>
                 </mat-step>
               
-                <!-- Steps 2 -->
                 <mat-step [stepControl]="secondStepForm" label="Step 2">
                     <form [formGroup]="secondStepForm">
                         <div class="row mb-3">
@@ -199,10 +198,10 @@
                     </form>
                 </mat-step>
                 <mat-step label="Step 3"></mat-step>
-            </mat-horizontal-stepper>
+            </mat-horizontal-stepper> -->
               
             <!-- Footer Buttons -->
-            <div class="p-3 bg-light text-center mb-2 d-flex justify-content-between">
+            <!-- <div class="p-3 bg-light text-center mb-2 d-flex justify-content-between">
                 <button mat-stroked-button color="primary" 
                     (click)="stepper.previous()" 
                     [disabled]="stepper.selectedIndex === 0"
@@ -214,7 +213,348 @@
                     style="background-color: rgb(13, 99, 174); color: whitesmoke;">
                     Next
                 </button>
-            </div>              
+            </div>               -->
+            <div class="card py-3">
+                <p-stepper [linear]="true">
+                    <p-stepperPanel header="Step I">
+                        <ng-template pTemplate="content" let-nextCallback="nextCallback" let-index="index">
+                            <div class="flex flex-column h-12rem">
+                                <form [formGroup]="firstStepForm">
+                                    <div *ngIf="!editMode">
+                                        <div class="row align-items-center mb-3">
+                                            <div class="col-7">
+                                                <label for="fetchExistingJob" class="form-label fw-bold">Do you want to get details from existing posted job?</label>
+                                            </div>
+                                            <div class="col-5 d-flex justify-content-around">
+                                                <div *ngFor="let category of existing">
+                                                    <div class="col-6 d-flex">
+                                                        <p-radioButton 
+                                                            [inputId]="category.key" 
+                                                            [value]="category.key" 
+                                                            formControlName="fetchExisting" />
+                                                        <label [for]="category.key" class="ms-2 fw-bold">
+                                                            {{ category.name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="col-12 col-lg-6 mb-3" *ngIf="firstStepForm.get('fetchExisting')?.value === 'yes'">
+                                            <div class="col-12">
+                                                <label for="existingJob" class="form-label fw-bold">Search and select existing job</label>
+                                            </div>
+                                            <p-autoComplete
+                                                formControlName="existingJob"
+                                                placeholder="Select or search job"
+                                                [dropdown]="true"
+                                                [showClear]="true"
+                                                [suggestions]="filteredJobsList"
+                                                (completeMethod)="filterJobs($event)"
+                                                (onSelect)="onJobSelected($event)"
+                                                optionLabel="job_name" />
+                                        </div>
+                                        <p-divider />
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <div class="col-12">
+                                            <label for="existingJob" class="form-label fw-bold">Job Title</label>
+                                            <input type="text" pInputText placeholder="Enter job title" formControlName="jobTitle" />
+                                            <small class="error-text" 
+                                                *ngIf="firstStepForm.get('jobTitle')?.hasError('required') && firstStepForm.get('jobTitle')?.touched">
+                                                Job title is required.
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <div class="col-12">
+                                            <label for="jobDescription" class="form-label fw-bold">Job Description</label>
+                                            <textarea rows="5" 
+                                                cols="30" 
+                                                pInputTextarea 
+                                                placeholder="Enter job description"
+                                                formControlName="jobDescription">
+                                            </textarea>
+                                            <small class="error-text" 
+                                                *ngIf="firstStepForm.get('jobDescription')?.hasError('required') && firstStepForm.get('jobDescription')?.touched">
+                                                Job description is required.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="flex pt-4 justify-content-end">
+                                <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" /> -->
+                                <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
+                            </div>
+                        </ng-template>
+                    </p-stepperPanel>
+                    <p-stepperPanel header="Step II">
+                        <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback" let-index="index">
+                            <div class="flex flex-column h-12rem">
+                                <form [formGroup]="secondStepForm">
+                                    <div class="col-12 mb-3">
+                                        <div class="col-12">
+                                            <label for="jobType" class="form-label fw-bold">Job Type</label>
+                                        </div>
+                                        <p-multiSelect formControlName="jobType"
+                                            [options]="jobTypes"
+                                            optionLabel="title"
+                                            optionValue="jobType"
+                                            placeholder="Select job types">
+                                        </p-multiSelect>
+                                        <small class="error-text" *ngIf="secondStepForm.get('jobType')?.hasError('required') && secondStepForm.get('jobType')?.touched">
+                                            Job type is required.
+                                        </small>
+                                    </div>
+                        
+                                    <div class="col-12 mb-3">
+                                        <div class="col-12">
+                                            <label for="jobLocation" class="form-label fw-bold">Job Location</label>
+                                        </div>
+                                        <p-multiSelect [options]="jobLocations" 
+                                            optionLabel="countryName"
+                                            optionValue="countryId"
+                                            placeholder="Select job locations" 
+                                            formControlName="jobLocation" 
+                                            display="chip">
+                                        </p-multiSelect>
+                                        <small class="error-text" *ngIf="secondStepForm.get('jobLocation')?.hasError('required') && secondStepForm.get('jobLocation')?.touched">
+                                            Job location is required.
+                                        </small>
+                                    </div>
+                        
+                                    <div class="col-12 mb-3">
+                                        <div class="col-12">
+                                            <label for="skills" class="form-label fw-bold">Skills</label>
+                                        </div>
+                                        <p-multiSelect [options]="skills" 
+                                            optionLabel="skill"
+                                            optionValue="skill"
+                                            placeholder="Select skills" 
+                                            formControlName="skills" 
+                                            display="chip">
+                                        </p-multiSelect>
+                                        <small class="error-text" *ngIf="secondStepForm.get('skills')?.hasError('required') && secondStepForm.get('skills')?.touched">
+                                            Skills are required.
+                                        </small>
+                                    </div>
+                        
+                                    <div class="row">
+                                        <div class="col-12 col-lg-6 mb-3">
+                                            <div class="col-12">
+                                                <label for="experience" class="form-label fw-bold">Experience</label>
+                                            </div>
+                                            <p-dropdown
+                                                formControlName="experience"
+                                                [options]="experienceLevels"
+                                                optionLabel="label"
+                                                optionValue="label"
+                                                class="w-100"
+                                                placeholder="Select experience">
+                                            </p-dropdown>
+                                            <small class="error-text" *ngIf="secondStepForm.get('experience')?.hasError('required') && secondStepForm.get('experience')?.touched">
+                                                Experience is required.
+                                            </small>
+                                        </div>
+                            
+                                        <div class="col-12 col-lg-6 mb-3">
+                                            <div class="col-12">
+                                                <label for="experience" class="form-label fw-bold">Expected Salary</label>
+                                            </div>
+                                            <div class="col-12 d-flex align-items-center">
+                                                <div class="col-6">
+                                                    <input type="text"
+                                                        pInputText
+                                                        formControlName="salaryRange"
+                                                        placeholder="Enter salary range"
+                                                        class="w-100" />
+                                                </div>
+                                            
+                                                <div class="col-3">
+                                                    <p-dropdown formControlName="currency"
+                                                        [options]="currencies"
+                                                        optionLabel="currencySymbol"
+                                                        optionValue="currencySymbol"
+                                                        placeholder="">
+                                                    </p-dropdown>
+                                                </div>
+                                            
+                                                <div class="col-3">
+                                                    <p-dropdown formControlName="period"
+                                                        [options]="period"
+                                                        optionLabel="title"
+                                                        optionValue="id"
+                                                        placeholder="">
+                                                    </p-dropdown>
+                                                </div>
+                                            </div>
+                                            <small class="error-text" 
+                                                *ngIf="secondStepForm.get('salaryRange')?.hasError('required') && secondStepForm.get('salaryRange')?.touched ||
+                                                    secondStepForm.get('currency')?.hasError('required') && secondStepForm.get('currency')?.touched ||
+                                                    secondStepForm.get('period')?.hasError('required') && secondStepForm.get('period')?.touched">
+                                                Salary range, currency and period are required.
+                                            </small>
+                                            <small class="error-text" *ngIf="secondStepForm.get('salaryRange')?.hasError('invalidSalaryRange') && secondStepForm.get('salaryRange')?.touched">
+                                                Please enter a valid salary (e.g., 50,000, 50000, or 50,000 - 70,000).
+                                            </small>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="col-12 mb-3">
+                                        <div class="col-12">
+                                            <label for="noticePeriod" class="form-label fw-bold">Notice Period</label>
+                                        </div>
+                                        <p-dropdown
+                                            formControlName="noticePeriod"
+                                            [options]="noticePeriods"
+                                            optionLabel="label"
+                                            optionValue="label"
+                                            placeholder="Select notice period">
+                                        </p-dropdown>
+                                        <small class="error-text" *ngIf="secondStepForm.get('noticePeriod')?.hasError('required') && secondStepForm.get('noticePeriod')?.touched">
+                                            Notice period is required.
+                                        </small>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="row flex pt-4 justify-content-between">
+                                <div class="col-6">
+                                    <p-button severity="danger" label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" />
+                                </div>
+                                <div class="col-6 text-end">
+                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-stepperPanel>
+                    <p-stepperPanel header="Step III">
+                        <ng-template pTemplate="content" let-prevCallback="prevCallback" let-index="index">
+                            <div class="flex flex-column h-12rem">
+                                <form [formGroup]="thirdStepForm">
+                                    <!-- Add New Question -->
+                                    <div class="question-section">
+                                        <label class="form-label fw-bold">Add Question</label>
+                                        <div class="row align-items-center mb-3">
+                                            <div class="col-md-6">
+                                                <!-- Question Input -->
+                                                <input type="text"
+                                                    formControlName="question"
+                                                    placeholder="Enter question (e.g., Do you have 5 years experience?)"
+                                                    class="form-control"/>
+                                            </div>
+                                            <div class="col-md-2 my-2 my-lg-0 text-start text-lg-center">
+                                                <!-- Decider Response Checkbox -->
+                                                <p-checkbox
+                                                    formControlName="deciderResponse"
+                                                    binary="true"
+                                                    [label]="'Expected Yes Response?'"
+                                                    class="fw-bold"
+                                                ></p-checkbox>
+                                            </div>
+                                            <div class="col-md-2 my-2 my-lg-0 text-start text-lg-center">
+                                                <!-- Additional Response Checkbox -->
+                                                <p-checkbox
+                                                    formControlName="additionalResponse"
+                                                    binary="true"
+                                                    [label]="'Additional Response Required?'"
+                                                    class="fw-bold"
+                                                ></p-checkbox>
+                                            </div>
+                                            <div class="col-md-2 text-end text-lg-center">
+                                                <!-- Save Button -->
+                                                <p-button icon="pi pi-save" label="Save" (onClick)="addQuestion()"></p-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <!-- Accordion to Display Saved Questions -->
+                                    <p-accordion>
+                                        <p-accordionTab *ngFor="let question of questionFormArray.controls; let i = index"
+                                            [header]="'Question ' + (i + 1)">
+                                            <div class="row d-flex justify-content-between align-items-center">
+                                                <div class="col-12 col-lg-8">
+                                                    <p><strong>Question:</strong> {{ question.get('question')?.value }}</p>
+                                                    <p>
+                                                        <strong>Expected Response:</strong>
+                                                        {{ question.get('deciderResponse')?.value ? 'Yes' : 'No' }}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Additional Response:</strong>
+                                                        {{ question.get('additionalResponse')?.value ? 'Yes' : 'No' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-12 col-lg-4 text-end text-lg-center">
+                                                    <p-button
+                                                        label="Edit"
+                                                        icon="pi pi-pencil"
+                                                        (onClick)="editQuestion(i)">
+                                                    </p-button>
+                                                    <p-button
+                                                        label="Delete"
+                                                        icon="pi pi-trash"
+                                                        class="p-button-danger"
+                                                        (onClick)="deleteQuestion(i)">
+                                                    </p-button>
+                                                </div>
+                                            </div>
+                                        </p-accordionTab>
+                                    </p-accordion>
+
+                                    <p-divider />
+                                
+                                    <!-- Use Tallite GPT Checkbox -->
+                                    <div class="mt-4">
+                                        <p-checkbox
+                                            binary="true"
+                                            formControlName="useTalliteGPT"
+                                            label="Use Tallite GPT for Questions"
+                                            (onChange)="toggleTalliteGPT()"
+                                            class="fw-bold">
+                                        </p-checkbox>
+                                    </div>
+                                
+                                    <!-- Tallite GPT Additional Inputs -->
+                                    <div *ngIf="thirdStepForm.get('useTalliteGPT')?.value" class="mt-3">
+                                        <div class="row">
+                                            <!-- Number of Questions -->
+                                            <div class="col-md-4">
+                                                <label for="noOfQuestion" class="fw-bold">Number of Questions</label>
+                                                <input
+                                                    type="number"
+                                                    formControlName="noOfQuestion"
+                                                    class="form-control"
+                                                    placeholder="Enter number of questions" />
+                                            </div>
+                                            <!-- Difficulty Dropdown -->
+                                            <div class="col-md-4">
+                                                <label for="difficulty" class="fw-bold">Difficulty</label>
+                                                <p-dropdown
+                                                    formControlName="difficulty"
+                                                    [options]="difficultyOptions"
+                                                    placeholder="Select difficulty">
+                                                </p-dropdown>
+                                            </div>
+                                            <!-- Required Assessment Score -->
+                                            <div class="col-md-4">
+                                                <label for="requiredAssessmentScore" class="fw-bold">Required Assessment Score</label>
+                                                <input
+                                                    type="text"
+                                                    formControlName="requiredAssessmentScore"
+                                                    class="form-control"
+                                                    placeholder="Enter required score" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="flex pt-4 justify-content-start">
+                                <p-button label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" />
+                            </div>
+                        </ng-template>
+                    </p-stepperPanel>
+                </p-stepper>
+            </div>
         </div>
     </div>
 </div>

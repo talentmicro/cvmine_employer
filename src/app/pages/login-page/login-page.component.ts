@@ -23,9 +23,6 @@ import { InputTextModule } from 'primeng/inputtext';
         InputTextModule,
         ToastModule
     ],
-    // providers: [
-    //     { provide: HTTP_INTERCEPTORS, useClass: HttpInterceptorService, multi: true }
-    // ],
     providers: [LoginService, MessageService]
 })
 
