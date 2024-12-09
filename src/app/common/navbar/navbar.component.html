@@ -4,7 +4,7 @@
     <nav class="navbar navbar-expand-lg bg_dark d-flex justify-content-between align-items-center">
         <div class="container">
             <a routerLink="/" class="navbar-brand">
-                <img src="img/logo-white.svg" alt="Logo">
+                <img src="img/logo-cvmine.png" alt="Logo"[width]="100">
             </a>
             <ul
                 class="category-menu list-unstyle d-none d-xl-block"
@@ -76,28 +76,19 @@
                 </li>
             </ul>
             <div class="other-options d-flex align-items-center justify-content-end d-lg-none">
-                <div
-                    class="option-item"
-                    [ngClass]="{'d-none': router.url === '/index-2' || router.url === '/index-3'}"
-                >
+                <div *ngIf="isLoggedIn" class="option-item"
+                    [ngClass]="{'d-none': router.url === '/index-2' || router.url === '/index-3'}">
                     <div class="notif-option position-relative">
-                        <button
-                            class="dropdown-toggle d-flex align-items-center position-relative bg-transparent border-0 transition"
-                            type="button"
-                            (click)="notificationsDropdownToggleClass()"
-                        >
+                        <button type="button" (click)="notificationsDropdownToggleClass()"
+                            class="dropdown-toggle d-flex align-items-center position-relative bg-transparent border-0 transition">
                             <img src="img/icons/bell-white.svg" alt="Bell Icon" class="notif-btn">
                             <span class="d-flex flex-column align-items-center justify-content-center rounded-circle text-white position-absolute">
                                 1
                             </span>
                         </button>
-                        <div
-                            class="dropdown-menu top-1 border-0"
-                            [class.active]="notificationsDropdownClassApplied"
-                        >
-                            <h3 class="fs-20 fw-semibold mb-15">
-                                Notifications
-                            </h3>
+                        <div class="dropdown-menu top-1 border-0"
+                            [class.active]="notificationsDropdownClassApplied">
+                            <h3 class="fs-20 fw-semibold mb-15">Notifications</h3>
                             <ul class="list-unstyle">
                                 <li class="position-relative unread">
                                     <p class="fs-15 fw-semibold font_secondary text-title">
@@ -208,9 +199,9 @@
                     <a *ngIf="router.url === '/register'" routerLink="/login" class="link style-four fw-medium mx-2">
                         Login
                     </a>
-                    <a *ngIf="router.url === '/login'" routerLink="/register" class="btn style-four mx-2">
+                    <!-- <a *ngIf="router.url === '/login'" routerLink="/register" class="btn style-four mx-2">
                         Register
-                    </a>
+                    </a> -->
                 </div>
                 <div *ngIf="isLoggedIn" class="user-icon position-relative ms-3 float-end">
                     <button type="button" class="icon-btn bg-transparent border-0 d-flex align-items-center text-white" (click)="toggleUserDropdown()">

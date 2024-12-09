@@ -3,6 +3,9 @@ import { CommonModule, ViewportScroller } from '@angular/common';
 import { RouterOutlet, Router, Event, NavigationEnd } from '@angular/router';
 import { LoadingService } from './common/loading-spinner/loading.service';
 import { LoadingSpinnerComponent } from './common/loading-spinner/loading-spinner.component';
+import { NavbarComponent } from './common/navbar/navbar.component';
+import { FooterComponent } from './common/footer/footer.component';
+import { BackToTopComponent } from './common/back-to-top/back-to-top.component';
 
 @Component({
     selector: 'app-root',
@@ -11,6 +14,9 @@ import { LoadingSpinnerComponent } from './common/loading-spinner/loading-spinne
     standalone: true,
     imports: [
         RouterOutlet,
+        NavbarComponent,
+        FooterComponent,
+        BackToTopComponent,
         LoadingSpinnerComponent,
         CommonModule
     ],

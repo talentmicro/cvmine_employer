@@ -1,9 +1,6 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { NavbarComponent } from '../../common/navbar/navbar.component';
-import { FooterComponent } from '../../common/footer/footer.component';
-import { BackToTopComponent } from '../../common/back-to-top/back-to-top.component';
 import { FormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { jobListings } from '../job-listings-page/job-listings';
 import { HttpClient } from '@angular/common/http';
@@ -35,14 +32,13 @@ interface Job {
 
 @Component({
     selector: 'app-job-listings-page',
+    templateUrl: './job-listings-page.component.html',
+    styleUrls: ['./job-listings-page.component.scss'],
     standalone: true,
     imports: [
         CommonModule,
         RouterLink,
         FormsModule,
-        NavbarComponent,
-        FooterComponent,
-        BackToTopComponent,
         MatTableModule,
         MatSortModule,
         MatPaginatorModule,
@@ -52,9 +48,7 @@ interface Job {
         MatFormFieldModule,
         MatOptionModule,
         MatInputModule
-    ],
-    templateUrl: './job-listings-page.component.html',
-    styleUrls: ['./job-listings-page.component.scss']
+    ]
 })
 export class JobListingsPageComponent implements OnInit, AfterViewInit {
     displayedColumns: string[] = [
@@ -174,7 +168,7 @@ export class JobListingsPageComponent implements OnInit, AfterViewInit {
             hour: '2-digit', 
             minute: '2-digit', 
             hour12: true
-          };
+        };
         const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
         return formattedDate;
     }

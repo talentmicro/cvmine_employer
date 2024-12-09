@@ -873,6 +873,29 @@ export const jobTypeList = [
     }
 ];
 
+export const applicantStatus = [
+    {
+        "id": 10594,
+        "title": "Review"
+    },
+    {
+        "id": 10595,
+        "title": "Interview",
+    },
+    {
+        "id": 10596,
+        "title": "Offer"
+    },
+    {
+        "id": 10597,
+        "title": "Onboarding"
+    },
+    {
+        "id": 10598,
+        "title": "Joined"
+    }
+];
+
 export const experienceLevels = [
     { id: 1, label: "Less than 1 year"},
     { id: 2, label: "Between 1 to 3 years"}, 
@@ -883,7 +906,7 @@ export const experienceLevels = [
 ];
 
 export const  noticePeriods = [
-    { id: 1, label: "Immediate"},
+    { id: 1, label: "Immediate Joinee"},
     { id: 1, label: "Upto 30 days"},
     { id: 1, label: "Upto 60 days"},
     { id: 1, label: "Upto 90 days"}

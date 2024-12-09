@@ -100,15 +100,101 @@
 }
 
 /* Min width 1400px */
-@media only screen and (min-width: 1400px) {
+// @media only screen and (min-width: 1400px) {
 
-    .login-form-wrap {
-        padding: 40px;
-    }
+//     .login-form-wrap {
+//         padding: 40px;
+//     }
 
-}
+// }
 
 .error-text {
     color: #f44336;
     font-size: 0.875rem;
+}
+
+.right-section {
+    height: auto;
+}
+
+
+/* Right Section Styling */
+.right-section {
+    background-color: #f9f9f9; /* Light background for contrast */
+    padding: 40px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Login Card Styling */
+.login-form-wrap {
+    background-color: #ffffff;
+    padding: auto;
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    width: 100%;
+    max-width: 400px; /* Fixed width */
+    position: relative;
+}
+
+/* Media Query for Responsiveness */
+@media (max-width: 768px) {
+    .right-section {
+        padding: 20px;
+    }
+    .login-form-wrap {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+.sign-up {
+    color: #0d63ae; 
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.creative-card {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.creative-card h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0d63ae;
+    margin: 0;
+}
+
+.creative-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.85);
+}
+
+.upgrade-card {
+    background-color: #0d63ae;
+    color: white !important;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.2);
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: underline;
+}
+
+.upgrade-card:hover {
+    transform: scale(1.02);
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.3);
 }

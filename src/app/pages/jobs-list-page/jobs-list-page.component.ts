@@ -1,11 +1,7 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { NavbarComponent } from '../../common/navbar/navbar.component';
-import { FooterComponent } from '../../common/footer/footer.component';
-import { BackToTopComponent } from '../../common/back-to-top/back-to-top.component';
-import { jobListings } from '../job-listings-page/job-listings';
-import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ImportsModule } from '../../imports';
 
 // prime-ng imports
@@ -38,9 +34,6 @@ interface Job {
     imports: [
         RouterLink, 
         CommonModule, 
-        NavbarComponent, 
-        FooterComponent, 
-        BackToTopComponent,
         FormsModule,
         ReactiveFormsModule,
         ImportsModule
@@ -48,17 +41,11 @@ interface Job {
     providers: [MessageService]
 })
 
-export class JobsListPageComponent {
+export class JobsListPageComponent implements OnInit {
     @ViewChild('dt2') dt2!: Table;
     jobsList: Job[] = [];
     selectedJobs!: Job;
     expandedRows = {};
-    // jobStatuses: Array<{ value: string; label: string }> = [
-    //     { value: 'pending', label: 'Pending' },
-    //     { value: 'published', label: 'Published' },
-    //     { value: 'paused', label: 'Paused' },
-    //     { value: 'closed', label: 'Closed' }
-    // ];
     jobStatuses: Array<{ value: string; label: string, status: number; statusTitle: string }> = []
     loading: boolean = true;
     formGroup!: FormGroup;
@@ -70,25 +57,12 @@ export class JobsListPageComponent {
         "updatedFromDate": null,
         "updatedToDate": null,
         "publishingType": null,
-        "accessTypeId": null,
         "startPage": 1,
         "limit": 40,
-        "bookmarks": [],
-        "userList": [],
         "productCode": [],
         "status": null,
         "dateFilterType": null,
         "jobType": null,
-        "count": 0,
-        "loadBalancerValue": null,
-        "updatedBy": [],
-        "customFilter": [],
-        "lock_status": null,
-        "clientAM": null,
-        "contactAM": null,
-        "hiringManagers": null,
-        "jobExtendedDataFilter": null,
-        "campusTypes": null
     }
 
     constructor(
@@ -106,7 +80,6 @@ export class JobsListPageComponent {
         this.loadingSpinnerService.show();
         this.apiService.getJobListings(this.requestBody).subscribe({
             next: (response) => {
-                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
@@ -137,7 +110,7 @@ export class JobsListPageComponent {
 
     getDropdownValues(): void {
         const body = {};
-        this.apiService.getDropdownsData(this.requestBody).subscribe({
+        this.apiService.getDropdownsData(body).subscribe({
             next: (response) => {
                 if (response.status && response.data && response.data.jobMasterData.jobStatusList) {
                     this.jobStatuses = response.data.jobMasterData.jobStatusList
@@ -148,14 +121,12 @@ export class JobsListPageComponent {
                         value: item.statusTitle.toLowerCase(),
                         label: item.statusTitle
                     }));
-                    console.log(this.jobStatuses);
                 }
             },
             error: (error: any) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
                 this.loading = false;
                 this.loadingSpinnerService.hide();
-                console.error('Error fetching job data:', error);
             },
         });
     }
@@ -214,16 +185,26 @@ export class JobsListPageComponent {
     }
 
     onJobStatusChange(row: Job): void {
-        console.log(`Job ID ${row.id} status changed to: ${row.status}`);
-    
-        // Optional: Call an API to persist the change
-        // this.http.put(`api/jobs/${row.id}`, { status: row.status }).subscribe(
-        //     (response) => console.log('Status updated', response),
-        //     (error) => console.error('Error updating status', error)
-        // );
+        let body = {
+            "status": this.jobStatuses.find(item => item.statusTitle === row.status)?.status,
+            "productCode": row.id,
+        }
+        this.apiService.changeJobStatus(body).subscribe({
+            next: (response) => {
+                if(response.status) {
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.getAllJobListings();
+                }
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.getAllJobListings();
+            }
+        })
     }
 
     formatPublishedDate(dateString: string): string {
+        console.log(dateString);
         const date = new Date(dateString);
         const options: Intl.DateTimeFormatOptions = { 
             day: 'numeric', 

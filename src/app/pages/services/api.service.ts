@@ -29,4 +29,16 @@ export class ApiService {
     getJobDetails(body: any): Observable<any> {
         return this.http.post(`${this.baseUrl}api_uat/icrweb/home/JobDetailsWithMaster_v4_tal_lite`, body);
     }
+
+    changeJobStatus(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/save_job_status`, body);
+    }
+
+    getApplicationDetails(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/resumeDetailWithMasterData_v4_tal_lite`, body);
+    }
+
+    changeApplicantionStatus(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/submit_stage_status_quick_update_tal_lite`, body);
+    }
 }

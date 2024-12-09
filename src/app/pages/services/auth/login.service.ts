@@ -12,7 +12,9 @@ import { environment } from '../../../../environments/environment';
 })
 
 export class LoginService {
-    private loginSubject = new BehaviorSubject<boolean>(false);
+    private loginSubject = new BehaviorSubject<boolean>(
+        this.isBrowser() && !!sessionStorage.getItem('authToken')
+    );
     loginState$ = this.loginSubject.asObservable();
 
     private apiUrl = `${environment.apiUrl}api_uat/icrweb/home/weblogin_tal_lite`;
@@ -34,16 +36,32 @@ export class LoginService {
                     user: response.data.userDetails 
                 }));
                 this.loginSubject.next(true);
-
                 return response;
             }),
             catchError((error) => {
                 this.store.dispatch(loginFailure({ error }));
                 this.loginSubject.next(false);
-
                 throw error;
             })
         );
+        // return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
+        //     map((response) => {
+        //         sessionStorage.setItem('authToken', response.data.userDetails.token);
+        //         sessionStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+    
+        //         this.loginSubject.next(true);
+    
+        //         if (this.isBrowser()) {
+        //             window.location.reload();
+        //         }
+    
+        //         return response;
+        //     }),
+        //     catchError((error) => {
+        //         this.loginSubject.next(false);
+        //         throw error;
+        //     })
+        // );
     }
 
     logout(): void {

@@ -43,7 +43,7 @@ export const requestInterceptors: HttpInterceptorFn = (req, next) => {
 
     // Conditionally encrypt data if body is not FormData
     if (req.body && !(req.body instanceof FormData)) {
-        console.log(req.body);
+        // console.log(req.body);
         const encryptionKey = session?.secretKey || aKey;
         req = req.clone({
             body: encryptData(encryptionKey, req.body)

@@ -2,11 +2,8 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ChangeDetectionStrategy, Component, computed, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../../common/navbar/navbar.component';
-import { FooterComponent } from '../../common/footer/footer.component';
-import { BackToTopComponent } from '../../common/back-to-top/back-to-top.component';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { jobListings } from '../job-listings-page/job-listings';
 import { currencyList, countryList, noticePeriods, durationList, experienceLevels, jobTypeList, skillsList } from '../data';
 import { ImportsModule } from '../../imports';
@@ -37,9 +34,6 @@ interface Job {
     standalone: true,
     imports: [
         CommonModule,
-        NavbarComponent,
-        FooterComponent,
-        BackToTopComponent,
         ReactiveFormsModule,
         FormsModule,
         ImportsModule
@@ -108,6 +102,7 @@ export class JobPostingPageComponent {
     constructor(
         private fb: FormBuilder, 
         private route: ActivatedRoute,
+        private router: Router,
         private loadingSpinnerService: LoadingService,
         private apiService: ApiService,
         private messageService: MessageService
@@ -115,7 +110,7 @@ export class JobPostingPageComponent {
         this.firstStepForm = this.fb.group({
             fetchExisting: ['no'],
             existingJob: [''],
-            jobTitle: ['', Validators.required],
+            jobTitle: ['', [Validators.required, Validators.maxLength(100)]],
             jobDescription: ['', Validators.required],
         });
         this.secondStepForm = this.fb.group({
@@ -301,6 +296,10 @@ export class JobPostingPageComponent {
             'Project Manager': { title: 'Project Manager', description: 'Lead and manage projects.' },
         };
         return mockJobs[jobName] || null;
+    }
+
+    navigate() {
+        this.router.navigate(['/job-listings']);
     }
 
 }

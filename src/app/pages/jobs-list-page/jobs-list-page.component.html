@@ -1,5 +1,4 @@
-<app-navbar />
-<div class="container my-2">
+<div class="container my-3">
     <p-toast />
     <div class="row align-items-center mb-10">
         <div class="col-12 table-container">
@@ -43,7 +42,7 @@
                     <th class="table-head" style="width:7%">Offered</th>
                     <th class="table-head" style="width:7%">Hired</th>
                     <th class="table-head" style="width:7%">Dropped</th>
-                    <th class="table-head text-center" style="width:18%">Status</th>
+                    <th class="table-head text-center" style="width:15%">Status</th>
                     <th class="table-head" style="width:9%">Options</th>
                 </tr>
                 <tr>
@@ -120,37 +119,37 @@
                             </span>
                         </div>
                     </td>
-                    <td class="p-1 text-end">
+                    <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-users-between-lines pe-2"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}">
                             {{job.total_applications}}
                         </a> 
                     </td>
-                    <td class="p-1 text-end">
+                    <td class="p-1 text-center">
                         <i class="fa-solid fa-user-clock fa-sm pe-2" style="color: #db9d00"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'shortlisted'}">
                             {{job.shortlisted_applications}}
                         </a> 
                     </td>
-                    <td class="p-1 text-end">
+                    <td class="p-1 text-center">
                         <i class="fa-solid fa-user-pen fa-sm pe-2" style="color: navy;"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'interviewed'}">
                             {{job.interviewed_applications}}
                         </a>
                     </td>
-                    <td class="p-1 text-end">
+                    <td class="p-1 text-center">
                         <i class="fa-solid fa-user-tag fa-sm pe-2" style="color: orangered;"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'offered'}">
                             {{job.offered_applications}}
                         </a> 
                     </td>
-                    <td class="p-1 text-end">
+                    <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-user-check pe-2" style="color: green"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'hired'}">
                             {{job.hired_applications}}
                         </a>
                     </td>
-                    <td class="p-1 text-end">
+                    <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-user-xmark pe-2" style="color: red"></i>
                         <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'dropped'}">
                             {{job.dropped_applications}}
@@ -190,14 +189,10 @@
             </ng-template>
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="9" class="text-center">No job listings found.</td>
+                    <td colspan="14" class="text-center">No job listings found.</td>
                 </tr>
             </ng-template>
             </p-table>
         </div> 
     </div>
 </div>
-
-<app-footer />
-
-<app-back-to-top />

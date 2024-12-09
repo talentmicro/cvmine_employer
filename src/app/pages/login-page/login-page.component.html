@@ -1,32 +1,68 @@
-<app-navbar />
 <div class="container my-3">
-    <p-toast />
-    <div class="section-title style-one text-center mb-35">
-        <h2>
-            <strong>Login</strong> Account
-        </h2>
-    </div>
     <div class="row">
-        <div class="col-xxl-6 offset-xxl-3 col-lg-8 offset-lg-2">
-            <div class="login-form-wrap bg-haze">
+        <div class="col-lg-7 order-2 order-lg-1 my-5 my-lg-0">
+            <div class="content-wrap p-4">
+                <div class="header-section text-center">
+                    <h3>A seamless jobseeker sourcing platform<br>for Employers across the world</h3>
+                    <h3 class="my-3" style="color: rgb(255, 113, 18);">New to CVMine?</h3>
+                    <a routerLink="/register"><h3 class="sign-up my-3"><u>Sign up now</u></h3></a>
+                </div>
+                <p-divider />
+                <div class="col-12">
+                    <h5 class="text-center">Features of CVMine for Employers</h5>
+                    <div class="row my-4">
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="creative-card">
+                                <h5>Post jobs to source unlimited jobseekers</h5>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="creative-card">
+                                <h5>Assessment questions to qualify jobseekers instantly</h5>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="creative-card">
+                                <h5>Generate questions automatically using TalliteGPT</h5>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="creative-card">
+                                <h5>Evaluate the jobseeker automatically using TalliteGPT</h5>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="upgrade-card text-center">
+                                <h5 class="text-white">Upgrade to Tallite ATS and get access to updated Jobseeker Database</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        <div class="col-12 col-lg-5 order-1 order-lg-2 right-section">
+            <div class="login-form-wrap bg-haze px-5">
+                <div class="section-title style-one text-center mb-35">
+                    <h2 style="color: rgb(13, 99, 174)">Login</h2>
+                </div>
                 <form [formGroup]="loginForm" class="login-form">
                     <div class="form-group mb-20">
-                        <label class="text-dark" for="fname">
-                            Employee Id
+                        <label class="text-dark fw-bold" for="fname">
+                            User Id
                         </label>
                         <input pInputText formControlName="employeeId" name="employeeId" id="employeeId" 
-                            placeholder="Enter employee Id">
+                            placeholder="Enter user id">
                         <small *ngIf="loginForm.get('employeeId')?.hasError('required') && loginForm.get('employeeId')?.touched" 
                             class="error-text">
-                            EmployeeId is required.
+                            Used id is required.
                         </small>
                         <small *ngIf="loginForm.get('employeeId')?.hasError('employeeId') && loginForm.get('employeeId')?.touched" 
                             class="error-text">
-                            Valid employeeId is required.
+                            Valid user id is required.
                         </small>
                     </div>
                     <div class="form-group style-two mb-30">
-                        <label class="text-dark" for="password_1">
+                        <label class="text-dark fw-bold" for="password_1">
                             Password
                         </label>
                         <input pInputText formControlName="password" [type]="isPasswordVisible ? 'text' : 'password'" name="password" id="password" placeholder="Enter password">
@@ -46,18 +82,18 @@
                             Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character.
                         </small>
                     </div>
+                    <div class="text-center">
+                        <p class="mb-0 mt-3 text-end">
+                            <a routerLink="/forgot-password" class="link style-three fw-semibold">Forgot Password?</a>
+                        </p>
+                    </div>
                     <div class="text-center mt-20">
                         <button class="btn style-four" (click)="onSubmit()">
                             Login
                         </button>
-                        <p class="mb-0 mt-3">
-                            Don't have an account? <a routerLink="/register" class="link style-three fw-semibold">Register</a>
-                        </p>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<app-footer />

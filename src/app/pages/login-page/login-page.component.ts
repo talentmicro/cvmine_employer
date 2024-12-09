@@ -2,13 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { NavbarComponent } from '../../common/navbar/navbar.component';
-import { FooterComponent } from '../../common/footer/footer.component';
 import { LoginService } from '../services/auth/login.service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
-
+import { DividerModule } from 'primeng/divider';
 @Component({
     selector: 'app-login-page',
     templateUrl: './login-page.component.html',
@@ -18,10 +16,9 @@ import { InputTextModule } from 'primeng/inputtext';
         RouterLink, 
         ReactiveFormsModule,
         CommonModule, 
-        NavbarComponent, 
-        FooterComponent,
         InputTextModule,
-        ToastModule
+        ToastModule,
+        DividerModule
     ],
     providers: [LoginService, MessageService]
 })
@@ -64,7 +61,7 @@ export class LoginPageComponent implements OnInit{
                     this.router.navigate(['/dashboard']);
                 },
                 (error) => {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: error });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
                 }
             );
         } else {

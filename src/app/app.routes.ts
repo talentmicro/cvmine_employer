@@ -7,6 +7,7 @@ import { JobListingsPageComponent } from './pages/job-listings-page/job-listings
 import { JobApplicantsPageComponent } from './pages/job-applicants-page/job-applicants-page.component';
 import { JobPostingPageComponent } from './pages/job-posting-page/job-posting-page.component';
 import { authGuard, redirectIfAuthenticatedGuard } from './guards/auth.guard';
+import { ApplicantDetailsPageComponent } from './pages/applicant-details-page/applicant-details-page.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard] },
@@ -14,6 +15,7 @@ export const routes: Routes = [
     { path: 'jobs-list', component: JobListingsPageComponent, canActivate: [authGuard] },
     { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard] },
     { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard] },
+    { path: 'job-applicant/:id', component: ApplicantDetailsPageComponent, canActivate: [authGuard] },
     {
         path: 'job',
         canActivate: [authGuard],

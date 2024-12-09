@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LoginService } from '../../pages/services/auth/login.service';
@@ -18,29 +18,44 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     userDropdownOpen: boolean = false;
 
-    constructor (
+    constructor(
         public router: Router,
+        private cdr: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
-        this.isLoggedIn = this.loginService.isLoggedIn();
-        if (this.isLoggedIn) {
-            const userDetails = this.loginService.getUserDetails();
-            this.userName = userDetails?.displayName || 'User';
-        }
+        // this.isLoggedIn = this.loginService.isLoggedIn();
+        // console.log(this.isLoggedIn);
+        // if (this.isLoggedIn) {
+        //     const userDetails = this.loginService.getUserDetails();
+        //     this.userName = userDetails?.displayName || 'User';
+        // }
 
-        // this.loginService.loginState$
-        //     .pipe(takeUntil(this.destroy$))
-        //     .subscribe((state) => {
-        //         console.log(state);
-        //         this.isLoggedIn = state;
-        //         if (state) {
-        //             const userDetails = this.loginService.getUserDetails();
-        //             this.userName = userDetails?.name || 'User';
-        //         } else {
-        //             this.userName = 'Guest';
-        //         }
-        // });
+        this.loginService.loginState$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (state) => {
+                    console.log('Navbar: Detected loginState$ change:', state);
+                    this.isLoggedIn = state;
+
+                    if (state) {
+                        const userDetails = this.loginService.getUserDetails();
+                        this.userName = userDetails?.displayName || 'User';
+                    } else {
+                        this.userName = 'Guest';
+                    }
+
+                    this.cdr.detectChanges();
+                },
+                error: (err) => {
+                    console.error('Navbar: Error in loginState$ subscription:', err);
+                }
+            });
+
+        // Force change detection on route change
+        this.router.events.subscribe(() => {
+            this.cdr.detectChanges();
+        });
     }
 
     toggleUserDropdown(): void {
@@ -48,12 +63,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
     
     logout(): void {
+        this.userDropdownOpen = !this.userDropdownOpen;
         this.loginService.logout();
         this.router.navigate(['/login']);
     }
     
     ngOnDestroy(): void {
-        // Unsubscribe to prevent memory leaks
         this.destroy$.next();
         this.destroy$.complete();
     }

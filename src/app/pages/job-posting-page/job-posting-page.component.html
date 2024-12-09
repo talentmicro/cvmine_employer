@@ -1,5 +1,3 @@
-<app-navbar />
-
 <div class="container my-5">
     <p-toast />
     <div class="row d-flex justify-content-center">
@@ -222,12 +220,12 @@
                                 <form [formGroup]="firstStepForm">
                                     <div *ngIf="!editMode">
                                         <div class="row align-items-center mb-3">
-                                            <div class="col-7">
+                                            <div class="col-12 col-lg-7">
                                                 <label for="fetchExistingJob" class="form-label fw-bold">Do you want to get details from existing posted job?</label>
                                             </div>
-                                            <div class="col-5 d-flex justify-content-around">
+                                            <div class="col-12 col-lg-5 d-flex justify-content-md-start justify-content-lg-around">
                                                 <div *ngFor="let category of existing">
-                                                    <div class="col-6 d-flex">
+                                                    <div class="col-6 mx-3 d-flex">
                                                         <p-radioButton 
                                                             [inputId]="category.key" 
                                                             [value]="category.key" 
@@ -241,12 +239,12 @@
                                         </div>
                                     
                                         <div class="col-12 col-lg-6 mb-3" *ngIf="firstStepForm.get('fetchExisting')?.value === 'yes'">
-                                            <div class="col-12">
+                                            <!-- <div class="col-12">
                                                 <label for="existingJob" class="form-label fw-bold">Search and select existing job</label>
-                                            </div>
+                                            </div> -->
                                             <p-autoComplete
                                                 formControlName="existingJob"
-                                                placeholder="Select or search job"
+                                                placeholder="Select or search existing job"
                                                 [dropdown]="true"
                                                 [showClear]="true"
                                                 [suggestions]="filteredJobsList"
@@ -263,6 +261,10 @@
                                             <small class="error-text" 
                                                 *ngIf="firstStepForm.get('jobTitle')?.hasError('required') && firstStepForm.get('jobTitle')?.touched">
                                                 Job title is required.
+                                            </small>
+                                            <small class="error-text" 
+                                                *ngIf="firstStepForm.get('jobTitle')?.hasError('maxlength') && firstStepForm.get('jobTitle')?.touched">
+                                                Job title cannot exceed 100 characters.
                                             </small>
                                         </div>
                                     </div>
@@ -283,9 +285,17 @@
                                     </div>
                                 </form>
                             </div>
-                            <div class="flex pt-4 justify-content-end">
-                                <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" /> -->
-                                <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
+                            <div class="flex pt-4 justify-content-between">
+                                
+                            </div>
+                            <div class="row flex pt-4 justify-content-between">
+                                <div class="col-6">
+                                    <p-button label="Back" icon="pi pi-arrow-left" iconPos="left" (onClick)="navigate()" styleClass="back-button"/>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" /> -->
+                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" styleClass="next-button" />
+                                </div>
                             </div>
                         </ng-template>
                     </p-stepperPanel>
@@ -420,10 +430,10 @@
                             </div>
                             <div class="row flex pt-4 justify-content-between">
                                 <div class="col-6">
-                                    <p-button severity="danger" label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" />
+                                    <p-button severity="danger" label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" styleClass="back-button" />
                                 </div>
                                 <div class="col-6 text-end">
-                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
+                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" styleClass="next-button" />
                                 </div>
                             </div>
                         </ng-template>
@@ -549,7 +559,7 @@
                                 </form>
                             </div>
                             <div class="flex pt-4 justify-content-start">
-                                <p-button label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" />
+                                <p-button label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" styleClass="back-button" />
                             </div>
                         </ng-template>
                     </p-stepperPanel>
@@ -558,7 +568,3 @@
         </div>
     </div>
 </div>
-
-<app-footer />
-
-<app-back-to-top />
