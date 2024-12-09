@@ -72,7 +72,6 @@ export class JobsListPageComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.getAllJobListings();
         this.getDropdownValues();
     }
 
@@ -95,7 +94,7 @@ export class JobsListPageComponent implements OnInit {
                         offered_applications: item.Offer || 0,
                         hired_applications: item.joined || 0,
                         dropped_applications: item.AllDropped || 0,
-                        published_date: item.postedOn,
+                        published_date: item.postedDate,
                         status: item.statusTitle,
                     }));
                 }
@@ -109,6 +108,7 @@ export class JobsListPageComponent implements OnInit {
     }
 
     getDropdownValues(): void {
+        this.loadingSpinnerService.show();
         const body = {};
         this.apiService.getDropdownsData(body).subscribe({
             next: (response) => {
@@ -121,6 +121,7 @@ export class JobsListPageComponent implements OnInit {
                         value: item.statusTitle.toLowerCase(),
                         label: item.statusTitle
                     }));
+                    this.getAllJobListings();
                 }
             },
             error: (error: any) => {
@@ -204,7 +205,6 @@ export class JobsListPageComponent implements OnInit {
     }
 
     formatPublishedDate(dateString: string): string {
-        console.log(dateString);
         const date = new Date(dateString);
         const options: Intl.DateTimeFormatOptions = { 
             day: 'numeric', 

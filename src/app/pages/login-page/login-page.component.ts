@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
+
 @Component({
     selector: 'app-login-page',
     templateUrl: './login-page.component.html',
@@ -58,7 +59,7 @@ export class LoginPageComponent implements OnInit{
             this.loginService.login(employeeId, password).subscribe(
                 (response) => {
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                    this.router.navigate(['/dashboard']);
+                    this.router.navigate(['/job-listings']);
                 },
                 (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });

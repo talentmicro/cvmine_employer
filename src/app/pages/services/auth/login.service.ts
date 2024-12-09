@@ -48,6 +48,10 @@ export class LoginService {
         //     map((response) => {
         //         sessionStorage.setItem('authToken', response.data.userDetails.token);
         //         sessionStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+        //         this.store.dispatch(loginSuccess({ 
+        //             token: response.data.userDetails.token, 
+        //             user: response.data.userDetails 
+        //         }));
     
         //         this.loginSubject.next(true);
     

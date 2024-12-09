@@ -126,10 +126,8 @@ export class JobApplicantsPageComponent implements OnInit {
         this.loadingSpinnerService.show();
         this.apiService.getApplicants(this.requestBody).subscribe({
             next: (response) => {
-                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.loadingSpinnerService.hide();
-                    console.log(response.data.list);
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
                         job_code: item.productCode,
@@ -144,7 +142,6 @@ export class JobApplicantsPageComponent implements OnInit {
                         alertId: item.alertId,
                         resId: item.resId
                     }));
-                    console.log(this.applicantsList);
                 }
             },
             error: (error: any) => {
@@ -166,7 +163,6 @@ export class JobApplicantsPageComponent implements OnInit {
                         statusCode: item.id,
                         label: item.title.split(' - ')[0],
                     }));
-                    console.log(this.applicationStatus);
                     this.getApplicants();
                 }
             },
@@ -202,14 +198,13 @@ export class JobApplicantsPageComponent implements OnInit {
     onStatusChange(row: Applicant): void {
         this.loadingSpinnerService.show();
         let body1 = {
-            "resId": row.job_code,
+            "resId": row.resId,
             "alertId": row.alertId,
-            "productCode": row.resId
+            "productCode": row.job_code
         };
 
         this.apiService.getApplicationDetails(body1).subscribe({
             next: (response: any) => {
-                console.log(response);
                 let body2 = {
                     "alertId": [
                         row.alertId

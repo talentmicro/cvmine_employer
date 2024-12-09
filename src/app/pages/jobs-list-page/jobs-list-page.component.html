@@ -22,7 +22,7 @@
                                     placeholder="Search keyword" />
                             </p-iconField>
                         </div>
-                        <div class="col-12 col-lg-6 text-end">
+                        <div class="col-12 col-lg-6 text-end mt-3 mt-lg-0">
                             <!-- <p-button label="Expand All" icon="pi pi-plus" text (onClick)="expandAll()" />
                             <p-button label="Collapse All" icon="pi pi-minus" text (onClick)="collapseAll()" /> -->
                             <button class="post-button" routerLink="/job/add">Post a Job</button>
@@ -31,8 +31,8 @@
                 </ng-template>
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="table-head" style="width: 4rem"></th>
-                    <th class="table-head" style="width: 4rem"><p-tableHeaderCheckbox /></th>
+                    <!-- <th class="table-head" style="width: 4rem"></th>
+                    <th class="table-head" style="width: 4rem"><p-tableHeaderCheckbox /></th> -->
                     <th class="table-head" pSortableColumn="job_name" style="min-width: 350px!important">
                         Job Title <p-sortIcon field="code" />
                     </th>
@@ -46,8 +46,8 @@
                     <th class="table-head" style="width:9%">Options</th>
                 </tr>
                 <tr>
-                    <th class="table-filter-row"></th>
-                    <th class="table-filter-row"></th>
+                    <!-- <th class="table-filter-row"></th>
+                    <th class="table-filter-row"></th> -->
                     <th class="table-filter-row">
                         <p-columnFilter 
                             type="text"
@@ -68,7 +68,8 @@
                                     [ngModel]="value" 
                                     [options]="jobStatuses"
                                     (onChange)="filter($event.value)" 
-                                    placeholder="Find by Status" 
+                                    placeholder="Find by Status"
+                                    appendTo="body" 
                                     [showClear]="true">
                                         <ng-template let-option pTemplate="item">
                                             <p-tag 
@@ -84,13 +85,13 @@
             </ng-template>
             <ng-template pTemplate="body" let-job let-expanded="expanded">
                 <tr>
-                    <td>
+                    <!-- <td>
                         <p-button type="button" pRipple [pRowToggler]="job" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
                     </td>
                     <td>
                         <p-tableCheckbox [value]="job" />
-                    </td>
-                    <td class="p-1">
+                    </td> -->
+                    <td class="p-3">
                         <div class="row">
                             <span><b>
                                 <a [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}">
@@ -161,6 +162,7 @@
                             optionLabel="label"
                             optionValue="label"
                             placeholder="Select Status"
+                            appendTo="body"
                             (onChange)="onJobStatusChange(job)">
                             <ng-template let-option pTemplate="item">
                                 <p-tag 

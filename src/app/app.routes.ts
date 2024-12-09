@@ -12,7 +12,6 @@ import { ApplicantDetailsPageComponent } from './pages/applicant-details-page/ap
 export const routes: Routes = [
     { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard] },
     { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard] },
-    { path: 'jobs-list', component: JobListingsPageComponent, canActivate: [authGuard] },
     { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard] },
     { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard] },
     { path: 'job-applicant/:id', component: ApplicantDetailsPageComponent, canActivate: [authGuard] },

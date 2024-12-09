@@ -27,7 +27,7 @@ export const redirectIfAuthenticatedGuard: CanActivateFn = (route, state) => {
 
     if (loginService.isLoggedIn()) {
         loadingService.hide();
-        router.navigate(['/dashboard']);
+        router.navigate(['/job-listings']);
         return false;
     }
 

@@ -52,10 +52,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
                 }
             });
 
-        // Force change detection on route change
-        this.router.events.subscribe(() => {
-            this.cdr.detectChanges();
-        });
     }
 
     toggleUserDropdown(): void {

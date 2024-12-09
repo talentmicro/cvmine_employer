@@ -35,6 +35,7 @@ export class AppComponent {
                 this.viewportScroller.scrollToPosition([0, 0]);
             }
         });
+        
         this.loadingService.loading$.subscribe((loading) => {
             this.isLoading = loading;
         });
