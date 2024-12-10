@@ -1,17 +1,13 @@
-import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { ChangeDetectionStrategy, Component, computed, inject, model, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { jobListings } from '../job-listings-page/job-listings';
 import { currencyList, countryList, noticePeriods, durationList, experienceLevels, jobTypeList, skillsList } from '../data';
 import { ImportsModule } from '../../imports';
 import { ApiService } from '../services/api.service';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { MessageService } from 'primeng/api';
 import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
-import { MultiSelectFilterOptions } from 'primeng/multiselect';
 
 interface Job {
     id: number;
@@ -41,63 +37,43 @@ interface Job {
     providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class JobPostingPageComponent {
-    firstStepForm: FormGroup;
-    secondStepForm: FormGroup;
-    thirdStepForm: FormGroup;
+export class JobPostingPageComponent implements OnInit {
+    firstStepForm!: FormGroup;
+    secondStepForm!: FormGroup;
+    thirdStepForm!: FormGroup;
     editMode: boolean = false;
     existing: any[] = [
         { name: 'Yes', key: 'yes' },
         { name: 'No', key: 'no' },
     ];
+    expectedAnswer: any[] = [
+        { name: 'Yes', key: 'yes' },
+        { name: 'No', key: 'no' },
+    ];
+    responseInput: any[] = [
+        { name: 'Required', key: 1 },
+        { name: 'Not Required', key: 2 },
+    ];
     selectedExistingJobDetails: any = {};
-    // jobsList: Array<{ job_code: number; job_name: string }> = [];
     jobsList: Array<Job> = [];
     filteredJobsList: Array<{ job_code: number; job_name: string }> = [];
     jobTypes: any[] = [];
     period: any[] = [];
     jobLocations: any[] = [];
-    // selectedCountries!: any[];
-    // filterCountryValue = '';
+    cityList: any[] = [];
     noticePeriods: any[] = [];
     currencies: any[] = [];
     experienceLevels: any[] = [];
     selectedLocations: any[] = [];
     defaultSelectedJobTypes = [1, 9];
     difficultyOptions = [
-        { label: 'Easy', value: 'easy' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Hard', value: 'hard' },
+        { label: 'Easy', value: 25 },
+        { label: 'Medium', value: 50 },
+        { label: 'High', value: 75 },
+        { label: 'Very High', value: 100 },
     ];
     skills: any = [];
-    requestBody = {
-        "search": "",
-        "sellerCode": null,
-        "fromDate": null,
-        "toDate": null,
-        "updatedFromDate": null,
-        "updatedToDate": null,
-        "publishingType": null,
-        "accessTypeId": null,
-        "startPage": 1,
-        "limit": 40,
-        "bookmarks": [],
-        "userList": [],
-        "productCode": [],
-        "status": null,
-        "dateFilterType": null,
-        "jobType": null,
-        "count": 0,
-        "loadBalancerValue": null,
-        "updatedBy": [],
-        "customFilter": [],
-        "lock_status": null,
-        "clientAM": null,
-        "contactAM": null,
-        "hiringManagers": null,
-        "jobExtendedDataFilter": null,
-        "campusTypes": null
-    }
+    active: number | undefined = 0;
 
     constructor(
         private fb: FormBuilder, 
@@ -106,7 +82,32 @@ export class JobPostingPageComponent {
         private loadingSpinnerService: LoadingService,
         private apiService: ApiService,
         private messageService: MessageService
-    ) {
+    ) {}
+
+    ngOnInit(): void {
+        this.route.params.subscribe((params) => {
+            this.getAllJobs();
+            this.editMode = !!params['id'];
+            if (this.editMode) {
+                this.loadJobDetails(params['id']);
+            }
+            this.jobTypes = jobTypeList;
+            this.jobLocations = countryList;
+            this.experienceLevels = experienceLevels;
+            this.noticePeriods = noticePeriods;
+            this.period = durationList;
+            this.currencies = currencyList;
+            this.initStepperForms();
+        });
+        this.getLocations();
+    }
+
+    initStepperForms() {
+        const jobTypeControls: { [key: string]: any } = {};
+        this.jobTypes.forEach(job => {
+            jobTypeControls[job.title] = [false];
+        });
+
         this.firstStepForm = this.fb.group({
             fetchExisting: ['no'],
             existingJob: [''],
@@ -114,49 +115,62 @@ export class JobPostingPageComponent {
             jobDescription: ['', Validators.required],
         });
         this.secondStepForm = this.fb.group({
-            jobType: [this.defaultSelectedJobTypes, Validators.required],
+            ...jobTypeControls,
             jobLocation: [[], Validators.required],
             skills: [[], Validators.required],
-            experience: ['', Validators.required],
-            salaryRange: ['', [Validators.required, this.salaryRangeValidator]],
+            experienceFrom: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
+            experienceTo: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
+            salaryFrom: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
+            salaryTo: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             currency: ['', Validators.required],
             period: ['', Validators.required],
-            noticePeriod: ['', Validators.required],
-        });
+            noticePeriodType: ['Immediate', Validators.required],
+            noticeFrom: [null],
+            noticeTo: [null],
+        }, { validator: [this.experienceRangeValidator, this.salaryRangeValidator, this.noticePeriodRangeValidator] });
+        this.initializeJobTypeFromString('');
         this.thirdStepForm = this.fb.group({
             question: ['', Validators.required],
             deciderResponse: [false],
             additionalResponse: [false],
             useTalliteGPT: [false],
-            noOfQuestion: [''],
+            noOfQuestion: [null, [Validators.min(1), Validators.max(10)]],
             difficulty: [''],
-            requiredAssessmentScore: [''],
+            requiredAssessmentScore: [null, [Validators.min(1), Validators.max(100), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             questions: this.fb.array([]),
         });
-    }
 
-    ngOnInit(): void {
-        this.route.params.subscribe((params) => {
-            // this.getAllJobListings();
-            this.editMode = !!params['id'];
-            if (this.editMode) {
-                this.loadJobDetails(params['id']);
-                this.removeAddSpecificControls();
-            }
-            this.jobsList = jobListings;
-            this.jobTypes = jobTypeList;
-            this.jobLocations = countryList;
-            this.experienceLevels = experienceLevels;
-            this.noticePeriods = noticePeriods;
-            this.period = durationList;
-            this.currencies = currencyList;
-            this.skills = skillsList;
+        this.toggleNoticePeriodValidators(this.secondStepForm.get('noticePeriodType')?.value);
+        this.toggleTalliteQuestionsControls(this.thirdStepForm.get('useTalliteGPT')?.value)
+
+        this.secondStepForm.get('noticePeriodType')?.valueChanges.subscribe(value => {
+            this.toggleNoticePeriodValidators(value);
+        });
+        this.thirdStepForm.get('useTalliteGPT')?.valueChanges.subscribe(value => {
+            this.toggleTalliteQuestionsControls(value);
         });
     }
 
-    getAllJobListings(): void {
+    getLocations() {
+        const body = {
+            search: ""
+        }
+        this.apiService.getCityList(body).subscribe({
+            next: (response) => {
+                this.cityList = response.data.list
+            },
+            error: (error: any) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error fetching locations' });
+            },
+        });
+    }
+
+    getAllJobs(): void {
+        const body = {
+            "activeJobs": 1
+        }
         this.loadingSpinnerService.show();
-        this.apiService.getJobListings(this.requestBody).subscribe({
+        this.apiService.getJobListings(body).subscribe({
             next: (response) => {
                 this.loadingSpinnerService.hide();
                 if (response.status && response.data && response.data.list) {
@@ -187,6 +201,13 @@ export class JobPostingPageComponent {
         this.filteredJobsList = filtered;
     }
 
+    onSkillAdd(event: any) {
+        const enteredSkill = event.value;
+        if (enteredSkill && !this.skills.includes(enteredSkill)) {
+          this.skills.push(enteredSkill);
+        }
+    }
+
     onJobSelected(event: any) {
         this.loadingSpinnerService.show();
         const selectedJob = event;
@@ -212,15 +233,38 @@ export class JobPostingPageComponent {
         }
     }
 
-    private removeAddSpecificControls(): void {
-        this.firstStepForm.removeControl('fetchExisting');
-        this.firstStepForm.removeControl('existingJob');
+    initializeJobTypeFromString(jobTypeString: string): void {
+        if (jobTypeString && jobTypeString.trim() !== '') {
+            const selectedTitles = jobTypeString.split(',').map(title => title.trim());
+            selectedTitles.forEach(title => {
+                if (this.secondStepForm.controls[title]) {
+                    this.secondStepForm.controls[title].setValue(true);
+                }
+            });
+        }
     }
 
-    salaryRangeValidator(control: AbstractControl): ValidationErrors | null {
-        const salaryRangePattern = /^\d{1,3}(,\d{3})*(\d+)?(\s*-\s*\d{1,3}(,\d{3})*(\d+)?)?$/;
-        const value = control.value;
-        return salaryRangePattern.test(value) ? null : { invalidSalaryRange: true };
+    getSelectedJobTypes(): string {
+        const selectedTitles = this.jobTypes
+            .filter(job => this.secondStepForm.controls[job.title].value)
+            .map(job => job.title);
+        return selectedTitles.join(', ');
+    }
+
+    isJobTypeInvalid(): boolean {
+        return !this.jobTypes.some(job => this.secondStepForm.get(job.title)?.value);
+    }
+
+    setStepperFormData() {
+        if(this.editMode) {
+            this.firstStepForm.removeControl('fetchExisting');
+            this.firstStepForm.removeControl('existingJob');
+            this.firstStepForm.get('jobTitle')?.setValue('Value for control1');
+            this.firstStepForm.get('jobDescription')?.setValue('Value for control1');
+        } else {
+            this.firstStepForm.get('jobTitle')?.setValue('Value for control1');
+            this.firstStepForm.get('jobDescription')?.setValue('Value for control1');
+        }
     }
 
     get questionFormArray(): FormArray {
@@ -270,7 +314,6 @@ export class JobPostingPageComponent {
             title: 'Software Developer',
             description: 'Build and maintain high-quality applications.',
         };
-      
         this.firstStepForm.patchValue({
             jobTitle: mockJob.title,
             jobDescription: mockJob.description,
@@ -300,6 +343,83 @@ export class JobPostingPageComponent {
 
     navigate() {
         this.router.navigate(['/job-listings']);
+    }
+
+    experienceRangeValidator(control: AbstractControl): ValidationErrors | null {
+        const experienceFrom = control.get('experienceFrom')?.value;
+        const experienceTo = control.get('experienceTo')?.value;
+        
+        if (experienceFrom !== null && experienceTo !== null && experienceFrom >= experienceTo) {
+            return { 'invalidExperienceRange': true };
+        }
+        return null;
+    }
+
+    salaryRangeValidator(control: AbstractControl): ValidationErrors | null {
+        const salaryFrom = control.get('salaryFrom')?.value;
+        const salaryTo = control.get('salaryTo')?.value;
+        
+        if (salaryFrom !== null && salaryTo !== null && salaryFrom >= salaryTo) {
+            return { 'invalidSalaryRange': true };
+        }
+        return null;
+    }
+
+    noticePeriodRangeValidator(control: AbstractControl): ValidationErrors | null {
+        const noticePeriodType = control.get('noticePeriodType')?.value;
+        const noticeFrom = control.get('noticeFrom')?.value;
+        const noticeTo = control.get('noticeTo')?.value;
+    
+        if (noticePeriodType === 'Other') {
+            if (noticeFrom === null || noticeTo === null) {
+                return { invalidNoticePeriodRange: true };
+            }
+            if (noticeFrom >= noticeTo) {
+                return { invalidNoticePeriodRange: true };
+            }
+        }
+        return null;
+    }
+
+    toggleNoticePeriodValidators(value: string) {
+        const noticeFromControl = this.secondStepForm.get('noticeFrom');
+        const noticeToControl = this.secondStepForm.get('noticeTo');
+
+        if (value === 'Other') {
+            noticeFromControl?.setValidators([Validators.required]);
+            noticeToControl?.setValidators([Validators.required]);
+        } else {
+            noticeFromControl?.clearValidators();
+            noticeToControl?.clearValidators();
+            noticeFromControl?.reset(null);
+            noticeToControl?.reset(null);
+        }
+
+        noticeFromControl?.updateValueAndValidity();
+        noticeToControl?.updateValueAndValidity();
+    }
+
+    toggleTalliteQuestionsControls(value: boolean) {
+        const noOfQuestion = this.thirdStepForm.get('noOfQuestion');
+        const difficulty = this.thirdStepForm.get('difficulty');
+        const requiredAssessmentScore = this.thirdStepForm.get('requiredAssessmentScore');
+
+        if (value) {
+            noOfQuestion?.setValidators([Validators.required]);
+            difficulty?.setValidators([Validators.required]);
+            requiredAssessmentScore?.setValidators([Validators.required]);
+        } else {
+            noOfQuestion?.clearValidators();
+            difficulty?.clearValidators();
+            requiredAssessmentScore?.clearValidators();
+            noOfQuestion?.reset(null);
+            difficulty?.reset('');
+            requiredAssessmentScore?.reset(null);
+        }
+
+        noOfQuestion?.updateValueAndValidity();
+        difficulty?.updateValueAndValidity();
+        requiredAssessmentScore?.updateValueAndValidity();
     }
 
 }

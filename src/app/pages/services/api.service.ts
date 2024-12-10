@@ -15,30 +15,38 @@ export class ApiService {
   	) { }
 
     getJobListings(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/jobview_tal_lite`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/jobview_tal_lite`, body);
+    }
+
+    getJobs(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icrweb/home/get_searchpage_joblist_tal_lite`, body);
     }
 
     getDropdownsData(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/get_all_master_data_v1_tal_lite`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/get_all_master_data_v1_tal_lite`, body);
     }
 
     getApplicants(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/ApplicantView_tal_lite`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/ApplicantView_tal_lite`, body);
     }
 
     getJobDetails(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/JobDetailsWithMaster_v4_tal_lite`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/JobDetailsWithMaster_v4_tal_lite`, body);
     }
 
     changeJobStatus(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/save_job_status`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/save_job_status`, body);
     }
 
     getApplicationDetails(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/resumeDetailWithMasterData_v4_tal_lite`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/resumeDetailWithMasterData_v4_tal_lite`, body);
     }
 
     changeApplicantionStatus(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}api_uat/icrweb/home/submit_stage_status_quick_update_tal_lite`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/submit_stage_status_quick_update_tal_lite`, body);
+    }
+
+    getCityList(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icrweb/home/get_city_list_tal_lite`, body);
     }
 }

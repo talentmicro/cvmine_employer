@@ -3,7 +3,6 @@ import { HomeDemoOneComponent } from './demos/home-demo-one/home-demo-one.compon
 import { ErrorPageComponent } from './pages/error-page/error-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { JobsListPageComponent } from './pages/jobs-list-page/jobs-list-page.component';
-import { JobListingsPageComponent } from './pages/job-listings-page/job-listings-page.component';
 import { JobApplicantsPageComponent } from './pages/job-applicants-page/job-applicants-page.component';
 import { JobPostingPageComponent } from './pages/job-posting-page/job-posting-page.component';
 import { authGuard, redirectIfAuthenticatedGuard } from './guards/auth.guard';

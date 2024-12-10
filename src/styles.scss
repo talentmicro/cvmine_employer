@@ -1534,6 +1534,14 @@ padding: 0.25rem !important;
     width: 100%;
 }
 
+.p-inputwrapper, .p-inputnumber {
+    width: 100%;
+}
+
+.p-chips, .p-chips-multiple-container {
+    width: 100%;
+}
+
 .p-autocomplete {
     width: 100%;
 }
@@ -1566,4 +1574,9 @@ padding: 0.25rem !important;
 .next-button {
     background-color: rgb(13, 99, 174) !important;
     border: none;
+}
+
+.p-stepper-nav {
+    overflow-y: hidden;
+    height: auto;
 }

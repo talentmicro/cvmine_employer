@@ -9,7 +9,43 @@ button[disabled] {
     font-size: 0.875rem;
 }
 
-// .back-button {
-//     background-color: rgb(255, 113, 18) !important;
-//     border: none
-// }
+@media only screen and (max-width: 768px) {
+    .error-text {
+        font-size: 0.75rem;
+    }
+}
+
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;  /* Allows the checkboxes to wrap if there are too many to fit on one line */
+    gap: 10px;  /* Adds spacing between the checkboxes */
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 2px solid #ccc; /* Border around each checkbox container */
+    border-radius: 5px; /* Optional: rounded corners for the checkbox container */
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.checkbox-item:hover {
+    border-color: #007bff; /* Change border color on hover */
+    background-color: #f0f8ff; /* Optional: background color change on hover */
+}
+
+.p-checkbox-box {
+    border-radius: 3px; /* Optional: rounded checkbox box */
+}
+
+.p-checkbox-input:checked + .p-checkbox-box {
+    background-color: #007bff; /* Change color of the checkbox when checked */
+    border-color: #007bff; /* Match the color of the border */
+}
+
+.p-checkbox-input:checked + .p-checkbox-box:before {
+    border-color: white; /* Change the checkmark color when the checkbox is checked */
+}

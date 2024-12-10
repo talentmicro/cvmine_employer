@@ -17,7 +17,7 @@ export class LoginService {
     );
     loginState$ = this.loginSubject.asObservable();
 
-    private apiUrl = `${environment.apiUrl}api_uat/icrweb/home/weblogin_tal_lite`;
+    private apiUrl = `${environment.apiUrl}icrweb/home/weblogin_tal_lite`;
 
     constructor(
         private http: HttpClient, 
