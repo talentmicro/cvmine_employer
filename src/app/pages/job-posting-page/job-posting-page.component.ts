@@ -227,6 +227,7 @@ export class JobPostingPageComponent implements OnInit {
                     if (response.status && response.data) {
                         this.loadingSpinnerService.hide();
                         this.selectedExistingJobDetails = {
+                            "jobCode": response.data.jobDetails[0].productCode,
                             "jobTitle": response.data.jobDetails[0].productName,
                             "jobDescription": response.data.jobDetails[0].description,
                             "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
@@ -383,12 +384,6 @@ export class JobPostingPageComponent implements OnInit {
         }
     }
 
-    submit() {
-        console.log(this.firstStepForm.value);
-        console.log(this.secondStepForm.value);
-        console.log(this.thirdStepForm.value);
-    }
-
     navigate() {
         this.router.navigate(['/job-listings']);
     }
@@ -439,10 +434,8 @@ export class JobPostingPageComponent implements OnInit {
         } else {
             noticeFromControl?.clearValidators();
             noticeToControl?.clearValidators();
-            // if(!this.editMode) {
-            //     noticeFromControl?.reset(null);
-            //     noticeToControl?.reset(null);
-            // }
+            noticeFromControl?.reset(null);
+            noticeToControl?.reset(null);
         }
 
         noticeFromControl?.updateValueAndValidity();
@@ -470,6 +463,268 @@ export class JobPostingPageComponent implements OnInit {
         noOfQuestion?.updateValueAndValidity();
         difficulty?.updateValueAndValidity();
         requiredAssessmentScore?.updateValueAndValidity();
+    }
+
+    submit() {
+        console.log(this.firstStepForm.value);
+        console.log(this.secondStepForm.value);
+        console.log(this.thirdStepForm.value);
+        if (this.firstStepForm.valid && this.secondStepForm.valid && this.thirdStepForm.valid) {
+            this.loadingSpinnerService.show();
+            const jobData = {
+                data: [
+                    {
+                        "reqType": null,
+                        "replacementEmpId": null,
+                        "replacementEmpName": null,
+                        "replacementEmpResignDate": null,
+                        "replacementEmpLWD": null,
+                        "priorityId": null,
+                        "sellerCode": 25830,
+                        "customerId": null,
+                        "productName": this.firstStepForm.get('jobTitle')?.value,
+                        "jobTitleId": 0,
+                        "displayJobTitleId": null,
+                        "displayJobTitle": null,
+                        "productCodeText": "test111",
+                        "intJobCode": null,
+                        "employerName": "Test IT Pvt Ltd (ITPL-001)",
+                        "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
+                        "positions": 11,
+                        "branchCode": this.secondStepForm.get('jobLocation')?.value,
+                        "startDatetime": "",
+                        "targetDatetime": "",
+                        "wfTemplateCode": null,
+                        "description": this.secondStepForm.get('jobDescription')?.value,
+                        "jdAttachments": null,
+                        "publishingType": [
+                            7
+                        ],
+                        "technology": null,
+                        "keySkills": [
+                            32206
+                        ],
+                        "jobseeker_location": [
+                            135569
+                        ],
+                        "jobType": [
+                            1
+                        ],
+                        "caContactNumber": "",
+                        "expFrom": 0,
+                        "expTo": null,
+                        "branches": null,
+                        "skill": this.secondStepForm.get('skills')?.value,
+                        "personalSkill": [],
+                        "education": null,
+                        "noticePeriodFrom": this.secondStepForm.get('noticeFrom')?.value,
+                        "noticePeriodTo": this.secondStepForm.get('noticeTo')?.value,
+                        "expSalaryCurrId": this.secondStepForm.get('currency')?.value,
+                        "expSalaryFrom": this.secondStepForm.get('salaryFrom')?.value,
+                        "expSalaryTo": this.secondStepForm.get('salaryTo')?.value,
+                        "expSalaryScaleDurationId": this.secondStepForm.get('period')?.value,
+                        "functionalArea": null,
+                        "subFunctionalAreas": null,
+                        "facesheetTemplateCode": null,
+                        "clientCVTemplateId": null,
+                        "hiringType": null,
+                        "HTStartDatetime": null,
+                        "HTEndDatetime": null,
+                        "bands": null,
+                        "bandId": null,
+                        "modeId": null,
+                        "ContractAmount": null,
+                        "ContractCurrencyId": 2,
+                        "presentSalaryCurrId": null,
+                        "presentSalaryCurrSymbol": null,
+                        "presentSalaryFrom": null,
+                        "presentSalaryTo": null,
+                        "presentSalaryScaleDurationId": 4,
+                        "paymentTermCode": null,
+                        "totalCVReq": null,
+                        "publishJobFor": 1,
+                        "sourcingType": null,
+                        "assessmentTemplateCode": null,
+                        "prefJobseekerBranch": [],
+                        "status": 1,
+                        "statusTitle": null,
+                        "statusType": null,
+                        "proximity": 20,
+                        "distanceType": 1,
+                        "industry": [],
+                        "certification": [],
+                        "caContactIsd": "+91",
+                        "caContactName": "",
+                        "notesForCA": "",
+                        "roles": null,
+                        "isIntJS": null,
+                        "isHeight": 0,
+                        "nationalities": null,
+                        "workPermits": null,
+                        "languages": null,
+                        "heightCode": 1,
+                        "visionCode": 1,
+                        "bodyTypeCode": 1,
+                        "roleTypeCode": 1,
+                        "isVision": 0,
+                        "isBodyType": 0,
+                        "isPremiumRole": 0,
+                        "isPhysicalChecked": 0,
+                        "abilities": null,
+                        "certiKeywords": "",
+                        "allSkillMatch": 0,
+                        "contractExtendable": 1,
+                        "cvPriceCurrencyId": 2,
+                        "maxCvPrice": null,
+                        "isActiveCV": null,
+                        "isALCV": null,
+                        "ALCVStartDate": null,
+                        "ALCVEndDate": null,
+                        "cvSourceType": 1,
+                        "fromAge": null,
+                        "toAge": null,
+                        "gender": null,
+                        "consultant": null,
+                        "consultantSDate": null,
+                        "consultantEDate": null,
+                        "team": null,
+                        "promotype": 0,
+                        "promobanners": 0,
+                        "youtubeLink": null,
+                        "promoYoutubeLink": null,
+                        "footerdescription": null,
+                        "clientContacts": [],
+                        "referralSuccessFee": null,
+                        "referralSuccessFeeCurrencyId": null,
+                        "referralSuccessFeeScaleId": null,
+                        "fromCVRating": 1,
+                        "toCVRating": 5,
+                        "fromCommSkillRating": 1,
+                        "toCommSkillRating": 5,
+                        "assessment": null,
+                        "pubForIntPartnerGroup": null,
+                        "vendors": [],
+                        "templateId": null,
+                        "templateName": null,
+                        "grade": null,
+                        "isTemplate": 0,
+                        "skillRankingList": [],
+                        "extendedData": [],
+                        "cvMinePublishTermId": null,
+                        "cvMinePublishTermDesc": null,
+                        "cvMineTALToken": null,
+                        "cvMineCurrencyId": null,
+                        "cvMineAmount": null,
+                        "publicInformation": null,
+                        "to": null,
+                        "cc": null,
+                        "bcc": null,
+                        "notes": null,
+                        "projectId": null,
+                        "projectName": null,
+                        "tools": null,
+                        "targetCompanies": [],
+                        "internalHiringManagers": null,
+                        "unifiedTemplateId": null,
+                        "jobMessage": null,
+                        "banners": null,
+                        "totalCVLimit": null,
+                        "badges": null,
+                        "sourcingTypes": null,
+                        "assetTemplateId": null,
+                        "careerPortalFieldConfigTemplateId": null,
+                        "vehicleTypes": null,
+                        "marriedStatus": null,
+                        "vaccinatedStatus": null,
+                        "netSalaryCurrId": null,
+                        "netSalaryFrom": null,
+                        "netSalaryTo": null,
+                        "netSalaryScaleCode": null,
+                        "offerOnbFormTemplate": null,
+                        "positionsArray": null,
+                        "candidateDocumentTemplateId": null,
+                        "extJSON": {
+                            "extEnableSourcingFee": null,
+                            "extSourcingFeeType": null,
+                            "extSourcingFeeCurrencyId": null,
+                            "extSourcingFee": null,
+                            "careerPortalStartDate": null,
+                            "careerPortalEndDate": null,
+                            "IJPStartDate": null,
+                            "IJPEndDate": null,
+                            "IJPERPostingJD": null,
+                            "ERStartDate": null,
+                            "EREndDate": null,
+                            "contractTenure": null,
+                            "hmConsentToPublishJobToIJP": null,
+                            "anyExceptionForIJP": null,
+                            "IJPExceptionList": null,
+                            "workingDaysId": null,
+                            "jobShiftId": null,
+                            "salaryBenefitId": null,
+                            "workTypeId": null,
+                            "contactEmailId": null,
+                            "clientLocation": null,
+                            "RRFProcessType": null,
+                            "POStartDatetime": null,
+                            "POEndDatetime": null,
+                            "POAttachment": null,
+                            "cvmineJobHeader": null,
+                            "extIntegrationRole": null,
+                            "extIntCityId": null,
+                            "extIntStateId": null,
+                            "extIntEducationId": null
+                        },
+                        "reqSourceTypeId": null,
+                        "folders": null,
+                        "cvminePostings": null,
+                        "formTemplateId": null,
+                        "organizationId": null,
+                        "entityId": null,
+                        "teamBucketingId": null,
+                        "companyId": null,
+                        "sbumisId": null,
+                        "costcenterId": null,
+                        "functionId": null,
+                        "subFunctionId": null,
+                        "budgetedYear": "2024-2025",
+                        "jobCategoryId": null,
+                        "hrOpsUserId": null,
+                        "onbSpocUserId": null,
+                        "digitalSignatories": null,
+                        "schemeType": null,
+                        "cvmineCareerGroups": null,
+                        "bgvVendorSellerCode": null,
+                        "customApprovers": null,
+                        "sapPositionCode": null,
+                        "cvMinePostingCategory": null,
+                        "interviewPanels": null,
+                        "assesshubFlowId": null,
+                        "assesshubTemplateId": null,
+                        "sendInviteConfirmationForAssesshub": null,
+                        "mainGroup": null,
+                        "subGroup": null,
+                        "referralTemplateId": null,
+                        "lobDetails": null
+                    }
+                ]
+            };
+            this.apiService.saveJob(jobData).subscribe((response) => {
+                this.loadingSpinnerService.show();
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                this.firstStepForm.reset();
+                this.secondStepForm.reset();
+                this.thirdStepForm.reset();
+                this.selectedLocations = [];
+                
+                this.router.navigate(['/job-listings']);
+            },
+            (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+            });
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Form is not valid. Please complete all steps.' });
+        }
     }
 
 }
