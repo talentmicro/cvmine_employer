@@ -65,12 +65,13 @@ export class JobPostingPageComponent implements OnInit {
     currencies: any[] = [];
     experienceLevels: any[] = [];
     selectedLocations: any[] = [];
+    savedCustomQuestions: any[] = [];
     defaultSelectedJobTypes = [1, 9];
     difficultyOptions = [
-        { label: 'Easy', value: 25 },
-        { label: 'Medium', value: 50 },
-        { label: 'High', value: 75 },
-        { label: 'Very High', value: 100 },
+        { label: 'Easy', value: 1 },
+        { label: 'Medium', value: 2 },
+        { label: 'High', value: 3 },
+        { label: 'Very High', value: 4 },
     ];
     skills: any = [];
     active: number | undefined = 0;
@@ -224,6 +225,7 @@ export class JobPostingPageComponent implements OnInit {
         if (productCode) {
             this.apiService.getJobDetails(body).subscribe({
                 next: (response) => {
+                    console.log(response.data);
                     if (response.status && response.data) {
                         this.loadingSpinnerService.hide();
                         this.selectedExistingJobDetails = {
@@ -231,10 +233,10 @@ export class JobPostingPageComponent implements OnInit {
                             "jobTitle": response.data.jobDetails[0].productName,
                             "jobDescription": response.data.jobDetails[0].description,
                             "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
-                            // "jobLocations": response.data.jobDetails[0].branchCode,
-                            "jobLocations": [584527, 142939, 143251],
-                            // "skills": response.data.jobDetails[0].skills,
-                            "skills": "Java, MySQL, Oracle, Spring",
+                            "jobLocations": response.data.jobDetails[0].branchCode,
+                            // "jobLocations": [584527, 142939, 143251],
+                            "skills": response.data.jobDetails[0].skills,
+                            // "skills": "Java, MySQL, Oracle, Spring",
                             "experienceFrom": response.data.jobDetails[0].expFrom,
                             "experienceTo": response.data.jobDetails[0].expTo,
                             "currency": response.data.jobDetails[0].referralCurrencySymbol,
@@ -243,10 +245,11 @@ export class JobPostingPageComponent implements OnInit {
                             "duration": response.data.jobDetails[0].expSalaryScaleDurationId,
                             "noticePeriodFrom": response.data.jobDetails[0].noticePeriodFrom,
                             "noticePeriodTo": response.data.jobDetails[0].noticePeriodTo,
-                            "questions": response.data.jobDetails[0].questions,
-                            "noOfQuestions": response.data.jobDetails[0].noOfQuestions,
-                            "difficulty": response.data.jobDetails[0].difficulty,
-                            "cutoffScore": response.data.jobDetails[0].cutoffScore
+                            "useTalliteGPT": response.data.jobDetails[0].jobQuestion?.useGpt === 1,
+                            "noOfQuestions": response.data.jobDetails[0].jobQuestion?.noOfQuestions,
+                            "difficulty": response.data.jobDetails[0].jobQuestion?.difficultyLevel,
+                            "cutoffScore": response.data.jobDetails[0].jobQuestion?.cutoffScore,
+                            "questions": this.getCustomQuestions(response.data.jobDetails[0].jobQuestion?.customQuestions)
                         }
                         this.setStepperFormData();
                     }
@@ -256,6 +259,20 @@ export class JobPostingPageComponent implements OnInit {
                     this.loadingSpinnerService.hide();
                 },
             });
+        }
+    }
+
+    getCustomQuestions(questionString: any) {
+        if(questionString) {
+            const customQuestions = JSON.parse(questionString);
+            this.savedCustomQuestions = customQuestions;
+            if(customQuestions?.length > 0) {
+                return customQuestions;
+            } else {
+                return [];
+            }
+        } else {
+            return [];
         }
     }
 
@@ -288,15 +305,6 @@ export class JobPostingPageComponent implements OnInit {
         }
         this.firstStepForm.get('jobTitle')?.setValue(this.selectedExistingJobDetails?.jobTitle || '');
         this.firstStepForm.get('jobDescription')?.setValue(this.selectedExistingJobDetails?.jobDescription || '');
-        // if (this.selectedExistingJobDetails?.jobTypes) {
-        //     const selectedJobTypes = this.selectedExistingJobDetails.jobTypes.split(',').map((type: any) => type.trim());
-        //     this.jobTypes.forEach(job => {
-        //         const control = this.secondStepForm.get(job.title);
-        //         if (control) {
-        //             control.setValue(selectedJobTypes.includes(job.title));
-        //         }
-        //     });
-        // }
         if (this.selectedExistingJobDetails?.jobTypes) {
             const selectedJobIds = this.selectedExistingJobDetails.jobTypes;
             this.jobTypes.forEach(job => {
@@ -320,8 +328,8 @@ export class JobPostingPageComponent implements OnInit {
         this.secondStepForm.get('noticeFrom')?.setValue(this.selectedExistingJobDetails?.noticePeriodFrom ?? null);
         this.secondStepForm.get('noticeTo')?.setValue(this.selectedExistingJobDetails?.noticePeriodTo || null);
         this.thirdStepForm.get('question')?.setValue(this.selectedExistingJobDetails?.questions || '');
-        this.thirdStepForm.get('deciderResponse')?.setValue(this.selectedExistingJobDetails?.deciderResponse || false);
-        this.thirdStepForm.get('additionalResponse')?.setValue(this.selectedExistingJobDetails?.additionalResponse || false);
+        this.thirdStepForm.get('deciderResponse')?.setValue(this.selectedExistingJobDetails?.deciderResponse || 'Yes');
+        this.thirdStepForm.get('additionalResponse')?.setValue(this.selectedExistingJobDetails?.additionalResponse || 'Not Required');
         this.thirdStepForm.get('useTalliteGPT')?.setValue(this.selectedExistingJobDetails?.useTalliteGPT || false);
         this.thirdStepForm.get('noOfQuestion')?.setValue(this.selectedExistingJobDetails?.noOfQuestions || null);
         this.thirdStepForm.get('difficulty')?.setValue(this.selectedExistingJobDetails?.difficulty || '');
@@ -332,9 +340,10 @@ export class JobPostingPageComponent implements OnInit {
             this.selectedExistingJobDetails?.questions.forEach((question: any) => {
                 questionsArray.push(this.fb.group({
                     id: [this.questionFormArray.length + 1],
+                    questionId: [question.questionId],
                     question: [question?.question],
-                    deciderResponse: [question?.deciderResponse],
-                    additionalResponse: [question?.additionalResponse],
+                    deciderResponse: [question?.deciderResponse === 1 ? 'Yes' : 'No'],
+                    additionalResponse: [question?.additionalResponse === 1 ? 'Required' : 'Not Required'],
                 }));
             });
         }
@@ -346,9 +355,10 @@ export class JobPostingPageComponent implements OnInit {
     
     addQuestion() {
         const { question, deciderResponse, additionalResponse } = this.thirdStepForm.value;
-        if (this.thirdStepForm.valid) {
+        if (this.thirdStepForm.get('question')?.value) {
             const questionGroup = this.fb.group({
                 id: [this.questionFormArray.length + 1],
+                questionId: 0,
                 question: [question],
                 deciderResponse: [deciderResponse],
                 additionalResponse: [additionalResponse],
@@ -471,6 +481,24 @@ export class JobPostingPageComponent implements OnInit {
         console.log(this.thirdStepForm.value);
         if (this.firstStepForm.valid && this.secondStepForm.valid && this.thirdStepForm.valid) {
             this.loadingSpinnerService.show();
+            const selectedJobTypes: number[] = [];
+            jobTypeList.forEach(item => {
+                if (this.secondStepForm.controls[item.title]?.value) {
+                    selectedJobTypes.push(item.jobType);
+                }
+            });
+            const customQuestions = this.thirdStepForm.get('questions')?.value.map((item: any) => {
+                return {
+                    questionId: item?.questionId,
+                    question: item?.question,
+                    expectedAnswer: item.deciderResponse === 'Yes' ? 1 : 2,
+                    responseInput: item.additionalResponse === 'Required' ? 1 : 2
+                };
+            });
+            const originalQuestionIds = this.savedCustomQuestions?.map(q => q.questionId);
+            const updatedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
+            const deletedQuestionIds = originalQuestionIds.filter(id => !updatedQuestionIds.includes(id));
+
             const jobData = {
                 data: [
                     {
@@ -507,12 +535,10 @@ export class JobPostingPageComponent implements OnInit {
                         "jobseeker_location": [
                             135569
                         ],
-                        "jobType": [
-                            1
-                        ],
+                        "jobType": selectedJobTypes,
                         "caContactNumber": "",
-                        "expFrom": 0,
-                        "expTo": null,
+                        "expFrom": this.secondStepForm.get('experienceFrom')?.value,
+                        "expTo": this.secondStepForm.get('experienceTo')?.value,
                         "branches": null,
                         "skill": this.secondStepForm.get('skills')?.value,
                         "personalSkill": [],
@@ -705,10 +731,19 @@ export class JobPostingPageComponent implements OnInit {
                         "mainGroup": null,
                         "subGroup": null,
                         "referralTemplateId": null,
-                        "lobDetails": null
+                        "lobDetails": null,
+                        "jobQuestions":{
+                            "noOfQuestions": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('noOfQuestion')?.value : null,
+                            "difficulty": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('difficulty')?.value : null,
+                            "cutoffScore": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('requiredAssessmentScore')?.value : null,
+                            "useGpt": this.thirdStepForm.get('useTalliteGPT')?.value ? 1 : 0,
+                            "deleteQuestionId": deletedQuestionIds,
+                            "customQuestions": this.questionFormArray.length > 0 ? customQuestions : []
+                        }
                     }
                 ]
             };
+            console.log(jobData);
             this.apiService.saveJob(jobData).subscribe((response) => {
                 this.loadingSpinnerService.show();
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });

@@ -109,11 +109,11 @@
                             </span>
                         </div>
                     </td>
-                    <td class="p-1">
+                    <td class="p-1" style="font-size: 14px;">
                         {{formatAppliedDate(applicant.application_date)}}
                     </td>
-                    <td class="p-1">
-                        {{applicant.experience_in_years}}
+                    <td class="p-1" style="font-size: 14px;">
+                        {{ formatExperience(applicant.experience_in_years) }} years
                     </td>
                     <td class="p-1" >
                         <div pTooltip="{{applicant.skills.join(', ')}}" tooltipPosition="top" [autoHide]="false">
@@ -132,7 +132,7 @@
                         
                     </td>
                     
-                    <td class="p-1">
+                    <td class="p-1" style="font-size: 14px;">
                         {{applicant.location}}
                     </td>
                     <td class="p-1 text-center">

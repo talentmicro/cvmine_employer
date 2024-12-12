@@ -129,6 +129,7 @@ export class JobApplicantsPageComponent implements OnInit {
             next: (response) => {
                 if (response.status && response.data && response.data.list) {
                     this.loadingSpinnerService.hide();
+                    console.log(response.data.list);
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
                         job_code: item.productCode,
@@ -136,7 +137,7 @@ export class JobApplicantsPageComponent implements OnInit {
                         applicant_email: item.emailId,
                         applicant_phone: item.mobileNumber,
                         application_date: item.crDate,
-                        experience_in_years: 'No Prop',
+                        experience_in_years: item.totalExp,
                         location: item.presentLocation,
                         status: item.statusCode,
                         skills: item.skills ? item.skills.split(',') : [],
@@ -280,5 +281,10 @@ export class JobApplicantsPageComponent implements OnInit {
         };
         const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
         return formattedDate;
+    }
+
+    formatExperience(experience: string | number): string {
+        const experienceNum = parseFloat(experience.toString());
+        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) : experienceNum.toString();
     }
 }

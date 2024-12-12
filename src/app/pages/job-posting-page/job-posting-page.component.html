@@ -510,7 +510,7 @@
                                 </div>
                                 <div class="col-6 text-end">
                                     <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" /> -->
-                                    <p-button label="Submit" icon="pi pi-arrow-right" iconPos="right" [disabled]="thirdStepForm.invalid" styleClass="next-button" (click)="submit()"/>
+                                    <p-button label="Submit" icon="pi pi-arrow-right" iconPos="right" [disabled]="thirdStepForm.invalid || questionFormArray.length === 0" styleClass="next-button" (click)="submit()"/>
                                 </div>
                             </div>
                         </ng-template>

@@ -94,7 +94,7 @@
                     <td class="p-3">
                         <div class="row">
                             <span><b>
-                                <a [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}">
+                                <!-- <a [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}"> -->
                                     <div class="row">
                                         <div style="font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" class="col-8" pTooltip="{{job.job_name}}" tooltipPosition="top" [autoHide]="false">
                                             {{job.job_name}}
@@ -104,7 +104,7 @@
                                             {{job.job_code}}
                                         </div>
                                     </div>
-                                </a>
+                                <!-- </a> -->
                             </b></span>
                         </div>
                         <div class="row">
@@ -122,39 +122,45 @@
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-users-between-lines pe-2"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}">
+                        <!-- <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code}">
                             {{job.total_applications}}
-                        </a> 
+                        </a>  -->
+                        {{job.total_applications}}
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-user-clock fa-sm pe-2" style="color: #db9d00"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'shortlisted'}">
+                        <!-- <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'shortlisted'}">
                             {{job.shortlisted_applications}}
-                        </a> 
+                        </a>  -->
+                        {{job.shortlisted_applications}}
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-user-pen fa-sm pe-2" style="color: navy;"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'interviewed'}">
+                        <!-- <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'interviewed'}">
                             {{job.interviewed_applications}}
-                        </a>
+                        </a> -->
+                        {{job.interviewed_applications}}
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-user-tag fa-sm pe-2" style="color: orangered;"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'offered'}">
+                        <!-- <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'offered'}">
                             {{job.offered_applications}}
-                        </a> 
+                        </a>  -->
+                        {{job.offered_applications}}
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-user-check pe-2" style="color: green"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'hired'}">
+                        <!-- <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'hired'}">
                             {{job.hired_applications}}
-                        </a>
+                        </a> -->
+                        {{job.hired_applications}}
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-user-xmark pe-2" style="color: red"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'dropped'}">
+                        <!-- <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'dropped'}">
                             {{job.dropped_applications}}
-                        </a>
+                        </a> -->
+                        {{job.dropped_applications}}
                     </td>
                     <td class="p-1 text-center">
                         <p-dropdown [options]="jobStatuses"
