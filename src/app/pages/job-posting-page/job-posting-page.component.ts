@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { currencyList, countryList, noticePeriods, durationList, experienceLevels, jobTypeList, skillsList } from '../data';
+import { currencyList, countryList, noticePeriods, durationList, experienceLevels, jobTypeList } from '../data';
 import { ImportsModule } from '../../imports';
 import { ApiService } from '../services/api.service';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
@@ -87,9 +87,10 @@ export class JobPostingPageComponent implements OnInit {
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             this.getAllJobs();
+            this.getLocations();
             this.editMode = !!params['id'];
             if (this.editMode) {
-                this.loadJobDetails(params['id']);
+                this.onJobSelected(params['id']);
             }
             this.jobTypes = jobTypeList;
             this.jobLocations = countryList;
@@ -99,7 +100,6 @@ export class JobPostingPageComponent implements OnInit {
             this.currencies = currencyList;
             this.initStepperForms();
         });
-        this.getLocations();
     }
 
     initStepperForms() {
@@ -131,8 +131,8 @@ export class JobPostingPageComponent implements OnInit {
         this.initializeJobTypeFromString('');
         this.thirdStepForm = this.fb.group({
             question: ['', Validators.required],
-            deciderResponse: [false],
-            additionalResponse: [false],
+            deciderResponse: ['Yes', Validators.required],
+            additionalResponse: ['Not Required', Validators.required],
             useTalliteGPT: [false],
             noOfQuestion: [null, [Validators.min(1), Validators.max(10)]],
             difficulty: [''],
@@ -190,14 +190,12 @@ export class JobPostingPageComponent implements OnInit {
     filterJobs(event: AutoCompleteCompleteEvent) {
         let filtered: any[] = [];
         let query = event.query;
-        console.log(query)
         for (let i = 0; i < (this.jobsList as any[]).length; i++) {
             let job = (this.jobsList as any[])[i];
             if (job.job_name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
                 filtered.push(job);
             }
         }
-        console.log(filtered)
         this.filteredJobsList = filtered;
     }
 
@@ -210,19 +208,46 @@ export class JobPostingPageComponent implements OnInit {
 
     onJobSelected(event: any) {
         this.loadingSpinnerService.show();
-        const selectedJob = event;
-        console.log(selectedJob.value.job_code);
+        let productCode;
+        if(this.editMode){
+            productCode = event;
+        } else {
+            productCode = event.value.job_code
+        }
+
         let body = {
             "sellerCode": 0,
-            "productCode": selectedJob.value.job_code,
+            "productCode": productCode,
             "productType": 1
         }
-        if (selectedJob) {
+
+        if (productCode) {
             this.apiService.getJobDetails(body).subscribe({
                 next: (response) => {
                     if (response.status && response.data) {
                         this.loadingSpinnerService.hide();
-                        this.selectedExistingJobDetails = response.data;
+                        this.selectedExistingJobDetails = {
+                            "jobTitle": response.data.jobDetails[0].productName,
+                            "jobDescription": response.data.jobDetails[0].description,
+                            "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
+                            // "jobLocations": response.data.jobDetails[0].branchCode,
+                            "jobLocations": [584527, 142939, 143251],
+                            // "skills": response.data.jobDetails[0].skills,
+                            "skills": "Java, MySQL, Oracle, Spring",
+                            "experienceFrom": response.data.jobDetails[0].expFrom,
+                            "experienceTo": response.data.jobDetails[0].expTo,
+                            "currency": response.data.jobDetails[0].referralCurrencySymbol,
+                            "salaryFrom": response.data.jobDetails[0].expSalaryFrom,
+                            "salaryTo": response.data.jobDetails[0].expSalaryTo,
+                            "duration": response.data.jobDetails[0].expSalaryScaleDurationId,
+                            "noticePeriodFrom": response.data.jobDetails[0].noticePeriodFrom,
+                            "noticePeriodTo": response.data.jobDetails[0].noticePeriodTo,
+                            "questions": response.data.jobDetails[0].questions,
+                            "noOfQuestions": response.data.jobDetails[0].noOfQuestions,
+                            "difficulty": response.data.jobDetails[0].difficulty,
+                            "cutoffScore": response.data.jobDetails[0].cutoffScore
+                        }
+                        this.setStepperFormData();
                     }
                 },
                 error: (error: any) => {
@@ -259,11 +284,58 @@ export class JobPostingPageComponent implements OnInit {
         if(this.editMode) {
             this.firstStepForm.removeControl('fetchExisting');
             this.firstStepForm.removeControl('existingJob');
-            this.firstStepForm.get('jobTitle')?.setValue('Value for control1');
-            this.firstStepForm.get('jobDescription')?.setValue('Value for control1');
-        } else {
-            this.firstStepForm.get('jobTitle')?.setValue('Value for control1');
-            this.firstStepForm.get('jobDescription')?.setValue('Value for control1');
+        }
+        this.firstStepForm.get('jobTitle')?.setValue(this.selectedExistingJobDetails?.jobTitle || '');
+        this.firstStepForm.get('jobDescription')?.setValue(this.selectedExistingJobDetails?.jobDescription || '');
+        // if (this.selectedExistingJobDetails?.jobTypes) {
+        //     const selectedJobTypes = this.selectedExistingJobDetails.jobTypes.split(',').map((type: any) => type.trim());
+        //     this.jobTypes.forEach(job => {
+        //         const control = this.secondStepForm.get(job.title);
+        //         if (control) {
+        //             control.setValue(selectedJobTypes.includes(job.title));
+        //         }
+        //     });
+        // }
+        if (this.selectedExistingJobDetails?.jobTypes) {
+            const selectedJobIds = this.selectedExistingJobDetails.jobTypes;
+            this.jobTypes.forEach(job => {
+                const control = this.secondStepForm.get(job.title);
+                if (control) {
+                    control.setValue(selectedJobIds.includes(job.jobType));
+                }
+            });
+        }
+        this.secondStepForm.get('jobLocation')?.setValue(this.selectedExistingJobDetails?.jobLocations || []);
+        this.secondStepForm.get('skills')?.setValue(this.selectedExistingJobDetails.skills.split(',').map((skill: any) => skill.trim()));
+        this.secondStepForm.get('experienceFrom')?.setValue(this.selectedExistingJobDetails?.experienceFrom || null);
+        this.secondStepForm.get('experienceTo')?.setValue(this.selectedExistingJobDetails?.experienceTo || null);
+        this.secondStepForm.get('salaryFrom')?.setValue(this.selectedExistingJobDetails?.salaryFrom || null);
+        this.secondStepForm.get('salaryTo')?.setValue(this.selectedExistingJobDetails?.salaryTo || null);
+        this.secondStepForm.get('currency')?.setValue(this.selectedExistingJobDetails?.currency || '');
+        this.secondStepForm.get('period')?.setValue(this.selectedExistingJobDetails?.duration || '');
+        this.secondStepForm.get('noticePeriodType')?.setValue(
+            this.selectedExistingJobDetails.noticePeriodFrom || this.selectedExistingJobDetails.noticePeriodTo ? 'Other' : 'Immediate'
+        );
+        this.secondStepForm.get('noticeFrom')?.setValue(this.selectedExistingJobDetails?.noticePeriodFrom ?? null);
+        this.secondStepForm.get('noticeTo')?.setValue(this.selectedExistingJobDetails?.noticePeriodTo || null);
+        this.thirdStepForm.get('question')?.setValue(this.selectedExistingJobDetails?.questions || '');
+        this.thirdStepForm.get('deciderResponse')?.setValue(this.selectedExistingJobDetails?.deciderResponse || false);
+        this.thirdStepForm.get('additionalResponse')?.setValue(this.selectedExistingJobDetails?.additionalResponse || false);
+        this.thirdStepForm.get('useTalliteGPT')?.setValue(this.selectedExistingJobDetails?.useTalliteGPT || false);
+        this.thirdStepForm.get('noOfQuestion')?.setValue(this.selectedExistingJobDetails?.noOfQuestions || null);
+        this.thirdStepForm.get('difficulty')?.setValue(this.selectedExistingJobDetails?.difficulty || '');
+        this.thirdStepForm.get('requiredAssessmentScore')?.setValue(this.selectedExistingJobDetails?.cutoffScore || null);
+
+        if (this.selectedExistingJobDetails?.questions) {
+            const questionsArray = this.thirdStepForm.get('questions') as FormArray;
+            this.selectedExistingJobDetails?.questions.forEach((question: any) => {
+                questionsArray.push(this.fb.group({
+                    id: [this.questionFormArray.length + 1],
+                    question: [question?.question],
+                    deciderResponse: [question?.deciderResponse],
+                    additionalResponse: [question?.additionalResponse],
+                }));
+            });
         }
     }
 
@@ -281,7 +353,9 @@ export class JobPostingPageComponent implements OnInit {
                 additionalResponse: [additionalResponse],
             });
             this.questionFormArray.push(questionGroup);
-            this.thirdStepForm.patchValue({ question: '', deciderResponse: false, additionalResponse: false });
+            this.thirdStepForm.patchValue({ question: '', deciderResponse: 'Yes', additionalResponse: 'Not Required' });
+            this.thirdStepForm.get('question')?.clearValidators();
+            this.thirdStepForm.get('question')?.updateValueAndValidity();
         }
     }
     
@@ -309,36 +383,10 @@ export class JobPostingPageComponent implements OnInit {
         }
     }
 
-    private loadJobDetails(id: string): void {
-        const mockJob = {
-            title: 'Software Developer',
-            description: 'Build and maintain high-quality applications.',
-        };
-        this.firstStepForm.patchValue({
-            jobTitle: mockJob.title,
-            jobDescription: mockJob.description,
-        });
-    }
-
-    private setupValueSync(): void {
-        this.firstStepForm.get('existingJob')?.valueChanges.subscribe((selectedJob) => {
-            if (this.firstStepForm.get('fetchExisting')?.value === 'yes') {
-                const jobDetails = this.getJobDetails(selectedJob);
-                this.firstStepForm.patchValue({
-                    jobTitle: jobDetails?.title || '',
-                    jobDescription: jobDetails?.description || '',
-                });
-            }
-        });
-    }
-
-    private getJobDetails(jobName: string): { title: string; description: string } | null {
-        const mockJobs: Record<string, { title: string; description: string }> = {
-            Developer: { title: 'Software Developer', description: 'Build and maintain applications.' },
-            Designer: { title: 'UI/UX Designer', description: 'Design user-friendly interfaces.' },
-            'Project Manager': { title: 'Project Manager', description: 'Lead and manage projects.' },
-        };
-        return mockJobs[jobName] || null;
+    submit() {
+        console.log(this.firstStepForm.value);
+        console.log(this.secondStepForm.value);
+        console.log(this.thirdStepForm.value);
     }
 
     navigate() {
@@ -391,8 +439,10 @@ export class JobPostingPageComponent implements OnInit {
         } else {
             noticeFromControl?.clearValidators();
             noticeToControl?.clearValidators();
-            noticeFromControl?.reset(null);
-            noticeToControl?.reset(null);
+            // if(!this.editMode) {
+            //     noticeFromControl?.reset(null);
+            //     noticeToControl?.reset(null);
+            // }
         }
 
         noticeFromControl?.updateValueAndValidity();

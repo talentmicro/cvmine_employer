@@ -1534,7 +1534,7 @@ padding: 0.25rem !important;
     width: 100%;
 }
 
-.p-inputwrapper, .p-inputnumber {
+.p-inputnumber {
     width: 100%;
 }
 
@@ -1574,6 +1574,16 @@ padding: 0.25rem !important;
 .next-button {
     background-color: rgb(13, 99, 174) !important;
     border: none;
+}
+
+.small-button {
+    border-radius: 0.5rem;
+    padding: 0.3rem 0.75rem;
+}
+
+.action-button {
+    border-radius: 0.3rem;
+    padding: 0.5rem;
 }
 
 .p-stepper-nav {

@@ -115,18 +115,21 @@
                     <td class="p-1">
                         {{applicant.experience_in_years}}
                     </td>
-                    <td class="p-1">
-                        <ng-container *ngFor="let skill of applicant.skills">
-                            <span  style="display: inline-block; 
-                                padding: 4px 8px; 
-                                margin: 2px; 
-                                background-color: #e0f7fa; 
-                                color: #006064; 
-                                border-radius: 12px; 
-                                font-size: 12px;">
-                                {{ skill }}
-                            </span>
-                        </ng-container>
+                    <td class="p-1" >
+                        <div pTooltip="{{applicant.skills.join(', ')}}" tooltipPosition="top" [autoHide]="false">
+                            <ng-container *ngFor="let skill of applicant.skills.slice(0, 3)">
+                                <span  style="display: inline-block; 
+                                    padding: 4px 8px; 
+                                    margin: 2px; 
+                                    background-color: #e0f7fa; 
+                                    color: #006064; 
+                                    border-radius: 12px; 
+                                    font-size: 12px;">
+                                    {{ skill }}
+                                </span>
+                            </ng-container>
+                        </div>
+                        
                     </td>
                     
                     <td class="p-1">

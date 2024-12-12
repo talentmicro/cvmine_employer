@@ -77,8 +77,8 @@
                                     <p-button label="Back" icon="pi pi-arrow-left" iconPos="left" (onClick)="navigate()" styleClass="back-button"/>
                                 </div>
                                 <div class="col-6 text-end">
-                                    <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" /> -->
-                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" styleClass="next-button" />
+                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" />
+                                    <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" styleClass="next-button" /> -->
                                 </div>
                             </div>
                         </ng-template>
@@ -94,8 +94,8 @@
                                         <div class="checkbox-container flex-container">
                                             <div *ngFor="let job of jobTypes" class="checkbox-item">
                                                 <p-checkbox 
+                                                    [binary]="true" 
                                                     [formControlName]="job.title" 
-                                                    [value]="true" 
                                                     [label]="job.title">
                                                 </p-checkbox>
                                             </div>
@@ -127,7 +127,6 @@
                                         </div>
                                         <p-chips 
                                             formControlName="skills" 
-                                            [(ngModel)]="skills"
                                             placeholder="Enter a skill and press Enter"
                                             (onAdd)="onSkillAdd($event)">
                                         </p-chips>
@@ -139,7 +138,7 @@
                                     <div class="row">
                                         <div class="col-12 col-lg-6 mb-3">
                                             <div class="col-12">
-                                                <label for="experience" class="form-label fw-bold">Experience</label>
+                                                <label for="experience" class="form-label fw-bold">Experience (in Years)</label>
                                             </div>
                                             <div class="d-flex align-items-center">
                                                 <p-inputNumber 
@@ -301,7 +300,7 @@
                                     <p-button severity="danger" label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" styleClass="back-button" />
                                 </div>
                                 <div class="col-6 text-end">
-                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" styleClass="next-button" />
+                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="secondStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" />
                                 </div>
                             </div>
                         </ng-template>
@@ -321,6 +320,9 @@
                                                     formControlName="question"
                                                     placeholder="Enter question (e.g., Do you have 5 years experience?)"
                                                     class="form-control"/>
+                                                    <small class="error-text" *ngIf="thirdStepForm.get('question')?.hasError('required') && thirdStepForm.get('question')?.touched">
+                                                        Question is required.
+                                                    </small>
                                             </div>
                                             <div class="col-12 col-md-3 my-2 my-lg-0 text-start">
                                                 <div class="col-12">
@@ -358,11 +360,11 @@
                                         </div>
                                         <div class="row justify-content-end mb-3">
                                             <div class="col-md-2 text-end text-lg-center">
-                                                <p-button icon="pi pi-save" label="Save" (onClick)="addQuestion()"></p-button>
+                                                <p-button icon="pi pi-save" label="Save" styleClass="small-button" (onClick)="addQuestion()"></p-button>
                                             </div>
                                         </div>
                                     </div>
-                                    <p-accordion>
+                                    <!-- <p-accordion>
                                         <p-accordionTab *ngFor="let question of questionFormArray.controls; let i = index"
                                             [header]="'Question ' + (i + 1)">
                                             <div class="row d-flex justify-content-between align-items-center">
@@ -392,6 +394,45 @@
                                                 </div>
                                             </div>
                                         </p-accordionTab>
+                                    </p-accordion> -->
+                                    <!-- Accordion to hold the table -->
+                                    <p-accordion *ngIf="questionFormArray?.length && questionFormArray.length > 0">
+                                        <p-accordionTab header="Questions">
+                                            <p-table [value]="questionFormArray.controls" class="p-datatable-gridlines">
+                                                <ng-template pTemplate="header">
+                                                    <tr>
+                                                        <th class="table-head">Question</th>
+                                                        <th class="table-head">Expected Response</th>
+                                                        <th class="table-head">Additional Response</th>
+                                                        <th class="table-head">Actions</th>
+                                                    </tr>
+                                                </ng-template>
+                                                <ng-template pTemplate="body" let-question let-i="rowIndex">
+                                                    <tr>
+                                                        <td>{{ question.get('question')?.value }}</td>
+                                                        <td>{{ question.get('deciderResponse')?.value }}</td>
+                                                        <td>{{ question.get('additionalResponse')?.value }}</td>
+                                                        <td>
+                                                            <p-button 
+                                                                icon="pi pi-pencil" 
+                                                                size="small"
+                                                                class="mx-1"
+                                                                styleClass="action-button"
+                                                                (onClick)="editQuestion(i)">
+                                                            </p-button>
+                                                            <p-button 
+                                                                icon="pi pi-trash" 
+                                                                size="small"
+                                                                severity="danger"
+                                                                class="mx-1"
+                                                                styleClass="action-button"
+                                                                (onClick)="deleteQuestion(i)">
+                                                            </p-button>
+                                                        </td>
+                                                    </tr>
+                                                </ng-template>
+                                            </p-table>
+                                        </p-accordionTab>
                                     </p-accordion>
                                     <p-divider />
                                     <div class="mt-4">
@@ -411,16 +452,19 @@
                                                 <div class="col-12">
                                                     <label for="noOfQuestion" class="fw-bold">Number of Questions</label>
                                                 </div>
-                                                <p-inputNumber 
-                                                    formControlName="noOfQuestion" 
-                                                    [min]="0" 
-                                                    [max]="10"
-                                                    [showButtons]="false" 
-                                                    placeholder="Enter number of questions">
-                                                </p-inputNumber>
-                                                <small class="error-text" *ngIf="thirdStepForm.get('noOfQuestion')?.hasError('required') && thirdStepForm.get('noOfQuestion')?.touched">
-                                                    Number of questions is required.
-                                                </small>
+                                                <div class="col-12">
+                                                    <p-inputNumber 
+                                                        formControlName="noOfQuestion" 
+                                                        [min]="0" 
+                                                        [max]="10"
+                                                        [showButtons]="false" 
+                                                        placeholder="Enter number of questions">
+                                                    </p-inputNumber>                                                </div>
+                                                <div class="col-12">
+                                                    <small class="error-text" *ngIf="thirdStepForm.get('noOfQuestion')?.hasError('required') && thirdStepForm.get('noOfQuestion')?.touched">
+                                                        Number of questions is required.
+                                                    </small>
+                                                </div>
                                             </div>
                                             <div class="col -12 col-md-4">
                                                 <div class="col-12">
@@ -439,18 +483,22 @@
                                                 <div class="col-12">
                                                     <label for="requiredAssessmentScore" class="fw-bold">Cut-off Score</label>
                                                 </div>
-                                                <p-inputNumber 
-                                                    formControlName="requiredAssessmentScore" 
-                                                    [min]="1" 
-                                                    [max]="100"
-                                                    [step]="0.1" 
-                                                    [showButtons]="false" 
-                                                    placeholder="Enter cut-off score" 
-                                                    mode="decimal">
-                                                </p-inputNumber>
-                                                <small class="error-text" *ngIf="thirdStepForm.get('requiredAssessmentScore')?.hasError('required') && thirdStepForm.get('requiredAssessmentScore')?.touched">
-                                                    Cut-off score is required.
-                                                </small>
+                                                <div class="col-12">
+                                                    <p-inputNumber 
+                                                        formControlName="requiredAssessmentScore" 
+                                                        [min]="1" 
+                                                        [max]="100"
+                                                        [step]="0.1" 
+                                                        [showButtons]="false" 
+                                                        placeholder="Enter cut-off score" 
+                                                        mode="decimal">
+                                                    </p-inputNumber>
+                                                </div>
+                                                <div class="col-12">
+                                                    <small class="error-text" *ngIf="thirdStepForm.get('requiredAssessmentScore')?.hasError('required') && thirdStepForm.get('requiredAssessmentScore')?.touched">
+                                                        Cut-off score is required.
+                                                    </small>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -458,11 +506,11 @@
                             </div>
                             <div class="row mt-2 pt-4 justify-content-between">
                                 <div class="col-6">
-                                    <p-button label="Back" icon="pi pi-arrow-left" iconPos="left" (onClick)="navigate()" styleClass="back-button"/>
+                                    <p-button label="Back" icon="pi pi-arrow-left" iconPos="left" (onClick)="prevCallback.emit()" styleClass="back-button"/>
                                 </div>
                                 <div class="col-6 text-end">
                                     <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" /> -->
-                                    <p-button label="Submit" icon="pi pi-arrow-right" iconPos="right" styleClass="next-button" />
+                                    <p-button label="Submit" icon="pi pi-arrow-right" iconPos="right" [disabled]="thirdStepForm.invalid" styleClass="next-button" (click)="submit()"/>
                                 </div>
                             </div>
                         </ng-template>

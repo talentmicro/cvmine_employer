@@ -49,4 +49,8 @@ export class ApiService {
     getCityList(body: any): Observable<any> {
         return this.http.post(`${this.baseUrl}icrweb/home/get_city_list_tal_lite`, body);
     }
+
+    saveJob(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icrweb/home/saveProductNewJob_v3_tal_lite`, body);
+    }
 }

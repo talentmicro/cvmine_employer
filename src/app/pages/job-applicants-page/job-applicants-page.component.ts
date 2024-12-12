@@ -22,6 +22,7 @@ interface Applicant {
     skills: string[];
     alertId: number;
     resId: number;
+    stageCode: number;
 }
 
 @Component({
@@ -134,13 +135,14 @@ export class JobApplicantsPageComponent implements OnInit {
                         applicant_name: item.fullName,
                         applicant_email: item.emailId,
                         applicant_phone: item.mobileNumber,
-                        application_date: item.deliveryDate,
+                        application_date: item.crDate,
                         experience_in_years: 'No Prop',
                         location: item.presentLocation,
                         status: item.statusCode,
-                        skills: ['Test1', 'No Prop', 'Etc'],
+                        skills: item.skills ? item.skills.split(',') : [],
                         alertId: item.alertId,
-                        resId: item.resId
+                        resId: item.resId,
+                        stageCode: item.stageCode
                     }));
                 }
             },
@@ -197,37 +199,54 @@ export class JobApplicantsPageComponent implements OnInit {
 
     onStatusChange(row: Applicant): void {
         this.loadingSpinnerService.show();
-        let body1 = {
-            "resId": row.resId,
-            "alertId": row.alertId,
-            "productCode": row.job_code
-        };
+        // let body1 = {
+        //     "resId": row.resId,
+        //     "alertId": row.alertId,
+        //     "productCode": row.job_code
+        // };
 
-        this.apiService.getApplicationDetails(body1).subscribe({
+        // this.apiService.getApplicationDetails(body1).subscribe({
+        //     next: (response: any) => {
+        //         let body2 = {
+        //             "alertId": [
+        //                 row.alertId
+        //             ],
+        //             "stageCode": response.data.resumeDetails.stageCode,
+        //             "statusCode": row.status
+        //         }
+        //         this.apiService.changeApplicantionStatus(body2).subscribe({
+        //             next: (response: any) => {
+        //                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+        //                 this.getApplicants();
+        //             },
+        //             error: (error: any) => {
+        //                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        //                 this.loadingSpinnerService.hide();
+        //             }
+        //         })
+        //     },
+        //     error: (error: any) => {
+        //         this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        //         this.loadingSpinnerService.hide();
+        //     }
+        // });
+        let body2 = {
+            "alertId": [
+                row.alertId
+            ],
+            "stageCode": row.stageCode,
+            "statusCode": row.status
+        }
+        this.apiService.changeApplicantionStatus(body2).subscribe({
             next: (response: any) => {
-                let body2 = {
-                    "alertId": [
-                        row.alertId
-                    ],
-                    "stageCode": response.data.resumeDetails.stageCode,
-                    "statusCode": row.status
-                }
-                this.apiService.changeApplicantionStatus(body2).subscribe({
-                    next: (response: any) => {
-                        this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                        this.getApplicants();
-                    },
-                    error: (error: any) => {
-                        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-                        this.loadingSpinnerService.hide();
-                    }
-                })
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                this.getApplicants();
             },
             error: (error: any) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
                 this.loadingSpinnerService.hide();
             }
-        });
+        })
     }
     
     getStatusClass(status: string): string {
