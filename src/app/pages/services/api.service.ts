@@ -53,4 +53,16 @@ export class ApiService {
     saveJob(body: any): Observable<any> {
         return this.http.post(`${this.baseUrl}icrweb/home/saveProductNewJob_v3_tal_lite`, body);
     }
+
+    checkUserID(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icr/pwdResetOtpWeb`, body);
+    }
+
+    verifyCode(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icr/verifyOtpWeb`, body);
+    }
+
+    resetPassword(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icr/resetPassword`, body);
+    }
 }

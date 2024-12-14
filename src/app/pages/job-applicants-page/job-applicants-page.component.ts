@@ -8,6 +8,7 @@ import { ApiService } from '../services/api.service';
 import { MessageService } from 'primeng/api';
 import { ImportsModule } from '../../imports';
 import { Table } from 'primeng/table';
+import { SharedService } from '../services/shared.service';
 
 interface Applicant {
     application_id: number;
@@ -112,14 +113,31 @@ export class JobApplicantsPageComponent implements OnInit {
         private route: ActivatedRoute,
         private loadingSpinnerService: LoadingService,
         private apiService: ApiService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private sharedService: SharedService
     ) {}
 
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
             this.jobCode = params['jobCode'];
             this.status = params['status'];
-            this.getDropdownValues();
+            this.sharedService.masterDropdowns$.subscribe({
+                next: (data) => {
+                    if (data.status && data.data && data.data.atsViewMasterData.wfList) {
+                        this.loadingSpinnerService.hide();
+                        this.applicationStatus = data.data.atsViewMasterData.wfList
+                        .map((item: any) => ({
+                            statusCode: item.id,
+                            label: item.title.split(' - ')[0],
+                        }));
+                        this.getApplicants();
+                    }
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.loadingSpinnerService.hide();
+                },
+            });
         });
     }
 
@@ -140,33 +158,11 @@ export class JobApplicantsPageComponent implements OnInit {
                         experience_in_years: item.totalExp,
                         location: item.presentLocation,
                         status: item.statusCode,
-                        skills: item.skills ? item.skills.split(',') : [],
+                        skills: item.certiKeywords ? item.certiKeywords.split(',') : [],
                         alertId: item.alertId,
                         resId: item.resId,
                         stageCode: item.stageCode
                     }));
-                }
-            },
-            error: (error: any) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-                this.loadingSpinnerService.hide();
-            },
-        });
-    }
-
-    getDropdownValues(): void {
-        const body = {};
-        this.loadingSpinnerService.show();
-        this.apiService.getDropdownsData(body).subscribe({
-            next: (response) => {
-                if (response.status && response.data && response.data.atsViewMasterData.wfList) {
-                    this.loadingSpinnerService.hide();
-                    this.applicationStatus = response.data.atsViewMasterData.wfList
-                    .map((item: any) => ({
-                        statusCode: item.id,
-                        label: item.title.split(' - ')[0],
-                    }));
-                    this.getApplicants();
                 }
             },
             error: (error: any) => {
@@ -200,37 +196,6 @@ export class JobApplicantsPageComponent implements OnInit {
 
     onStatusChange(row: Applicant): void {
         this.loadingSpinnerService.show();
-        // let body1 = {
-        //     "resId": row.resId,
-        //     "alertId": row.alertId,
-        //     "productCode": row.job_code
-        // };
-
-        // this.apiService.getApplicationDetails(body1).subscribe({
-        //     next: (response: any) => {
-        //         let body2 = {
-        //             "alertId": [
-        //                 row.alertId
-        //             ],
-        //             "stageCode": response.data.resumeDetails.stageCode,
-        //             "statusCode": row.status
-        //         }
-        //         this.apiService.changeApplicantionStatus(body2).subscribe({
-        //             next: (response: any) => {
-        //                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-        //                 this.getApplicants();
-        //             },
-        //             error: (error: any) => {
-        //                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-        //                 this.loadingSpinnerService.hide();
-        //             }
-        //         })
-        //     },
-        //     error: (error: any) => {
-        //         this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-        //         this.loadingSpinnerService.hide();
-        //     }
-        // });
         let body2 = {
             "alertId": [
                 row.alertId

@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { loginSuccess, loginFailure, logout } from '../../../store/actions/auth.actions';
 import { AppState } from '../../../store/app.state';
 import { environment } from '../../../../environments/environment';
+import { SharedService } from '../shared.service';
 
 @Injectable({
     providedIn: 'root'
@@ -21,12 +22,14 @@ export class LoginService {
 
     constructor(
         private http: HttpClient, 
-        private store: Store<AppState>
+        private store: Store<AppState>,
+        private sharedService: SharedService
     ) {}
 
     login(employeeId: string, password: string): Observable<any> {
         return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
             map((response) => {
+                console.log(response);
                 if (this.isBrowser()) {
                     sessionStorage.setItem('authToken', response.data.userDetails.token);
                     sessionStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
@@ -36,6 +39,7 @@ export class LoginService {
                     user: response.data.userDetails 
                 }));
                 this.loginSubject.next(true);
+                this.sharedService.fetchAndSetDropdownData({});
                 return response;
             }),
             catchError((error) => {

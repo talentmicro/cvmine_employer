@@ -1,3 +1,4 @@
+<p-toast />
 <div class="container my-3">
     <div class="row">
         <div class="col-lg-7 order-2 order-lg-1 my-5 my-lg-0">
@@ -75,7 +76,7 @@
                         </small>
                         <small *ngIf="loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched" 
                             class="error-text">
-                            Password must be at least 8 characters.
+                            Password must be at least 6 characters.
                         </small>
                         <small *ngIf="loginForm.get('password')?.hasError('pattern') && loginForm.get('password')?.touched" 
                             class="error-text">
@@ -84,7 +85,7 @@
                     </div>
                     <div class="text-center">
                         <p class="mb-0 mt-3 text-end">
-                            <a routerLink="/forgot-password" class="link style-three fw-semibold">Forgot Password?</a>
+                            <button (click)="showDialog()" style="background-color: white; border: none;" class="link style-three fw-semibold">Forgot Password?</button>
                         </p>
                     </div>
                     <div class="text-center mt-20">
@@ -94,6 +95,139 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 justify-content-center">
+            <p-dialog header="Forgot Password" [style]="{ width: '33rem' }" [(visible)]="display" [modal]="true" [closable]="true" (onHide)="closeDialog()">
+                <form [formGroup]="forgotPasswordForm" (ngSubmit)="onPasswordReset()">
+                    <div>
+                        <div class="p-field">
+                            <label for="userID">User ID</label>
+                            <input id="userID" type="text" pInputText formControlName="userID" [disabled]="loading" />
+                            <small *ngIf="forgotPasswordForm.get('userID')?.invalid && forgotPasswordForm.get('userID')?.touched" class="p-error">
+                                User ID is required.
+                            </small>
+                        </div>
+                        <div class="col-12 text-end my-3">
+                            <p-button
+                                *ngIf="step === 1"
+                                label="Send Verification Code"
+                                type="submit"
+                                [disabled]="forgotPasswordForm.get('userID')?.invalid || loading"
+                                [loading]="loading"
+                                styleClass="submit-button">
+                            </p-button>
+                        </div>
+                    </div>
+                    <div *ngIf="step === 2">
+                        <div class="p-field">
+                            <label for="verificationCode">Verification Code</label>
+                            <div class="p-inputgroup">
+                                <input
+                                    id="verificationCode"
+                                    [type]="verificationCodeVisible ? 'text' : 'password'"
+                                    pInputText
+                                    formControlName="verificationCode"
+                                    [disabled]="loading"
+                                />
+                                <button
+                                    pButton
+                                    type="button"
+                                    icon="pi pi-eye"
+                                    [icon]="verificationCodeVisible ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                    (click)="toggleVerificationCodeVisibility()"
+                                    pTooltip="Toggle Verification Code Visibility"
+                                    tooltipPosition="top"
+                                ></button>
+                            </div>                    
+                            <small *ngIf="forgotPasswordForm.get('verificationCode')?.invalid && forgotPasswordForm.get('verificationCode')?.touched" class="p-error">
+                                Verification Code is required.
+                            </small>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between my-3">
+                            <p-button
+                                label="Resend Code"
+                                type="button"
+                                [loading]="loading"
+                                styleClass="resend-button"
+                                (click)="resendCode()">
+                            </p-button>
+                            <p-button
+                                label="Verify Code"
+                                type="submit"
+                                [disabled]="forgotPasswordForm.get('verificationCode')?.invalid || loading"
+                                [loading]="loading"
+                                styleClass="submit-button">
+                            </p-button>
+                        </div>
+                    </div>
+                    <div *ngIf="step === 3">
+                        <div class="p-field">
+                            <label for="newPassword">New Password</label>
+                            <div class="p-inputgroup">
+                                <input
+                                    id="newPassword"
+                                    [type]="newPasswordVisible ? 'text' : 'password'"
+                                    pPassword
+                                    formControlName="newPassword"
+                                    [disabled]="loading"
+                                />
+                                <button
+                                    pButton
+                                    type="button"
+                                    icon="pi pi-eye"
+                                    [icon]="newPasswordVisible ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                    (click)="toggleNewPasswordVisibility()"
+                                    pTooltip="Toggle New Password Visibility"
+                                    tooltipPosition="top"
+                                ></button>
+                            </div>     
+                            <small *ngIf="forgotPasswordForm.get('newPassword')?.hasError('required') && forgotPasswordForm.get('newPassword')?.touched" 
+                                class="error-text">
+                                Password is required.
+                            </small>
+                            <small *ngIf="forgotPasswordForm.get('newPassword')?.hasError('minlength') && forgotPasswordForm.get('newPassword')?.touched" 
+                                class="error-text">
+                                Password must be at least 6 characters.
+                            </small>                       
+                        </div>
+                        <div class="p-field">
+                            <label for="confirmNewPassword">Confirm New Password</label>
+                            <div class="p-inputgroup">
+                                <input
+                                    id="confirmNewPassword"
+                                    [type]="confirmNewPasswordVisible ? 'text' : 'password'"
+                                    pPassword
+                                    formControlName="confirmNewPassword"
+                                    [disabled]="loading"
+                                />
+                                <button
+                                    pButton
+                                    type="button"
+                                    icon="pi pi-eye"
+                                    [icon]="confirmNewPasswordVisible ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                    (click)="toggleConfirmNewPasswordVisibility()"
+                                    pTooltip="Toggle Confirm New Password Visibility"
+                                    tooltipPosition="top"
+                                ></button>
+                            </div>                            
+                            <small *ngIf="forgotPasswordForm.get('confirmNewPassword')?.invalid && forgotPasswordForm.get('confirmNewPassword')?.touched" class="p-error">
+                                Confirm password is required.
+                            </small>
+                        </div>
+                        <div class="col-12 text-end my-3">
+                            <p-button
+                                label="Reset Password"
+                                type="submit"
+                                [disabled]="forgotPasswordForm.invalid || loading"
+                                [loading]="loading"
+                                styleClass="submit-button">
+                            </p-button>
+                        </div>
+                    </div>
+                </form>
+            </p-dialog>
         </div>
     </div>
 </div>

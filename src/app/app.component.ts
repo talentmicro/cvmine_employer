@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { RouterOutlet, Router, Event, NavigationEnd } from '@angular/router';
 import { LoadingService } from './common/loading-spinner/loading.service';
@@ -6,6 +6,8 @@ import { LoadingSpinnerComponent } from './common/loading-spinner/loading-spinne
 import { NavbarComponent } from './common/navbar/navbar.component';
 import { FooterComponent } from './common/footer/footer.component';
 import { BackToTopComponent } from './common/back-to-top/back-to-top.component';
+import { SharedService } from './pages/services/shared.service';
+import { LoginService } from './pages/services/auth/login.service';
 
 @Component({
     selector: 'app-root',
@@ -21,14 +23,16 @@ import { BackToTopComponent } from './common/back-to-top/back-to-top.component';
         CommonModule
     ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     isLoading = false;
     title = 'CVMine Employer Portal';
 
     constructor (
         private router: Router,
         private viewportScroller: ViewportScroller,
-        private loadingService: LoadingService
+        private loadingService: LoadingService,
+        private sharedService: SharedService,
+        private loginService: LoginService
     ) {
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationEnd) {
@@ -38,6 +42,14 @@ export class AppComponent {
         
         this.loadingService.loading$.subscribe((loading) => {
             this.isLoading = loading;
+        });
+    }
+
+    ngOnInit(): void {
+        this.loginService.loginState$.subscribe((isLoggedIn) => {
+            if (isLoggedIn) {
+                this.sharedService.fetchAndSetDropdownData({});
+            }
         });
     }
 

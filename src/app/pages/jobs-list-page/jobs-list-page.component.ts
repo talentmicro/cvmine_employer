@@ -10,6 +10,7 @@ import { ApiService } from '../services/api.service';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { MessageService } from 'primeng/api';
 import { TableRowCollapseEvent, TableRowExpandEvent } from 'primeng/table';
+import { SharedService } from '../services/shared.service';
 
 interface Job {
     id: number;
@@ -68,11 +69,32 @@ export class JobsListPageComponent implements OnInit {
     constructor(
         private apiService: ApiService,
         private loadingSpinnerService: LoadingService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private sharedService: SharedService
     ) {}
 
     ngOnInit(): void {
-        this.getDropdownValues();
+        this.loadingSpinnerService.show();
+        this.sharedService.masterDropdowns$.subscribe({
+            next: (data) => {
+                if (data && data?.data?.jobMasterData && data?.data?.jobMasterData?.jobStatusList) {
+                    this.jobStatuses = data.data.jobMasterData.jobStatusList
+                        .filter((item: any) => item.status !== 10)
+                        .map((item: any) => ({
+                            status: item.status,
+                            statusTitle: item.statusTitle,
+                            value: item.statusTitle.toLowerCase(),
+                            label: item.statusTitle,
+                        }));
+                    this.getAllJobListings();
+                }
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.loading = false;
+                this.loadingSpinnerService.hide();
+            },
+        });
     }
 
     getAllJobListings(): void {
@@ -98,6 +120,7 @@ export class JobsListPageComponent implements OnInit {
                         status: item.statusTitle,
                     }));
                 }
+                this.loadingSpinnerService.hide();
             },
             error: (error: any) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
@@ -107,30 +130,30 @@ export class JobsListPageComponent implements OnInit {
         });
     }
 
-    getDropdownValues(): void {
-        this.loadingSpinnerService.show();
-        const body = {};
-        this.apiService.getDropdownsData(body).subscribe({
-            next: (response) => {
-                if (response.status && response.data && response.data.jobMasterData.jobStatusList) {
-                    this.jobStatuses = response.data.jobMasterData.jobStatusList
-                    .filter((item: any) => item.status !== 10)
-                    .map((item: any) => ({
-                        status: item.status,
-                        statusTitle: item.statusTitle,
-                        value: item.statusTitle.toLowerCase(),
-                        label: item.statusTitle
-                    }));
-                    this.getAllJobListings();
-                }
-            },
-            error: (error: any) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-                this.loading = false;
-                this.loadingSpinnerService.hide();
-            },
-        });
-    }
+    // getDropdownValues(): void {
+    //     this.loadingSpinnerService.show();
+    //     const body = {};
+    //     this.apiService.getDropdownsData(body).subscribe({
+    //         next: (response) => {
+    //             if (response.status && response.data && response.data.jobMasterData.jobStatusList) {
+    //                 this.jobStatuses = response.data.jobMasterData.jobStatusList
+    //                 .filter((item: any) => item.status !== 10)
+    //                 .map((item: any) => ({
+    //                     status: item.status,
+    //                     statusTitle: item.statusTitle,
+    //                     value: item.statusTitle.toLowerCase(),
+    //                     label: item.statusTitle
+    //                 }));
+    //                 this.getAllJobListings();
+    //             }
+    //         },
+    //         error: (error: any) => {
+    //             this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+    //             this.loading = false;
+    //             this.loadingSpinnerService.hide();
+    //         },
+    //     });
+    // }
 
     expandAll() {
         // this.expandedRows = this.jobsList.reduce((acc: { [key: string]: boolean }, j) => (acc[j.id] = true) && acc, {});

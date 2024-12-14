@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { currencyList, countryList, noticePeriods, durationList, experienceLevels, jobTypeList } from '../data';
+import { jobTypeList } from '../data';
 import { ImportsModule } from '../../imports';
 import { ApiService } from '../services/api.service';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { MessageService } from 'primeng/api';
 import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { SharedService } from '../services/shared.service';
+import { LoginService } from '../services/auth/login.service';
 
 interface Job {
     id: number;
@@ -38,6 +40,7 @@ interface Job {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class JobPostingPageComponent implements OnInit {
+    userDetails!: any;
     firstStepForm!: FormGroup;
     secondStepForm!: FormGroup;
     thirdStepForm!: FormGroup;
@@ -47,8 +50,8 @@ export class JobPostingPageComponent implements OnInit {
         { name: 'No', key: 'no' },
     ];
     expectedAnswer: any[] = [
-        { name: 'Yes', key: 'yes' },
-        { name: 'No', key: 'no' },
+        { name: 'Yes', key: 1 },
+        { name: 'No', key: 2 },
     ];
     responseInput: any[] = [
         { name: 'Required', key: 1 },
@@ -59,11 +62,8 @@ export class JobPostingPageComponent implements OnInit {
     filteredJobsList: Array<{ job_code: number; job_name: string }> = [];
     jobTypes: any[] = [];
     period: any[] = [];
-    jobLocations: any[] = [];
     cityList: any[] = [];
-    noticePeriods: any[] = [];
     currencies: any[] = [];
-    experienceLevels: any[] = [];
     selectedLocations: any[] = [];
     savedCustomQuestions: any[] = [];
     defaultSelectedJobTypes = [1, 9];
@@ -82,32 +82,49 @@ export class JobPostingPageComponent implements OnInit {
         private router: Router,
         private loadingSpinnerService: LoadingService,
         private apiService: ApiService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private sharedService: SharedService,
+        private loginService: LoginService
     ) {}
 
     ngOnInit(): void {
+        this.loadingSpinnerService.show();
+        this.userDetails = this.loginService.getUserDetails();
         this.route.params.subscribe((params) => {
-            this.getAllJobs();
-            this.getLocations();
             this.editMode = !!params['id'];
             if (this.editMode) {
                 this.onJobSelected(params['id']);
             }
+            this.sharedService.masterDropdowns$.subscribe({
+                next: (data) => {
+                    if (data) {
+                        this.period = data.data.jobMasterData.scaleDurationList
+                            .filter((item: any) => item.scaleDurationId !== 7)
+                            .map((item: any) => ({
+                                id: item.scaleDurationId,
+                                title: item.name
+                            }));
+                        this.currencies = data.data.alertMasterData.currencyList;
+                        this.getAllJobs();
+                    }
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.loadingSpinnerService.hide();
+                },
+            });
             this.jobTypes = jobTypeList;
-            this.jobLocations = countryList;
-            this.experienceLevels = experienceLevels;
-            this.noticePeriods = noticePeriods;
-            this.period = durationList;
-            this.currencies = currencyList;
             this.initStepperForms();
         });
     }
 
     initStepperForms() {
         const jobTypeControls: { [key: string]: any } = {};
-        this.jobTypes.forEach(job => {
-            jobTypeControls[job.title] = [false];
-        });
+        if(this.jobTypes) {
+            this.jobTypes.forEach(job => {
+                jobTypeControls[job.title] = [false];
+            });
+        }
 
         this.firstStepForm = this.fb.group({
             fetchExisting: ['no'],
@@ -158,9 +175,11 @@ export class JobPostingPageComponent implements OnInit {
         }
         this.apiService.getCityList(body).subscribe({
             next: (response) => {
-                this.cityList = response.data.list
+                this.cityList = response.data.list;
+                this.loadingSpinnerService.hide();
             },
             error: (error: any) => {
+                this.loadingSpinnerService.hide();
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error fetching locations' });
             },
         });
@@ -170,15 +189,14 @@ export class JobPostingPageComponent implements OnInit {
         const body = {
             "activeJobs": 1
         }
-        this.loadingSpinnerService.show();
         this.apiService.getJobListings(body).subscribe({
             next: (response) => {
-                this.loadingSpinnerService.hide();
                 if (response.status && response.data && response.data.list) {
                     this.jobsList = response.data.list.map((item: any) => ({
                         job_code: item.productCode,
                         job_name: item.productName,
                     }));
+                    this.getLocations();
                 }
             },
             error: (error: any) => {
@@ -203,12 +221,11 @@ export class JobPostingPageComponent implements OnInit {
     onSkillAdd(event: any) {
         const enteredSkill = event.value;
         if (enteredSkill && !this.skills.includes(enteredSkill)) {
-          this.skills.push(enteredSkill);
+            this.skills.push(enteredSkill);
         }
     }
 
     onJobSelected(event: any) {
-        this.loadingSpinnerService.show();
         let productCode;
         if(this.editMode){
             productCode = event;
@@ -227,16 +244,13 @@ export class JobPostingPageComponent implements OnInit {
                 next: (response) => {
                     console.log(response.data);
                     if (response.status && response.data) {
-                        this.loadingSpinnerService.hide();
                         this.selectedExistingJobDetails = {
                             "jobCode": response.data.jobDetails[0].productCode,
                             "jobTitle": response.data.jobDetails[0].productName,
                             "jobDescription": response.data.jobDetails[0].description,
                             "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
-                            "jobLocations": response.data.jobDetails[0].branchCode,
-                            // "jobLocations": [584527, 142939, 143251],
-                            "skills": response.data.jobDetails[0].skills,
-                            // "skills": "Java, MySQL, Oracle, Spring",
+                            "jobLocations": JSON.parse(response.data.jobDetails[0].branchCode),
+                            "skills": response.data.jobDetails[0].certiKeywords,
                             "experienceFrom": response.data.jobDetails[0].expFrom,
                             "experienceTo": response.data.jobDetails[0].expTo,
                             "currency": response.data.jobDetails[0].referralCurrencySymbol,
@@ -476,9 +490,6 @@ export class JobPostingPageComponent implements OnInit {
     }
 
     submit() {
-        console.log(this.firstStepForm.value);
-        console.log(this.secondStepForm.value);
-        console.log(this.thirdStepForm.value);
         if (this.firstStepForm.valid && this.secondStepForm.valid && this.thirdStepForm.valid) {
             this.loadingSpinnerService.show();
             const selectedJobTypes: number[] = [];
@@ -500,176 +511,135 @@ export class JobPostingPageComponent implements OnInit {
             const deletedQuestionIds = originalQuestionIds.filter(id => !updatedQuestionIds.includes(id));
 
             const jobData = {
-                data: [
-                    {
-                        "reqType": null,
-                        "replacementEmpId": null,
-                        "replacementEmpName": null,
-                        "replacementEmpResignDate": null,
-                        "replacementEmpLWD": null,
-                        "priorityId": null,
-                        "sellerCode": 25830,
-                        "customerId": null,
-                        "productName": this.firstStepForm.get('jobTitle')?.value,
-                        "jobTitleId": 0,
-                        "displayJobTitleId": null,
-                        "displayJobTitle": null,
-                        "productCodeText": "test111",
-                        "intJobCode": null,
-                        "employerName": "Test IT Pvt Ltd (ITPL-001)",
-                        "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
-                        "positions": 11,
-                        "branchCode": this.secondStepForm.get('jobLocation')?.value,
-                        "startDatetime": "",
-                        "targetDatetime": "",
-                        "wfTemplateCode": null,
-                        "description": this.secondStepForm.get('jobDescription')?.value,
-                        "jdAttachments": null,
-                        "publishingType": [
-                            7
-                        ],
-                        "technology": null,
-                        "keySkills": [
-                            32206
-                        ],
-                        "jobseeker_location": [
-                            135569
-                        ],
-                        "jobType": selectedJobTypes,
-                        "caContactNumber": "",
-                        "expFrom": this.secondStepForm.get('experienceFrom')?.value,
-                        "expTo": this.secondStepForm.get('experienceTo')?.value,
-                        "branches": null,
-                        "skill": this.secondStepForm.get('skills')?.value,
-                        "personalSkill": [],
-                        "education": null,
-                        "noticePeriodFrom": this.secondStepForm.get('noticeFrom')?.value,
-                        "noticePeriodTo": this.secondStepForm.get('noticeTo')?.value,
-                        "expSalaryCurrId": this.secondStepForm.get('currency')?.value,
-                        "expSalaryFrom": this.secondStepForm.get('salaryFrom')?.value,
-                        "expSalaryTo": this.secondStepForm.get('salaryTo')?.value,
-                        "expSalaryScaleDurationId": this.secondStepForm.get('period')?.value,
-                        "functionalArea": null,
-                        "subFunctionalAreas": null,
-                        "facesheetTemplateCode": null,
-                        "clientCVTemplateId": null,
-                        "hiringType": null,
-                        "HTStartDatetime": null,
-                        "HTEndDatetime": null,
-                        "bands": null,
-                        "bandId": null,
-                        "modeId": null,
-                        "ContractAmount": null,
-                        "ContractCurrencyId": 2,
-                        "presentSalaryCurrId": null,
-                        "presentSalaryCurrSymbol": null,
-                        "presentSalaryFrom": null,
-                        "presentSalaryTo": null,
-                        "presentSalaryScaleDurationId": 4,
-                        "paymentTermCode": null,
-                        "totalCVReq": null,
-                        "publishJobFor": 1,
-                        "sourcingType": null,
-                        "assessmentTemplateCode": null,
-                        "prefJobseekerBranch": [],
-                        "status": 1,
-                        "statusTitle": null,
-                        "statusType": null,
-                        "proximity": 20,
-                        "distanceType": 1,
-                        "industry": [],
-                        "certification": [],
-                        "caContactIsd": "+91",
-                        "caContactName": "",
-                        "notesForCA": "",
-                        "roles": null,
-                        "isIntJS": null,
-                        "isHeight": 0,
-                        "nationalities": null,
-                        "workPermits": null,
-                        "languages": null,
-                        "heightCode": 1,
-                        "visionCode": 1,
-                        "bodyTypeCode": 1,
-                        "roleTypeCode": 1,
-                        "isVision": 0,
-                        "isBodyType": 0,
-                        "isPremiumRole": 0,
-                        "isPhysicalChecked": 0,
-                        "abilities": null,
-                        "certiKeywords": "",
-                        "allSkillMatch": 0,
-                        "contractExtendable": 1,
-                        "cvPriceCurrencyId": 2,
-                        "maxCvPrice": null,
-                        "isActiveCV": null,
-                        "isALCV": null,
-                        "ALCVStartDate": null,
-                        "ALCVEndDate": null,
-                        "cvSourceType": 1,
-                        "fromAge": null,
-                        "toAge": null,
-                        "gender": null,
-                        "consultant": null,
-                        "consultantSDate": null,
-                        "consultantEDate": null,
-                        "team": null,
-                        "promotype": 0,
-                        "promobanners": 0,
-                        "youtubeLink": null,
-                        "promoYoutubeLink": null,
-                        "footerdescription": null,
-                        "clientContacts": [],
-                        "referralSuccessFee": null,
-                        "referralSuccessFeeCurrencyId": null,
-                        "referralSuccessFeeScaleId": null,
-                        "fromCVRating": 1,
-                        "toCVRating": 5,
-                        "fromCommSkillRating": 1,
-                        "toCommSkillRating": 5,
-                        "assessment": null,
-                        "pubForIntPartnerGroup": null,
-                        "vendors": [],
-                        "templateId": null,
-                        "templateName": null,
-                        "grade": null,
-                        "isTemplate": 0,
-                        "skillRankingList": [],
-                        "extendedData": [],
-                        "cvMinePublishTermId": null,
-                        "cvMinePublishTermDesc": null,
-                        "cvMineTALToken": null,
-                        "cvMineCurrencyId": null,
-                        "cvMineAmount": null,
-                        "publicInformation": null,
-                        "to": null,
-                        "cc": null,
-                        "bcc": null,
-                        "notes": null,
-                        "projectId": null,
-                        "projectName": null,
-                        "tools": null,
-                        "targetCompanies": [],
-                        "internalHiringManagers": null,
-                        "unifiedTemplateId": null,
-                        "jobMessage": null,
-                        "banners": null,
-                        "totalCVLimit": null,
-                        "badges": null,
-                        "sourcingTypes": null,
-                        "assetTemplateId": null,
-                        "careerPortalFieldConfigTemplateId": null,
-                        "vehicleTypes": null,
-                        "marriedStatus": null,
-                        "vaccinatedStatus": null,
-                        "netSalaryCurrId": null,
-                        "netSalaryFrom": null,
-                        "netSalaryTo": null,
-                        "netSalaryScaleCode": null,
-                        "offerOnbFormTemplate": null,
-                        "positionsArray": null,
-                        "candidateDocumentTemplateId": null,
-                        "extJSON": {
+                data: [{
+                    "sellerCode": Number(this.userDetails.sellerCode),
+                    "customerId": null,
+                    "productName": this.firstStepForm.get('jobTitle')?.value,
+                    "jobTitleId": 0,
+                    "productCodeText": "cvmine_2",
+                    "intJobCode": null,
+                    "employerName": this.userDetails.displayName,
+                    "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
+                    "positions": 1,
+                    "branchCode": this.secondStepForm.get('jobLocation')?.value,
+                    "startDatetime": "",
+                    "targetDatetime": "",
+                    "description": this.firstStepForm.get('jobDescription')?.value,
+                    "jdAttachments": null,
+                    "publishingType": [
+                        7
+                    ],
+                    "technology": null,
+                    "keySkills": [],
+                    "jobseeker_location": [],
+                    "jobType": selectedJobTypes,
+                    "caContactNumber": "",
+                    "expFrom": this.secondStepForm.get('experienceFrom')?.value,
+                    "expTo": this.secondStepForm.get('experienceTo')?.value,
+                    "branches": null,
+                    "skill": [],
+                    "personalSkill": [],
+                    "education": null,
+                    "noticePeriodFrom": this.secondStepForm.get('noticeFrom')?.value,
+                    "noticePeriodTo": this.secondStepForm.get('noticeTo')?.value,
+                    "expSalaryCurrId": this.secondStepForm.get('currency')?.value,
+                    "expSalaryFrom": this.secondStepForm.get('salaryFrom')?.value,
+                    "expSalaryTo": this.secondStepForm.get('salaryTo')?.value,
+                    "expSalaryScaleDurationId": this.secondStepForm.get('period')?.value,
+                    "functionalArea": null,
+                    "subFunctionalAreas": null,
+                    "ContractAmount": null,
+                    "ContractCurrencyId": 2,
+                    "presentSalaryCurrId": null,
+                    "presentSalaryCurrSymbol": null,
+                    "presentSalaryFrom": null,
+                    "presentSalaryTo": null,
+                    "presentSalaryScaleDurationId": 4,
+                    "paymentTermCode": null,
+                    "totalCVReq": null,
+                    "publishJobFor": 1,
+                    "sourcingType": null,
+                    "prefJobseekerBranch": [],
+                    "status": 1,
+                    "statusTitle": null,
+                    "statusType": null,
+                    "proximity": 20,
+                    "industry": [],
+                    "certification": [],
+                    "caContactIsd": "+91",
+                    "caContactName": "",
+                    "notesForCA": "",
+                    "roles": null,
+                    "roleTypeCode": 1,
+                    "isVision": 0,
+                    "isBodyType": 0,
+                    "isPremiumRole": 0,
+                    "isPhysicalChecked": 0,
+                    "abilities": null,
+                    "certiKeywords": this.secondStepForm.get('skills')?.value.join(', '),
+                    "allSkillMatch": 0,
+                    "contractExtendable": 1,
+                    "cvPriceCurrencyId": 2,
+                    "maxCvPrice": null,
+                    "isActiveCV": null,
+                    "isALCV": null,
+                    "ALCVStartDate": null,
+                    "ALCVEndDate": null,
+                    "cvSourceType": 1,
+                    "fromAge": null,
+                    "toAge": null,
+                    "gender": null,
+                    "team": null,
+                    "promotype": 0,
+                    "promobanners": 0,
+                    "clientContacts": [],
+                    "referralSuccessFee": null,
+                    "referralSuccessFeeCurrencyId": null,
+                    "referralSuccessFeeScaleId": null,
+                    "fromCVRating": 1,
+                    "toCVRating": 5,
+                    "fromCommSkillRating": 1,
+                    "toCommSkillRating": 5,
+                    "assessment": null,
+                    "pubForIntPartnerGroup": null,
+                    "vendors": [],
+                    "templateId": null,
+                    "templateName": null,
+                    "grade": null,
+                    "isTemplate": 0,
+                    "skillRankingList": [],
+                    "extendedData": [],
+                    "cvMinePublishTermId": null,
+                    "cvMinePublishTermDesc": null,
+                    "cvMineTALToken": null,
+                    "cvMineCurrencyId": null,
+                    "cvMineAmount": null,
+                    "publicInformation": null,
+                    "notes": null,
+                    "projectId": null,
+                    "projectName": null,
+                    "tools": null,
+                    "targetCompanies": [],
+                    "internalHiringManagers": null,
+                    "unifiedTemplateId": null,
+                    "jobMessage": null,
+                    "banners": null,
+                    "totalCVLimit": null,
+                    "badges": null,
+                    "sourcingTypes": null,
+                    "assetTemplateId": null,
+                    "careerPortalFieldConfigTemplateId": null,
+                    "vehicleTypes": null,
+                    "marriedStatus": null,
+                    "vaccinatedStatus": null,
+                    "netSalaryCurrId": null,
+                    "netSalaryFrom": null,
+                    "netSalaryTo": null,
+                    "netSalaryScaleCode": null,
+                    "offerOnbFormTemplate": null,
+                    "positionsArray": null,
+                    "candidateDocumentTemplateId": null,
+                    "extJSON": {
                             "extEnableSourcingFee": null,
                             "extSourcingFeeType": null,
                             "extSourcingFeeCurrencyId": null,
@@ -700,51 +670,51 @@ export class JobPostingPageComponent implements OnInit {
                             "extIntCityId": null,
                             "extIntStateId": null,
                             "extIntEducationId": null
-                        },
-                        "reqSourceTypeId": null,
-                        "folders": null,
-                        "cvminePostings": null,
-                        "formTemplateId": null,
-                        "organizationId": null,
-                        "entityId": null,
-                        "teamBucketingId": null,
-                        "companyId": null,
-                        "sbumisId": null,
-                        "costcenterId": null,
-                        "functionId": null,
-                        "subFunctionId": null,
-                        "budgetedYear": "2024-2025",
-                        "jobCategoryId": null,
-                        "hrOpsUserId": null,
-                        "onbSpocUserId": null,
-                        "digitalSignatories": null,
-                        "schemeType": null,
-                        "cvmineCareerGroups": null,
-                        "bgvVendorSellerCode": null,
-                        "customApprovers": null,
-                        "sapPositionCode": null,
-                        "cvMinePostingCategory": null,
-                        "interviewPanels": null,
-                        "assesshubFlowId": null,
-                        "assesshubTemplateId": null,
-                        "sendInviteConfirmationForAssesshub": null,
-                        "mainGroup": null,
-                        "subGroup": null,
-                        "referralTemplateId": null,
-                        "lobDetails": null,
-                        "jobQuestions":{
-                            "noOfQuestions": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('noOfQuestion')?.value : null,
-                            "difficulty": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('difficulty')?.value : null,
-                            "cutoffScore": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('requiredAssessmentScore')?.value : null,
-                            "useGpt": this.thirdStepForm.get('useTalliteGPT')?.value ? 1 : 0,
-                            "deleteQuestionId": deletedQuestionIds,
-                            "customQuestions": this.questionFormArray.length > 0 ? customQuestions : []
-                        }
+                    },
+                    "reqSourceTypeId": null,
+                    "folders": null,
+                    "cvminePostings": null,
+                    "formTemplateId": null,
+                    "organizationId": null,
+                    "entityId": null,
+                    "teamBucketingId": null,
+                    "companyId": null,
+                    "sbumisId": null,
+                    "costcenterId": null,
+                    "functionId": null,
+                    "subFunctionId": null,
+                    "budgetedYear": "2024-2025",
+                    "jobCategoryId": null,
+                    "hrOpsUserId": null,
+                    "onbSpocUserId": null,
+                    "digitalSignatories": null,
+                    "schemeType": null,
+                    "cvmineCareerGroups": null,
+                    "bgvVendorSellerCode": null,
+                    "customApprovers": null,
+                    "sapPositionCode": null,
+                    "cvMinePostingCategory": null,
+                    "interviewPanels": null,
+                    "assesshubFlowId": null,
+                    "assesshubTemplateId": null,
+                    "sendInviteConfirmationForAssesshub": null,
+                    "mainGroup": null,
+                    "subGroup": null,
+                    "referralTemplateId": null,
+                    "lobDetails": null,
+                    "jobQuestions":{
+                        "noOfQuestions": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('noOfQuestion')?.value : null,
+                        "difficulty": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('difficulty')?.value : null,
+                        "cutoffScore": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('requiredAssessmentScore')?.value : null,
+                        "useGpt": this.thirdStepForm.get('useTalliteGPT')?.value ? 1 : 0,
+                        "deleteQuestionId": deletedQuestionIds,
+                        "customQuestions": this.questionFormArray.length > 0 ? customQuestions : []
                     }
-                ]
+                }]
             };
             console.log(jobData);
             this.apiService.saveJob(jobData).subscribe((response) => {
+                console.log(response);
                 this.loadingSpinnerService.show();
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                 this.firstStepForm.reset();
