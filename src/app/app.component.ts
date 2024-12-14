@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { RouterOutlet, Router, Event, NavigationEnd } from '@angular/router';
 import { LoadingService } from './common/loading-spinner/loading.service';
@@ -32,7 +32,8 @@ export class AppComponent implements OnInit {
         private viewportScroller: ViewportScroller,
         private loadingService: LoadingService,
         private sharedService: SharedService,
-        private loginService: LoginService
+        private loginService: LoginService,
+        private cdr: ChangeDetectorRef
     ) {
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationEnd) {
@@ -40,9 +41,10 @@ export class AppComponent implements OnInit {
             }
         });
         
-        this.loadingService.loading$.subscribe((loading) => {
-            this.isLoading = loading;
-        });
+        // this.loadingService.loading$.subscribe((loading) => {
+        //     this.isLoading = loading;
+        //     this.cdr.detectChanges();
+        // });
     }
 
     ngOnInit(): void {
@@ -50,6 +52,13 @@ export class AppComponent implements OnInit {
             if (isLoggedIn) {
                 this.sharedService.fetchAndSetDropdownData({});
             }
+        });
+    }
+
+    ngAfterViewInit() {
+        this.loadingService.loading$.subscribe((loading) => {
+            this.isLoading = loading;
+            this.cdr.detectChanges();
         });
     }
 

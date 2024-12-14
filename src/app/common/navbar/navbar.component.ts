@@ -17,6 +17,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     userName: string = 'Guest';
     private destroy$ = new Subject<void>();
     userDropdownOpen: boolean = false;
+    classApplied = false;
+    isSticky: boolean = false;
+    notificationsDropdownClassApplied = false;
 
     constructor(
         public router: Router,
@@ -24,13 +27,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        // this.isLoggedIn = this.loginService.isLoggedIn();
-        // console.log(this.isLoggedIn);
-        // if (this.isLoggedIn) {
-        //     const userDetails = this.loginService.getUserDetails();
-        //     this.userName = userDetails?.displayName || 'User';
-        // }
-
         this.loginService.loginState$
             .pipe(takeUntil(this.destroy$))
             .subscribe({
@@ -44,14 +40,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
                     } else {
                         this.userName = 'Guest';
                     }
-
                     this.cdr.detectChanges();
                 },
                 error: (err) => {
                     console.error('Navbar: Error in loginState$ subscription:', err);
                 }
             });
-
     }
 
     toggleUserDropdown(): void {
@@ -60,6 +54,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     
     logout(): void {
         this.userDropdownOpen = !this.userDropdownOpen;
+        this.classApplied = !this.classApplied
         this.loginService.logout();
         this.router.navigate(['/login']);
     }
@@ -69,8 +64,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    // Navbar Sticky
-    isSticky: boolean = false;
     @HostListener('window:scroll', ['$event'])
     checkScroll() {
         const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -81,14 +74,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
         }
     }
 
-    // Menu Trigger
-    classApplied = false;
     toggleClass() {
         this.classApplied = !this.classApplied;
     }
 
-    // Notifications Dropdown
-    notificationsDropdownClassApplied = false;
     notificationsDropdownToggleClass() {
         this.notificationsDropdownClassApplied = !this.notificationsDropdownClassApplied;
     }
@@ -96,36 +85,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
     openSectionIndex: number = -1;
     openSectionIndex2: number = -1;
     openSectionIndex3: number = -1;
-    toggleSection(index: number): void {
-        if (this.openSectionIndex === index) {
-            this.openSectionIndex = -1;
-        } else {
-            this.openSectionIndex = index;
-        }
-    }
-    toggleSection2(index: number): void {
-        if (this.openSectionIndex2 === index) {
-            this.openSectionIndex2 = -1;
-        } else {
-            this.openSectionIndex2 = index;
-        }
-    }
-    toggleSection3(index: number): void {
-        if (this.openSectionIndex3 === index) {
-            this.openSectionIndex3 = -1;
-        } else {
-            this.openSectionIndex3 = index;
-        }
-    }
-    isSectionOpen(index: number): boolean {
-        return this.openSectionIndex === index;
-    }
-    isSectionOpen2(index: number): boolean {
-        return this.openSectionIndex2 === index;
-    }
-    isSectionOpen3(index: number): boolean {
-        return this.openSectionIndex3 === index;
-    }
 
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: Event): void {
+        const target = event.target as HTMLElement;
+
+        const clickedInsideUserDropdown = target.closest('.user-icon');
+        const clickedInsideNotificationsDropdown = target.closest('.notif-option');
+
+        if (!clickedInsideUserDropdown) {
+            this.userDropdownOpen = false;
+        }
+
+        if (!clickedInsideNotificationsDropdown) {
+            this.notificationsDropdownClassApplied = false;
+        }
+
+        this.cdr.detectChanges();
+    }
 
 }

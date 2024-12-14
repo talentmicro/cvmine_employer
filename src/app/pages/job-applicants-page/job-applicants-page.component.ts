@@ -147,7 +147,6 @@ export class JobApplicantsPageComponent implements OnInit {
             next: (response) => {
                 if (response.status && response.data && response.data.list) {
                     this.loadingSpinnerService.hide();
-                    console.log(response.data.list);
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
                         job_code: item.productCode,
@@ -158,7 +157,7 @@ export class JobApplicantsPageComponent implements OnInit {
                         experience_in_years: item.totalExp,
                         location: item.presentLocation,
                         status: item.statusCode,
-                        skills: item.certiKeywords ? item.certiKeywords.split(',') : [],
+                        skills: item.skills ? item.skills.split(',') : [],
                         alertId: item.alertId,
                         resId: item.resId,
                         stageCode: item.stageCode

@@ -85,9 +85,7 @@ export class JobPostingPageComponent implements OnInit {
         private messageService: MessageService,
         private sharedService: SharedService,
         private loginService: LoginService
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         this.loadingSpinnerService.show();
         this.userDetails = this.loginService.getUserDetails();
         this.route.params.subscribe((params) => {
@@ -116,6 +114,37 @@ export class JobPostingPageComponent implements OnInit {
             this.jobTypes = jobTypeList;
             this.initStepperForms();
         });
+    }
+
+    ngOnInit(): void {
+        // this.loadingSpinnerService.show();
+        // this.userDetails = this.loginService.getUserDetails();
+        // this.route.params.subscribe((params) => {
+        //     this.editMode = !!params['id'];
+        //     if (this.editMode) {
+        //         this.onJobSelected(params['id']);
+        //     }
+        //     this.sharedService.masterDropdowns$.subscribe({
+        //         next: (data) => {
+        //             if (data) {
+        //                 this.period = data.data.jobMasterData.scaleDurationList
+        //                     .filter((item: any) => item.scaleDurationId !== 7)
+        //                     .map((item: any) => ({
+        //                         id: item.scaleDurationId,
+        //                         title: item.name
+        //                     }));
+        //                 this.currencies = data.data.alertMasterData.currencyList;
+        //                 this.getAllJobs();
+        //             }
+        //         },
+        //         error: (error) => {
+        //             this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        //         this.loadingSpinnerService.hide();
+        //         },
+        //     });
+        //     this.jobTypes = jobTypeList;
+        //     this.initStepperForms();
+        // });
     }
 
     initStepperForms() {
