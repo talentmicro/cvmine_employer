@@ -90,9 +90,6 @@ export class JobPostingPageComponent implements OnInit {
         this.userDetails = this.loginService.getUserDetails();
         this.route.params.subscribe((params) => {
             this.editMode = !!params['id'];
-            if (this.editMode) {
-                this.onJobSelected(params['id']);
-            }
             this.sharedService.masterDropdowns$.subscribe({
                 next: (data) => {
                     if (data) {
@@ -103,6 +100,9 @@ export class JobPostingPageComponent implements OnInit {
                                 title: item.name
                             }));
                         this.currencies = data.data.alertMasterData.currencyList;
+                        if (this.editMode) {
+                            this.onJobSelected(params['id']);
+                        }
                         this.getAllJobs();
                     }
                 },
@@ -112,6 +112,7 @@ export class JobPostingPageComponent implements OnInit {
                 },
             });
             this.jobTypes = jobTypeList;
+            
             this.initStepperForms();
         });
     }
@@ -177,6 +178,7 @@ export class JobPostingPageComponent implements OnInit {
         }, { validator: [this.experienceRangeValidator, this.salaryRangeValidator, this.noticePeriodRangeValidator] });
         this.initializeJobTypeFromString('');
         this.thirdStepForm = this.fb.group({
+            questionId: [0],
             question: ['', Validators.required],
             deciderResponse: ['Yes', Validators.required],
             additionalResponse: ['Not Required', Validators.required],
@@ -271,7 +273,7 @@ export class JobPostingPageComponent implements OnInit {
         if (productCode) {
             this.apiService.getJobDetails(body).subscribe({
                 next: (response) => {
-                    console.log(response.data);
+                    console.log(this.currencies.filter(item => item.id === response.data.jobDetails[0].expSalaryCurrId)[0].currencySymbol);
                     if (response.status && response.data) {
                         this.selectedExistingJobDetails = {
                             "jobCode": response.data.jobDetails[0].productCode,
@@ -282,17 +284,17 @@ export class JobPostingPageComponent implements OnInit {
                             "skills": response.data.jobDetails[0].certiKeywords,
                             "experienceFrom": response.data.jobDetails[0].expFrom,
                             "experienceTo": response.data.jobDetails[0].expTo,
-                            "currency": response.data.jobDetails[0].referralCurrencySymbol,
+                            "currency": response.data.jobDetails[0].expSalaryCurrId,
                             "salaryFrom": response.data.jobDetails[0].expSalaryFrom,
                             "salaryTo": response.data.jobDetails[0].expSalaryTo,
                             "duration": response.data.jobDetails[0].expSalaryScaleDurationId,
                             "noticePeriodFrom": response.data.jobDetails[0].noticePeriodFrom,
                             "noticePeriodTo": response.data.jobDetails[0].noticePeriodTo,
-                            "useTalliteGPT": response.data.jobDetails[0].jobQuestion?.useGpt === 1,
-                            "noOfQuestions": response.data.jobDetails[0].jobQuestion?.noOfQuestions,
-                            "difficulty": response.data.jobDetails[0].jobQuestion?.difficultyLevel,
-                            "cutoffScore": response.data.jobDetails[0].jobQuestion?.cutoffScore,
-                            "questions": this.getCustomQuestions(response.data.jobDetails[0].jobQuestion?.customQuestions)
+                            "useTalliteGPT": response.data.jobDetails[0].jobQuestions?.useGpt === 1,
+                            "noOfQuestions": response.data.jobDetails[0].jobQuestions?.noOfQuestions,
+                            "difficulty": response.data.jobDetails[0].jobQuestions?.difficultyLevel,
+                            "cutoffScore": response.data.jobDetails[0].jobQuestions?.cutoffScore,
+                            "questions": this.getCustomQuestions(response.data.jobDetails[0].jobQuestions?.customQuestions)
                         }
                         this.setStepperFormData();
                     }
@@ -306,9 +308,11 @@ export class JobPostingPageComponent implements OnInit {
     }
 
     getCustomQuestions(questionString: any) {
+        console.log(questionString);
         if(questionString) {
             const customQuestions = JSON.parse(questionString);
             this.savedCustomQuestions = customQuestions;
+            console.log(customQuestions);
             if(customQuestions?.length > 0) {
                 return customQuestions;
             } else {
@@ -370,7 +374,7 @@ export class JobPostingPageComponent implements OnInit {
         );
         this.secondStepForm.get('noticeFrom')?.setValue(this.selectedExistingJobDetails?.noticePeriodFrom ?? null);
         this.secondStepForm.get('noticeTo')?.setValue(this.selectedExistingJobDetails?.noticePeriodTo || null);
-        this.thirdStepForm.get('question')?.setValue(this.selectedExistingJobDetails?.questions || '');
+        this.thirdStepForm.get('question')?.setValue('');
         this.thirdStepForm.get('deciderResponse')?.setValue(this.selectedExistingJobDetails?.deciderResponse || 'Yes');
         this.thirdStepForm.get('additionalResponse')?.setValue(this.selectedExistingJobDetails?.additionalResponse || 'Not Required');
         this.thirdStepForm.get('useTalliteGPT')?.setValue(this.selectedExistingJobDetails?.useTalliteGPT || false);
@@ -383,10 +387,10 @@ export class JobPostingPageComponent implements OnInit {
             this.selectedExistingJobDetails?.questions.forEach((question: any) => {
                 questionsArray.push(this.fb.group({
                     id: [this.questionFormArray.length + 1],
-                    questionId: [question.questionId],
+                    questionId: [question.id],
                     question: [question?.question],
-                    deciderResponse: [question?.deciderResponse === 1 ? 'Yes' : 'No'],
-                    additionalResponse: [question?.additionalResponse === 1 ? 'Required' : 'Not Required'],
+                    deciderResponse: [question?.expectedAnswer === 1 ? 'Yes' : 'No'],
+                    additionalResponse: [question?.responseInput === 1 ? 'Required' : 'Not Required'],
                 }));
             });
         }
@@ -397,17 +401,18 @@ export class JobPostingPageComponent implements OnInit {
     }
     
     addQuestion() {
-        const { question, deciderResponse, additionalResponse } = this.thirdStepForm.value;
+        console.log(this.thirdStepForm);
+        const { question, questionId, deciderResponse, additionalResponse } = this.thirdStepForm.value;
         if (this.thirdStepForm.get('question')?.value) {
             const questionGroup = this.fb.group({
                 id: [this.questionFormArray.length + 1],
-                questionId: 0,
+                questionId: questionId ? [questionId] : 0,
                 question: [question],
                 deciderResponse: [deciderResponse],
                 additionalResponse: [additionalResponse],
             });
             this.questionFormArray.push(questionGroup);
-            this.thirdStepForm.patchValue({ question: '', deciderResponse: 'Yes', additionalResponse: 'Not Required' });
+            this.thirdStepForm.patchValue({ questionId: 0, question: '', deciderResponse: 'Yes', additionalResponse: 'Not Required' });
             this.thirdStepForm.get('question')?.clearValidators();
             this.thirdStepForm.get('question')?.updateValueAndValidity();
         }
@@ -415,7 +420,9 @@ export class JobPostingPageComponent implements OnInit {
     
     editQuestion(index: number) {
         const questionGroup = this.questionFormArray.at(index);
+        console.log(questionGroup);
         this.thirdStepForm.patchValue({
+            questionId: questionGroup.get('questionId')?.value,
             question: questionGroup.get('question')?.value,
             deciderResponse: questionGroup.get('deciderResponse')?.value,
             additionalResponse: questionGroup.get('additionalResponse')?.value,
@@ -519,6 +526,7 @@ export class JobPostingPageComponent implements OnInit {
     }
 
     submit() {
+        console.log( this.secondStepForm.value);
         if (this.firstStepForm.valid && this.secondStepForm.valid && this.thirdStepForm.valid) {
             this.loadingSpinnerService.show();
             const selectedJobTypes: number[] = [];
@@ -535,10 +543,14 @@ export class JobPostingPageComponent implements OnInit {
                     responseInput: item.additionalResponse === 'Required' ? 1 : 2
                 };
             });
-            const originalQuestionIds = this.savedCustomQuestions?.map(q => q.questionId);
-            const updatedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
-            const deletedQuestionIds = originalQuestionIds.filter(id => !updatedQuestionIds.includes(id));
-
+            console.log("saved", this.savedCustomQuestions);
+            console.log("formarray", customQuestions)
+            const originalQuestionIds = this.savedCustomQuestions?.map(q => q.id);
+            const addedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
+            const deletedQuestionIds = originalQuestionIds.filter(id => !addedQuestionIds.includes(id));
+            console.log("originalIDs", originalQuestionIds);
+            console.log("added Questions", addedQuestionIds);
+            console.log('deleted questions ID', deletedQuestionIds);
             const jobData = {
                 data: [{
                     "sellerCode": Number(this.userDetails.sellerCode),
