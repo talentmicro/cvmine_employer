@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { jobTypeList } from '../data';
+import { QuillModule } from 'ngx-quill';
 import { ImportsModule } from '../../imports';
 import { ApiService } from '../services/api.service';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
@@ -34,7 +35,8 @@ interface Job {
         CommonModule,
         ReactiveFormsModule,
         FormsModule,
-        ImportsModule
+        ImportsModule,
+        QuillModule
     ],
     providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -75,6 +77,24 @@ export class JobPostingPageComponent implements OnInit {
     ];
     skills: any = [];
     active: number | undefined = 0;
+    quillModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'direction': 'rtl' }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+            ['clean'],
+            ['link', 'image', 'video']
+        ],
+    };
 
     constructor(
         private fb: FormBuilder, 
@@ -207,7 +227,6 @@ export class JobPostingPageComponent implements OnInit {
         this.apiService.getCityList(body).subscribe({
             next: (response) => {
                 this.cityList = response.data.list;
-                console.log(this.cityList);
                 this.loadingSpinnerService.hide();
             },
             error: (error: any) => {
@@ -309,7 +328,6 @@ export class JobPostingPageComponent implements OnInit {
     }
 
     getCustomQuestions(questionString: any) {
-        console.log(questionString);
         if(questionString) {
             const customQuestions = JSON.parse(questionString);
             this.savedCustomQuestions = customQuestions;
@@ -395,9 +413,10 @@ export class JobPostingPageComponent implements OnInit {
                 }));
             });
         }
-        // if(this.editMode && this.selectedExistingJobDetails?.questions.length > 0) {
-
-        // }
+        if(this.editMode && this.selectedExistingJobDetails?.questions.length > 0) {
+            this.thirdStepForm.get('question')?.clearValidators();
+            this.thirdStepForm.get('question')?.updateValueAndValidity();
+        }
     }
 
     get questionFormArray(): FormArray {
@@ -405,7 +424,6 @@ export class JobPostingPageComponent implements OnInit {
     }
     
     addQuestion() {
-        console.log(this.thirdStepForm);
         const { question, questionId, deciderResponse, additionalResponse } = this.thirdStepForm.value;
         if (this.thirdStepForm.get('question')?.value) {
             const questionGroup = this.fb.group({
@@ -424,7 +442,6 @@ export class JobPostingPageComponent implements OnInit {
     
     editQuestion(index: number) {
         const questionGroup = this.questionFormArray.at(index);
-        console.log(questionGroup);
         this.thirdStepForm.patchValue({
             questionId: questionGroup.get('questionId')?.value,
             question: questionGroup.get('question')?.value,
@@ -530,7 +547,6 @@ export class JobPostingPageComponent implements OnInit {
     }
 
     submit() {
-        console.log( this.secondStepForm.value);
         if (this.firstStepForm.valid && this.secondStepForm.valid && this.thirdStepForm.valid) {
             this.loadingSpinnerService.show();
             const selectedJobTypes: number[] = [];
@@ -553,8 +569,6 @@ export class JobPostingPageComponent implements OnInit {
             const originalQuestionIds = this.savedCustomQuestions?.map(q => q.id);
             const addedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
             const deletedQuestionIds = originalQuestionIds.filter(id => !addedQuestionIds.includes(id));
-            console.log("originalIDs", originalQuestionIds);
-            console.log("added Questions", addedQuestionIds);
             console.log('deleted questions ID', deletedQuestionIds);
             const jobData = {
                 data: [{

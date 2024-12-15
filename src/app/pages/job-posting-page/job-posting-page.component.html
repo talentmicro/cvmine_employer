@@ -58,12 +58,15 @@
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
                                             <label for="jobDescription" class="form-label fw-bold">Job Description</label>
-                                            <textarea rows="5" 
+                                            <!-- <textarea rows="5" 
                                                 cols="30" 
                                                 pInputTextarea 
                                                 placeholder="Enter job description"
                                                 formControlName="jobDescription">
-                                            </textarea>
+                                            </textarea> -->
+                                            <quill-editor formControlName="jobDescription"
+                                                [styles]="{ height: '200px', width: '100%' }" [modules]="quillModules">
+                                            </quill-editor>
                                             <small class="error-text" 
                                                 *ngIf="firstStepForm.get('jobDescription')?.hasError('required') && firstStepForm.get('jobDescription')?.touched">
                                                 Job description is required.
@@ -541,3 +544,7 @@
         </div>
     </div>
 </div>
+<!-- 
+<quill-editor formControlName="jobDescription"
+                                                [styles]="{ height: '200px' }" [modules]="quillModules">
+                                            </quill-editor> -->
