@@ -98,16 +98,21 @@ export class LoginPageComponent{
             return;
         }
         const body =  {
-            "loginId": this.forgotPasswordForm.get('userID')?.value
+            "employeeId": this.forgotPasswordForm.get('userID')?.value
         }
         this.apiService.checkUserID(body).subscribe({
             next: (response) => {
-                this.loading = false;
-                this.step = 2;
-                this.forgotPasswordForm.get('userID')?.disable();
-                this.forgotPasswordForm.get('verificationCode')?.setValidators([Validators.required]);
-                this.forgotPasswordForm.get('verificationCode')?.updateValueAndValidity();
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                if(response.status) {
+                    this.loading = false;
+                    this.step = 2;
+                    this.forgotPasswordForm.get('userID')?.disable();
+                    this.forgotPasswordForm.get('verificationCode')?.setValidators([Validators.required]);
+                    this.forgotPasswordForm.get('verificationCode')?.updateValueAndValidity();
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                } else {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                }
             },
             error: (err) => {
                 this.loading = false;
@@ -118,12 +123,18 @@ export class LoginPageComponent{
 
     resendCode() {
         const body =  {
-            "loginId": this.forgotPasswordForm.get('userID')?.value
+            "employeeId": this.forgotPasswordForm.get('userID')?.value
         }
         this.apiService.checkUserID(body).subscribe({
             next: (response) => {
-                this.loading = false;
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                if(response.status) {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                } else {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                }
+                
             },
             error: (err) => {
                 this.loading = false;
@@ -140,17 +151,22 @@ export class LoginPageComponent{
         }
         const body = {
             "otp": this.forgotPasswordForm.get('verificationCode')?.value,
-            "loginId": this.forgotPasswordForm.get('userID')?.value
+            "employeeId": this.forgotPasswordForm.get('userID')?.value
         } 
         this.apiService.verifyCode(body).subscribe({
             next: (response) => {
-                this.loading = false;
-                this.step = 3;
-                this.forgotPasswordForm.get('newPassword')?.setValidators([Validators.required, Validators.minLength(6)]);
-                this.forgotPasswordForm.get('confirmNewPassword')?.setValidators([Validators.required]);
-                this.forgotPasswordForm.get('newPassword')?.updateValueAndValidity();
-                this.forgotPasswordForm.get('confirmNewPassword')?.updateValueAndValidity();
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                if(response.status) {
+                    this.loading = false;
+                    this.step = 3;
+                    this.forgotPasswordForm.get('newPassword')?.setValidators([Validators.required, Validators.minLength(6)]);
+                    this.forgotPasswordForm.get('confirmNewPassword')?.setValidators([Validators.required]);
+                    this.forgotPasswordForm.get('newPassword')?.updateValueAndValidity();
+                    this.forgotPasswordForm.get('confirmNewPassword')?.updateValueAndValidity();
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                } else {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                }
             },
             error: (err) => {
                 this.loading = false;
@@ -173,16 +189,25 @@ export class LoginPageComponent{
             return;
         }
         const body = {
-            "loginId": this.forgotPasswordForm.get('userID')?.value,
+            "employeeId": this.forgotPasswordForm.get('userID')?.value,
+            "otp": this.forgotPasswordForm.get('verificationCode')?.value,
             "newPassword": this.forgotPasswordForm.get('newPassword')?.value
         }
+        console.log(body);
+
         this.apiService.resetPassword(body).subscribe({
             next: (response) => {
-                this.loading = false;
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                setTimeout(() => {
-                    this.router.navigate(['/login']);
-                }, 2000);
+                console.log(response);
+                if(response.status) {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    setTimeout(() => {
+                        this.router.navigate(['/login']);
+                    }, 2000);
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                    return;
+                }
             },
             error: (err) => {
                 this.loading = false;

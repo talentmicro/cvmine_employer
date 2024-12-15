@@ -207,6 +207,7 @@ export class JobPostingPageComponent implements OnInit {
         this.apiService.getCityList(body).subscribe({
             next: (response) => {
                 this.cityList = response.data.list;
+                console.log(this.cityList);
                 this.loadingSpinnerService.hide();
             },
             error: (error: any) => {
@@ -273,7 +274,7 @@ export class JobPostingPageComponent implements OnInit {
         if (productCode) {
             this.apiService.getJobDetails(body).subscribe({
                 next: (response) => {
-                    console.log(this.currencies.filter(item => item.id === response.data.jobDetails[0].expSalaryCurrId)[0].currencySymbol);
+                    console.log(response);
                     if (response.status && response.data) {
                         this.selectedExistingJobDetails = {
                             "jobCode": response.data.jobDetails[0].productCode,
@@ -394,6 +395,9 @@ export class JobPostingPageComponent implements OnInit {
                 }));
             });
         }
+        // if(this.editMode && this.selectedExistingJobDetails?.questions.length > 0) {
+
+        // }
     }
 
     get questionFormArray(): FormArray {
@@ -535,6 +539,7 @@ export class JobPostingPageComponent implements OnInit {
                     selectedJobTypes.push(item.jobType);
                 }
             });
+            const prefJobseekerBranch = this.cityList.filter(item => this.secondStepForm.get('jobLocation')?.value.includes(item.id));
             const customQuestions = this.thirdStepForm.get('questions')?.value.map((item: any) => {
                 return {
                     questionId: item?.questionId,
@@ -561,8 +566,7 @@ export class JobPostingPageComponent implements OnInit {
                     "intJobCode": null,
                     "employerName": this.userDetails.displayName,
                     "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
-                    "positions": 1,
-                    "branchCode": this.secondStepForm.get('jobLocation')?.value,
+                    "positions": 1, 
                     "startDatetime": "",
                     "targetDatetime": "",
                     "description": this.firstStepForm.get('jobDescription')?.value,
@@ -572,7 +576,7 @@ export class JobPostingPageComponent implements OnInit {
                     ],
                     "technology": null,
                     "keySkills": [],
-                    "jobseeker_location": [],
+                    "jobseeker_location": this.secondStepForm.get('jobLocation')?.value,
                     "jobType": selectedJobTypes,
                     "caContactNumber": "",
                     "expFrom": this.secondStepForm.get('experienceFrom')?.value,
@@ -600,7 +604,7 @@ export class JobPostingPageComponent implements OnInit {
                     "totalCVReq": null,
                     "publishJobFor": 1,
                     "sourcingType": null,
-                    "prefJobseekerBranch": [],
+                    "prefJobseekerBranch": prefJobseekerBranch,
                     "status": 1,
                     "statusTitle": null,
                     "statusType": null,
@@ -668,6 +672,14 @@ export class JobPostingPageComponent implements OnInit {
                     "totalCVLimit": null,
                     "badges": null,
                     "sourcingTypes": null,
+                    "jobQuestions":{
+                        "noOfQuestions": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('noOfQuestion')?.value : null,
+                        "difficulty": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('difficulty')?.value : null,
+                        "cutoffScore": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('requiredAssessmentScore')?.value : null,
+                        "useGpt": this.thirdStepForm.get('useTalliteGPT')?.value ? 1 : 0,
+                        "deleteQuestionId": deletedQuestionIds,
+                        "customQuestions": this.questionFormArray.length > 0 ? customQuestions : []
+                    },
                     "assetTemplateId": null,
                     "careerPortalFieldConfigTemplateId": null,
                     "vehicleTypes": null,
@@ -742,28 +754,25 @@ export class JobPostingPageComponent implements OnInit {
                     "mainGroup": null,
                     "subGroup": null,
                     "referralTemplateId": null,
-                    "lobDetails": null,
-                    "jobQuestions":{
-                        "noOfQuestions": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('noOfQuestion')?.value : null,
-                        "difficulty": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('difficulty')?.value : null,
-                        "cutoffScore": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('requiredAssessmentScore')?.value : null,
-                        "useGpt": this.thirdStepForm.get('useTalliteGPT')?.value ? 1 : 0,
-                        "deleteQuestionId": deletedQuestionIds,
-                        "customQuestions": this.questionFormArray.length > 0 ? customQuestions : []
-                    }
+                    "lobDetails": null
                 }]
             };
             console.log(jobData);
             this.apiService.saveJob(jobData).subscribe((response) => {
-                console.log(response);
-                this.loadingSpinnerService.show();
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                this.firstStepForm.reset();
-                this.secondStepForm.reset();
-                this.thirdStepForm.reset();
-                this.selectedLocations = [];
-                
-                this.router.navigate(['/job-listings']);
+                if(response.status) {
+                    console.log(response);
+                    this.loadingSpinnerService.show();
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.firstStepForm.reset();
+                    this.secondStepForm.reset();
+                    this.thirdStepForm.reset();
+                    this.selectedLocations = [];
+                    
+                    this.router.navigate(['/job-listings']);
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                    return;
+                }
             },
             (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
