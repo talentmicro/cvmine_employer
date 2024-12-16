@@ -17,7 +17,7 @@ import { ApiService } from '../services/api.service';
         CommonModule, 
         ImportsModule,
     ],
-    providers: [LoginService, MessageService]
+    providers: [MessageService]
 })
 
 export class LoginPageComponent{
@@ -66,7 +66,7 @@ export class LoginPageComponent{
 
             this.loginService.login(employeeId, password).subscribe(
                 (response) => {
-                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.router.navigate(['/job-listings']);
                 },
                 (error) => {
