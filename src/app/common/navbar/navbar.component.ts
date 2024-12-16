@@ -31,7 +31,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (state) => {
-                    console.log('Navbar: Detected loginState$ change:', state);
                     this.isLoggedIn = state;
 
                     if (state) {
@@ -54,7 +53,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     
     logout(): void {
         this.userDropdownOpen = !this.userDropdownOpen;
-        this.classApplied = !this.classApplied
+        if (window.innerWidth < 992) {
+            this.classApplied = !this.classApplied;
+        }
         this.loginService.logout();
         this.router.navigate(['/login']);
     }

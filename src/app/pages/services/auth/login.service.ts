@@ -65,7 +65,7 @@ export class LoginService {
                     this.loginSubject.next(true);
                 });
 
-                this.sharedService.fetchAndSetDropdownData({});
+                // this.sharedService.fetchAndSetDropdownData({});
                 return response;
             }),
             catchError((error) => {

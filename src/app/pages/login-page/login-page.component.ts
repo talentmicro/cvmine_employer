@@ -75,7 +75,7 @@ export class LoginPageComponent{
             );
         } else {
             this.loginForm.markAllAsTouched();
-            // this.messageService.add({ severity: 'warn', summary: 'Invalid', detail: 'Form is invalid!' });
+            this.messageService.add({ severity: 'warn', summary: 'Invalid', detail: 'Invalid Credentials!' });
         }
     }
 

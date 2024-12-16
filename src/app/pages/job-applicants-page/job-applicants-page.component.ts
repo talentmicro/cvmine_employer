@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { ApiService } from '../services/api.service';
 import { MessageService } from 'primeng/api';
@@ -41,7 +41,7 @@ interface Applicant {
     providers: [MessageService]
 })
 
-export class JobApplicantsPageComponent implements OnInit {
+export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     @ViewChild('dt2') dt2!: Table;
     jobCode?: string;
     status?: string;
@@ -56,7 +56,7 @@ export class JobApplicantsPageComponent implements OnInit {
     selectedJobs: number[] = [];
     selectedStatuses: number[] = [];
     onSearch: boolean = false;
-
+    private destroy$ = new Subject<void>();
     requestBody = {
         "sellerCode": [],
         "search": null,
@@ -126,7 +126,7 @@ export class JobApplicantsPageComponent implements OnInit {
             this.loadingSpinnerService.show()
             this.jobCode = params['jobCode'];
             this.status = params['status'];
-            this.sharedService.masterDropdowns$.subscribe({
+            this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (data) => {
                     console.log(data);
                     if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
@@ -144,6 +144,11 @@ export class JobApplicantsPageComponent implements OnInit {
                 },
             });
         });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     getApplicants(): void {

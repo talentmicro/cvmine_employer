@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { MessageService } from 'primeng/api';
 import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { SharedService } from '../services/shared.service';
 import { LoginService } from '../services/auth/login.service';
+import { Subject, takeUntil } from 'rxjs';
 
 interface Job {
     id: number;
@@ -41,7 +42,7 @@ interface Job {
     providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class JobPostingPageComponent implements OnInit {
+export class JobPostingPageComponent implements OnInit, OnDestroy {
     userDetails!: any;
     firstStepForm!: FormGroup;
     secondStepForm!: FormGroup;
@@ -59,6 +60,7 @@ export class JobPostingPageComponent implements OnInit {
         { name: 'Required', key: 1 },
         { name: 'Not Required', key: 2 },
     ];
+    private destroy$ = new Subject<void>();
     selectedExistingJobDetails: any = {};
     jobsList: Array<Job> = [];
     filteredJobsList: Array<{ job_code: number; job_name: string }> = [];
@@ -110,7 +112,7 @@ export class JobPostingPageComponent implements OnInit {
         this.userDetails = this.loginService.getUserDetails();
         this.route.params.subscribe((params) => {
             this.editMode = !!params['id'];
-            this.sharedService.masterDropdowns$.subscribe({
+            this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (data) => {
                     if (data) {
                         this.period = data.data.jobMasterData.scaleDurationList
@@ -138,34 +140,12 @@ export class JobPostingPageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // this.loadingSpinnerService.show();
-        // this.userDetails = this.loginService.getUserDetails();
-        // this.route.params.subscribe((params) => {
-        //     this.editMode = !!params['id'];
-        //     if (this.editMode) {
-        //         this.onJobSelected(params['id']);
-        //     }
-        //     this.sharedService.masterDropdowns$.subscribe({
-        //         next: (data) => {
-        //             if (data) {
-        //                 this.period = data.data.jobMasterData.scaleDurationList
-        //                     .filter((item: any) => item.scaleDurationId !== 7)
-        //                     .map((item: any) => ({
-        //                         id: item.scaleDurationId,
-        //                         title: item.name
-        //                     }));
-        //                 this.currencies = data.data.alertMasterData.currencyList;
-        //                 this.getAllJobs();
-        //             }
-        //         },
-        //         error: (error) => {
-        //             this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-        //         this.loadingSpinnerService.hide();
-        //         },
-        //     });
-        //     this.jobTypes = jobTypeList;
-        //     this.initStepperForms();
-        // });
+
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     initStepperForms() {

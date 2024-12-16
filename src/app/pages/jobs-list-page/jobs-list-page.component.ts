@@ -1,10 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ImportsModule } from '../../imports';
-
-// prime-ng imports
 import { Table } from 'primeng/table';
 import { ApiService } from '../services/api.service';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
@@ -12,7 +10,7 @@ import { MessageService } from 'primeng/api';
 import { TableRowCollapseEvent, TableRowExpandEvent } from 'primeng/table';
 import { SharedService } from '../services/shared.service';
 import { FloatLabelModule } from 'primeng/floatlabel';
-
+import { Subject, takeUntil } from 'rxjs';
 
 interface Job {
     id: number;
@@ -45,11 +43,12 @@ interface Job {
     providers: [MessageService]
 })
 
-export class JobsListPageComponent implements OnInit {
+export class JobsListPageComponent implements OnInit, OnDestroy {
     @ViewChild('dt2') dt2!: Table;
     jobsList: Job[] = [];
     selectedJobs!: Job;
     expandedRows = {};
+    private destroy$ = new Subject<void>();
     jobStatuses: Array<{ value: string; label: string, status: number; statusTitle: string }> = []
     loading: boolean = true;
     formGroup!: FormGroup;
@@ -80,7 +79,7 @@ export class JobsListPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadingSpinnerService.show();
-        this.sharedService.masterDropdowns$.subscribe({
+        this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
             next: (data) => {
                 if (data && data?.data?.jobMasterData && data?.data?.jobMasterData?.jobStatusList) {
                     this.jobStatuses = data.data.jobMasterData.jobStatusList
@@ -100,6 +99,11 @@ export class JobsListPageComponent implements OnInit {
                 this.loadingSpinnerService.hide();
             },
         });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     getAllJobListings(): void {
