@@ -28,3 +28,23 @@
     color: white;
     font-weight: 500;
 }
+
+.pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pill {
+    padding: 0px 7px;
+    background-color: #a2ccb9;
+    color: white;
+    border-radius: 10px;
+    font-size: 11px;
+    cursor: pointer;
+    width: 65px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}

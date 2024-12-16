@@ -193,17 +193,13 @@ export class LoginPageComponent{
             "otp": this.forgotPasswordForm.get('verificationCode')?.value,
             "newPassword": this.forgotPasswordForm.get('newPassword')?.value
         }
-        console.log(body);
 
         this.apiService.resetPassword(body).subscribe({
             next: (response) => {
-                console.log(response);
                 if(response.status) {
                     this.loading = false;
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                    setTimeout(() => {
-                        this.router.navigate(['/login']);
-                    }, 2000);
+                    this.closeDialog();
                 } else {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
                     return;

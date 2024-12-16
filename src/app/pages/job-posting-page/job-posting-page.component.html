@@ -43,7 +43,7 @@
                                     </div>
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="existingJob" class="form-label fw-bold">Job Title</label>
+                                            <label for="existingJob" class="form-label fw-bold">Job Title<span class="required">*</span></label>
                                             <input type="text" pInputText placeholder="Enter job title" formControlName="jobTitle" />
                                             <small class="error-text" 
                                                 *ngIf="firstStepForm.get('jobTitle')?.hasError('required') && firstStepForm.get('jobTitle')?.touched">
@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="jobDescription" class="form-label fw-bold">Job Description</label>
+                                            <label for="jobDescription" class="form-label fw-bold">Job Description<span class="required">*</span></label>
                                             <!-- <textarea rows="5" 
                                                 cols="30" 
                                                 pInputTextarea 
@@ -92,7 +92,7 @@
                                 <form [formGroup]="secondStepForm">
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="jobType" class="form-label fw-bold">Job Type</label>
+                                            <label for="jobType" class="form-label fw-bold">Job Type<span class="required">*</span></label>
                                         </div>
                                         <div class="checkbox-container flex-container">
                                             <div *ngFor="let job of jobTypes" class="checkbox-item">
@@ -110,7 +110,7 @@
                         
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="jobLocation" class="form-label fw-bold">Job Location</label>
+                                            <label for="jobLocation" class="form-label fw-bold">Job Location<span class="required">*</span></label>
                                         </div>
                                         <p-multiSelect [options]="cityList" 
                                             optionLabel="title"
@@ -126,7 +126,7 @@
                         
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="skills" class="form-label fw-bold">Skills</label>
+                                            <label for="skills" class="form-label fw-bold">Skills<span class="required">*</span></label>
                                         </div>
                                         <p-chips 
                                             formControlName="skills" 
@@ -141,7 +141,7 @@
                                     <div class="row">
                                         <div class="col-12 col-lg-6 mb-3">
                                             <div class="col-12">
-                                                <label for="experience" class="form-label fw-bold">Experience (in Years)</label>
+                                                <label for="experience" class="form-label fw-bold">Experience (in Years)<span class="required">*</span></label>
                                             </div>
                                             <div class="row">
                                                 <div class="col-12 col-lg-6 mb-3 mb-lg-0">
@@ -184,7 +184,7 @@
                             
                                         <div class="col-12 col-lg-6 mb-3">
                                             <div class="col-12">
-                                                <label for="experience" class="form-label fw-bold">Expected Salary</label>
+                                                <label for="experience" class="form-label fw-bold">Expected Salary<span class="required">*</span></label>
                                             </div>
                                             <div class="col-12 d-flex align-items-center">
                                                 <div class="col-3">
@@ -257,7 +257,7 @@
                         
                                     <div class="row mt-2">
                                         <div class="col-12 col-lg-6 mb-3 justify-content-around">
-                                            <label for="noticePeriod" class="form-label fw-bold">Notice Period</label>
+                                            <label for="noticePeriod" class="form-label fw-bold">Notice Period<span class="required">*</span></label>
                                             <div class="d-flex align-items-center justify-content-around">
                                                 <p-radioButton 
                                                     formControlName="noticePeriodType" 
@@ -279,7 +279,7 @@
                                         </div>
                                     
                                         <div class="col-12 col-lg-6 mb-3" *ngIf="secondStepForm.get('noticePeriodType')?.value === 'Other'">
-                                            <label for="noticePeriodRange" class="form-label fw-bold">Notice Period Range (in Days)</label>
+                                            <label for="noticePeriodRange" class="form-label fw-bold">Notice Period Range (in Days)<span class="required">*</span></label>
                                             <div class="d-flex align-items-center">
                                                 <div class="row">
                                                     <div class="col-12 col-lg-6 mb-3 mb-lg-0">
@@ -337,7 +337,7 @@
                                         <div class="row align-items-center mb-3">
                                             <div class="col-12 col-md-6">
                                                 <div class="col-12">
-                                                    <label class="form-label fw-bold">Add Question</label>
+                                                    <label class="form-label fw-bold">Add Question<span class="required">*</span></label>
                                                 </div>
                                                 <input type="text"
                                                     pInputText
@@ -474,7 +474,7 @@
                                         <div class="row">
                                             <div class="col-12 col-md-4">
                                                 <div class="col-12">
-                                                    <label for="noOfQuestion" class="fw-bold">Number of Questions</label>
+                                                    <label for="noOfQuestion" class="fw-bold">Number of Questions<span class="required">*</span></label>
                                                 </div>
                                                 <div class="col-12">
                                                     <p-inputNumber 
@@ -492,7 +492,7 @@
                                             </div>
                                             <div class="col -12 col-md-4">
                                                 <div class="col-12">
-                                                    <label for="difficulty" class="fw-bold">Difficulty</label>
+                                                    <label for="difficulty" class="fw-bold">Difficulty<span class="required">*</span></label>
                                                 </div>
                                                 <p-dropdown
                                                     formControlName="difficulty"
@@ -505,7 +505,7 @@
                                             </div>
                                             <div class="col-12 col-md-4">
                                                 <div class="col-12">
-                                                    <label for="requiredAssessmentScore" class="fw-bold">Cut-off Score</label>
+                                                    <label for="requiredAssessmentScore" class="fw-bold">Cut-off Score<span class="required">*</span></label>
                                                 </div>
                                                 <div class="col-12">
                                                     <p-inputNumber 

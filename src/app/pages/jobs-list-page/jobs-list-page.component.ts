@@ -105,6 +105,7 @@ export class JobsListPageComponent implements OnInit {
     getAllJobListings(): void {
         this.apiService.getJobListings(this.requestBody).subscribe({
             next: (response) => {
+                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
@@ -113,7 +114,7 @@ export class JobsListPageComponent implements OnInit {
                         id: item.productCode,
                         job_code: item.productCode,
                         job_name: item.productName,
-                        location: item.jobLocation,
+                        location: JSON.parse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
                         shortlisted_applications: item.Shortlist || 0,
                         interviewed_applications: item.Interview || 0,
@@ -142,12 +143,13 @@ export class JobsListPageComponent implements OnInit {
         this.loadingSpinnerService.show();
         this.apiService.getJobListings(requestBody).subscribe({
             next: (response) => {
+                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.jobsList = response.data.list.map((item: any) => ({
                         id: item.productCode,
                         job_code: item.productCode,
                         job_name: item.productName,
-                        location: item.jobLocation,
+                        location: JSON.parse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
                         shortlisted_applications: item.Shortlist || 0,
                         interviewed_applications: item.Interview || 0,
@@ -157,6 +159,7 @@ export class JobsListPageComponent implements OnInit {
                         published_date: item.postedDate,
                         status: item.statusTitle,
                     }));
+                    console.log(this.jobsList);
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
                     this.loadingSpinnerService.hide();
@@ -271,6 +274,11 @@ export class JobsListPageComponent implements OnInit {
         };
         const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
         return formattedDate;
+    }
+
+    formatLocations(locations: any[]) {
+        const allLocations = locations.map(item => item.title);
+        return allLocations.length > 0 ? allLocations : ['Unknown'];
     }
 
 }

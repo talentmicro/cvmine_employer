@@ -300,7 +300,7 @@ export class JobPostingPageComponent implements OnInit {
                             "jobTitle": response.data.jobDetails[0].productName,
                             "jobDescription": response.data.jobDetails[0].description,
                             "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
-                            "jobLocations": JSON.parse(response.data.jobDetails[0].branchCode),
+                            "jobLocations": JSON.parse(response.data.jobDetails[0].prefJobseekerBranch).map((item: any) => item.id),
                             "skills": response.data.jobDetails[0].certiKeywords,
                             "experienceFrom": response.data.jobDetails[0].expFrom,
                             "experienceTo": response.data.jobDetails[0].expTo,
@@ -314,7 +314,8 @@ export class JobPostingPageComponent implements OnInit {
                             "noOfQuestions": response.data.jobDetails[0].jobQuestions?.noOfQuestions,
                             "difficulty": response.data.jobDetails[0].jobQuestions?.difficultyLevel,
                             "cutoffScore": response.data.jobDetails[0].jobQuestions?.cutoffScore,
-                            "questions": this.getCustomQuestions(response.data.jobDetails[0].jobQuestions?.customQuestions)
+                            "questions": this.getCustomQuestions(response.data.jobDetails[0].jobQuestions?.customQuestions),
+                            "cvminePostings": JSON.parse(response.data.jobDetails[0].cvminePostings)
                         }
                         this.setStepperFormData();
                     }
@@ -576,7 +577,7 @@ export class JobPostingPageComponent implements OnInit {
                     "customerId": null,
                     "productName": this.firstStepForm.get('jobTitle')?.value,
                     "jobTitleId": 0,
-                    "productCodeText": "cvmine_3",
+                    "productCodeText": "",
                     "intJobCode": null,
                     "employerName": this.userDetails.displayName,
                     "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
@@ -740,7 +741,7 @@ export class JobPostingPageComponent implements OnInit {
                     },
                     "reqSourceTypeId": null,
                     "folders": null,
-                    "cvminePostings": null,
+                    "cvminePostings": this.editMode && this.selectedExistingJobDetails.cvminePostings.length > 0 ? this.selectedExistingJobDetails.cvminePostings : null,
                     "formTemplateId": null,
                     "organizationId": null,
                     "entityId": null,
