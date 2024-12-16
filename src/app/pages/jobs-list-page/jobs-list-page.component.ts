@@ -11,6 +11,8 @@ import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { MessageService } from 'primeng/api';
 import { TableRowCollapseEvent, TableRowExpandEvent } from 'primeng/table';
 import { SharedService } from '../services/shared.service';
+import { FloatLabelModule } from 'primeng/floatlabel';
+
 
 interface Job {
     id: number;
@@ -37,7 +39,8 @@ interface Job {
         CommonModule, 
         FormsModule,
         ReactiveFormsModule,
-        ImportsModule
+        ImportsModule,
+        FloatLabelModule
     ],
     providers: [MessageService]
 })
@@ -50,6 +53,8 @@ export class JobsListPageComponent implements OnInit {
     jobStatuses: Array<{ value: string; label: string, status: number; statusTitle: string }> = []
     loading: boolean = true;
     formGroup!: FormGroup;
+    searchedKeyword: string = '';
+    selectedStatuses: number[] = [];
     requestBody = {
         "search": "",
         "sellerCode": null,
@@ -59,7 +64,7 @@ export class JobsListPageComponent implements OnInit {
         "updatedToDate": null,
         "publishingType": null,
         "startPage": 1,
-        "limit": 40,
+        "limit": 50,
         "productCode": [],
         "status": null,
         "dateFilterType": null,
@@ -98,7 +103,6 @@ export class JobsListPageComponent implements OnInit {
     }
 
     getAllJobListings(): void {
-        this.loadingSpinnerService.show();
         this.apiService.getJobListings(this.requestBody).subscribe({
             next: (response) => {
                 if (response.status && response.data && response.data.list) {
@@ -120,9 +124,45 @@ export class JobsListPageComponent implements OnInit {
                         status: item.statusTitle,
                     }));
                 }
-                this.loadingSpinnerService.hide();
             },
             error: (error: any) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.loading = false;
+                this.loadingSpinnerService.hide();
+            },
+        });
+    }
+
+    onSearch(): void {
+        const requestBody = {
+            ...this.requestBody,
+            search: this.searchedKeyword.trim(),
+            status: this.selectedStatuses.length > 0 ? this.selectedStatuses : null
+        };
+        this.loadingSpinnerService.show();
+        this.apiService.getJobListings(requestBody).subscribe({
+            next: (response) => {
+                if (response.status && response.data && response.data.list) {
+                    this.jobsList = response.data.list.map((item: any) => ({
+                        id: item.productCode,
+                        job_code: item.productCode,
+                        job_name: item.productName,
+                        location: item.jobLocation,
+                        total_applications: item.totalResCount,
+                        shortlisted_applications: item.Shortlist || 0,
+                        interviewed_applications: item.Interview || 0,
+                        offered_applications: item.Offer || 0,
+                        hired_applications: item.joined || 0,
+                        dropped_applications: item.AllDropped || 0,
+                        published_date: item.postedDate,
+                        status: item.statusTitle,
+                    }));
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.loading = false;
+                    this.loadingSpinnerService.hide();
+                }
+            },
+            error: (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
                 this.loading = false;
                 this.loadingSpinnerService.hide();
@@ -175,40 +215,32 @@ export class JobsListPageComponent implements OnInit {
         this.messageService.add({ severity: 'success', summary: 'Job Collapsed', detail: event.data.name, life: 3000 });
     }
 
-
-    ngAfterViewInit(): void {
-        
-    }
-
     clear(table: Table) {
         table.clear();
     }
 
-    onGlobalFilter(event: Event) {
-        const input = event.target as HTMLInputElement;
-        this.dt2.filterGlobal(input.value, 'contains');
-    }
+    // onGlobalFilter(event: Event) {
+    //     const input = event.target as HTMLInputElement;
+    //     this.dt2.filterGlobal(input.value, 'contains');
+    // }
 
     getSeverity(status: string): any {
         switch (status) {
             case 'closed':
                 return 'danger';
-
             case 'published':
                 return 'success';
-
             case 'pending':
                 return 'info';
-
             case 'paused':
                 return 'warning';
-
             default:
                 return '';
         }
     }
 
     onJobStatusChange(row: Job): void {
+        this.loadingSpinnerService.show();
         let body = {
             "status": this.jobStatuses.find(item => item.statusTitle === row.status)?.status,
             "productCode": row.id,

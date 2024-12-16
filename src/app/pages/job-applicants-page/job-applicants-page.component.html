@@ -9,8 +9,8 @@
                 [tableStyle]="{ 'min-width': '75rem' }" >
                 <ng-template pTemplate="caption">
                     <div class="row d-flex justify-content-between">
-                        <div class="col-8 col-lg-5">
-                            <p-iconField iconPosition="right" class="ml-auto">
+                        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+                            <!-- <p-iconField iconPosition="right" class="ml-auto">
                                 <p-inputIcon>
                                     <i class="pi pi-search"></i>
                                 </p-inputIcon>
@@ -19,11 +19,47 @@
                                     type="text" 
                                     (input)="onGlobalFilter($event)" 
                                     placeholder="Search keyword" />
-                            </p-iconField>
+                            </p-iconField> -->
+                            <input
+                                id="job-title"
+                                type="text"
+                                pInputText
+                                [(ngModel)]="searchedKeyword"
+                                placeholder="Search Applicant"
+                                styleClass="w-full"
+                                style="height: 53px;" />
                         </div>
-                        <!-- <div class="col-4 text-end">
-                            <p-button class="post-btn" label="Post a Job" [rounded]="true" severity="warning" routerLink="/job/add"/>
-                        </div> -->
+                        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+                            <p-multiSelect
+                                id="jobs"
+                                [options]="jobsList"
+                                [(ngModel)]="selectedJobs"
+                                optionLabel="job_name"
+                                optionValue="job_code"
+                                placeholder="Select Jobs"
+                                [showToggleAll]="true"
+                                display="chip"
+                                styleClass="w-full">
+                            </p-multiSelect>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3 mt-1 mt-lg-0 mb-lg-0">
+                            <p-multiSelect
+                                id="status"
+                                [options]="applicationStatus"
+                                [(ngModel)]="selectedStatuses"
+                                optionLabel="label"
+                                optionValue="statusCode"
+                                placeholder="Select Status"
+                                [showToggleAll]="true"
+                                display="chip"
+                                styleClass="w-full">
+                            </p-multiSelect>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3 text-end mt-3 mt-lg-0">
+                            <button type="button" class="search-button mt-lg-2" (click)="onSearchFilter()">Search</button>
+                            <!-- <p-button label="Expand All" icon="pi pi-plus" text (onClick)="expandAll()" />
+                            <p-button label="Collapse All" icon="pi pi-minus" text (onClick)="collapseAll()" /> -->
+                        </div>
                     </div>
                 </ng-template>
             <ng-template pTemplate="header">

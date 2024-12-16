@@ -52,6 +52,10 @@ export class JobApplicantsPageComponent implements OnInit {
     currentPage = 0;
     searchText: string = '';
     applicationStatus: Array<{ statusCode: number; label: string }> = [];
+    searchedKeyword: string = '';
+    selectedJobs: number[] = [];
+    selectedStatuses: number[] = [];
+    onSearch: boolean = false;
 
     requestBody = {
         "sellerCode": [],
@@ -119,34 +123,49 @@ export class JobApplicantsPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
+            this.loadingSpinnerService.show()
             this.jobCode = params['jobCode'];
             this.status = params['status'];
             this.sharedService.masterDropdowns$.subscribe({
                 next: (data) => {
-                    if (data.status && data.data && data.data.atsViewMasterData.wfList) {
-                        this.loadingSpinnerService.hide();
+                    console.log(data);
+                    if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
                         this.applicationStatus = data.data.atsViewMasterData.wfList
                         .map((item: any) => ({
                             statusCode: item.id,
                             label: item.title.split(' - ')[0],
                         }));
-                        this.getApplicants();
+                        this.getAllJobs();
                     }
                 },
                 error: (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-                this.loadingSpinnerService.hide();
+                    this.loadingSpinnerService.hide();
                 },
             });
         });
     }
 
     getApplicants(): void {
-        this.loadingSpinnerService.show();
-        this.apiService.getApplicants(this.requestBody).subscribe({
+        if(!this.onSearch && this.jobCode) {
+            this.selectedJobs.push(Number(this.jobCode));
+        }
+        if(!this.onSearch && this.status) {
+            this.selectedStatuses = this.applicationStatus
+                .filter(status => status.label.toLowerCase() === this.status?.toLowerCase())
+                .map(status => status.statusCode); 
+                console.log(this.selectedStatuses);
+        }
+        const requestBody = {
+            ...this.requestBody,
+            search: this.searchedKeyword.trim(),
+            productCode: this.selectedJobs.length > 0 ? this.selectedJobs : [],
+            statusCode: this.selectedStatuses.length > 0 ? this.selectedStatuses : []
+        };
+        console.log(requestBody);
+        this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
                 if (response.status && response.data && response.data.list) {
-                    this.loadingSpinnerService.hide();
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
                         job_code: item.productCode,
@@ -162,6 +181,8 @@ export class JobApplicantsPageComponent implements OnInit {
                         resId: item.resId,
                         stageCode: item.stageCode
                     }));
+                    this.loadingSpinnerService.hide();
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                 }
             },
             error: (error: any) => {
@@ -169,6 +190,33 @@ export class JobApplicantsPageComponent implements OnInit {
                 this.loadingSpinnerService.hide();
             },
         });
+    }
+
+    getAllJobs(): void {
+        const body = {
+            "activeJobs": 1
+        }
+        this.apiService.getJobListings(body).subscribe({
+            next: (response) => {
+                if (response.status && response.data && response.data.list) {
+                    this.jobsList = response.data.list.map((item: any) => ({
+                        job_code: item.productCode,
+                        job_name: item.productName,
+                    }));
+                    this.getApplicants();
+                }
+            },
+            error: (error: any) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error fetching job data' });
+                this.loadingSpinnerService.hide();
+            },
+        });
+    }
+
+    onSearchFilter() {
+        this.onSearch = true;
+        this.loadingSpinnerService.show();
+        this.getApplicants();
     }
 
     getSeverity(status: string): any {

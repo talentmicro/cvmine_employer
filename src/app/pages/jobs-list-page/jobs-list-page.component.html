@@ -10,8 +10,8 @@
                 [tableStyle]="{ 'min-width': '75rem' }" >
                 <ng-template pTemplate="caption">
                     <div class="row d-flex justify-content-between">
-                        <div class="col-12 col-lg-5">
-                            <p-iconField iconPosition="right" class="ml-auto">
+                        <div class="col-12 col-md-6 col-lg-4 mb-3 mb-md-0">
+                            <!-- <p-iconField iconPosition="right" class="ml-auto">
                                 <p-inputIcon>
                                     <i class="pi pi-search"></i>
                                 </p-inputIcon>
@@ -20,9 +20,31 @@
                                     type="text" 
                                     (input)="onGlobalFilter($event)" 
                                     placeholder="Search keyword" />
-                            </p-iconField>
+                            </p-iconField> -->
+                            <input
+                                id="job-title"
+                                type="text"
+                                pInputText
+                                [(ngModel)]="searchedKeyword"
+                                placeholder="Search job title"
+                                styleClass="w-full"
+                                style="height: 53px;" />
                         </div>
-                        <div class="col-12 col-lg-6 text-end mt-3 mt-lg-0">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <p-multiSelect
+                                id="status"
+                                [options]="jobStatuses"
+                                [(ngModel)]="selectedStatuses"
+                                optionLabel="label"
+                                optionValue="status"
+                                placeholder="Search status"
+                                [showToggleAll]="true"
+                                display="chip"
+                                styleClass="w-full">
+                            </p-multiSelect>
+                        </div>
+                        <div class="col-12 col-lg-4 d-flex justify-content-end justify-content-lg-between mt-3 mt-lg-0">
+                            <button type="button" class="search-button mx-3 mx-lg-0" (click)="onSearch()">Search</button>
                             <!-- <p-button label="Expand All" icon="pi pi-plus" text (onClick)="expandAll()" />
                             <p-button label="Collapse All" icon="pi pi-minus" text (onClick)="collapseAll()" /> -->
                             <button class="post-button" routerLink="/job/add">Post a Job</button>
@@ -129,31 +151,31 @@
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-user-clock fa-sm pe-2" style="color: #db9d00"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'shortlisted'}">
+                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'review'}">
                             {{job.shortlisted_applications}}
                         </a> 
                         <!-- {{job.shortlisted_applications}} -->
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-user-pen fa-sm pe-2" style="color: navy;"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'interviewed'}">
+                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'interview'}">
                             {{job.interviewed_applications}}
                         </a>
                         <!-- {{job.interviewed_applications}} -->
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-user-tag fa-sm pe-2" style="color: orangered;"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'offered'}">
+                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'offer'}">
                             {{job.offered_applications}}
                         </a> 
                         <!-- {{job.offered_applications}} -->
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-user-check pe-2" style="color: green"></i>
-                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'hired'}">
+                        <a class="fs-14" [routerLink]="['/job-applicants']" [queryParams]="{jobCode: job.job_code, status: 'joined'}">
                             {{job.hired_applications}}
                         </a>
-                        {{job.hired_applications}}
+                        <!-- {{job.hired_applications}} -->
                     </td>
                     <td class="p-1 text-center">
                         <i class="fa-solid fa-sm fa-user-xmark pe-2" style="color: red"></i>

@@ -128,7 +128,7 @@ export class JobPostingPageComponent implements OnInit {
                 },
                 error: (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-                this.loadingSpinnerService.hide();
+                    this.loadingSpinnerService.hide();
                 },
             });
             this.jobTypes = jobTypeList;
@@ -576,7 +576,7 @@ export class JobPostingPageComponent implements OnInit {
                     "customerId": null,
                     "productName": this.firstStepForm.get('jobTitle')?.value,
                     "jobTitleId": 0,
-                    "productCodeText": "cvmine_2",
+                    "productCodeText": "cvmine_3",
                     "intJobCode": null,
                     "employerName": this.userDetails.displayName,
                     "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
@@ -599,8 +599,8 @@ export class JobPostingPageComponent implements OnInit {
                     "skill": [],
                     "personalSkill": [],
                     "education": null,
-                    "noticePeriodFrom": this.secondStepForm.get('noticeFrom')?.value,
-                    "noticePeriodTo": this.secondStepForm.get('noticeTo')?.value,
+                    "noticePeriodFrom": this.secondStepForm.get('noticePeriodType')?.value === 'Other' ? this.secondStepForm.get('noticeFrom')?.value : 0,
+                    "noticePeriodTo": this.secondStepForm.get('noticePeriodType')?.value === 'Other' ? this.secondStepForm.get('noticeTo')?.value : 0,
                     "expSalaryCurrId": this.secondStepForm.get('currency')?.value,
                     "expSalaryFrom": this.secondStepForm.get('salaryFrom')?.value,
                     "expSalaryTo": this.secondStepForm.get('salaryTo')?.value,
@@ -775,15 +775,15 @@ export class JobPostingPageComponent implements OnInit {
             this.apiService.saveJob(jobData).subscribe((response) => {
                 if(response.status) {
                     console.log(response);
-                    this.loadingSpinnerService.show();
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.firstStepForm.reset();
                     this.secondStepForm.reset();
                     this.thirdStepForm.reset();
                     this.selectedLocations = [];
-                    
+                    this.loadingSpinnerService.hide();
                     this.router.navigate(['/job-listings']);
                 } else {
+                    this.loadingSpinnerService.hide();
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
                     return;
                 }
