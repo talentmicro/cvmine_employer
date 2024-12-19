@@ -497,7 +497,7 @@
 }
 
 .left-section {
-    flex: 0 0 35%;
+    // flex: 0 0 35%;
     text-align: center;
 }
 
@@ -551,12 +551,12 @@
 }
 
 .job-details {
-    flex: 1;
+    // flex: 1;
     color: #333;
 }
 
 .skills-container {
-    flex: 1;
+    // flex: 1;
 }
 
 .skills-list {
@@ -566,11 +566,12 @@
 }
 
 .skill-chip {
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.5rem;
     background-color: #e0f7fa;
     color: #00796b;
     font-weight: bold;
 }
-
 
 .note-entry {
     background: #f9f9f9;

@@ -285,4 +285,10 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         return allLocations.length > 0 ? allLocations : ['Unknown'];
     }
 
+    encryptQueryParams(queryParams: any) {
+        const queryParamsString = JSON.stringify(queryParams);
+        const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
+        return encryptedQueryParamsString;
+    }
+
 }

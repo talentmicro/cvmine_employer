@@ -43,6 +43,8 @@ interface Applicant {
 
 export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     @ViewChild('dt2') dt2!: Table;
+    encryptedQueryParamsString?: string;
+    queryParamsString?: string;
     jobCode?: string;
     status?: string;
     applicantsList: Applicant[] = [];
@@ -124,8 +126,14 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
             this.loadingSpinnerService.show()
-            this.jobCode = params['jobCode'];
-            this.status = params['status'];
+            this.encryptedQueryParamsString = params['q'];
+            if(this.encryptedQueryParamsString) {
+                this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
+                const queryParams = JSON.parse(this.queryParamsString);
+                this.jobCode = queryParams?.jobCode;
+                this.status = queryParams?.status;
+            }
+            
             this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (data) => {
                     console.log(data);
@@ -303,5 +311,9 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     formatExperience(experience: string | number): string {
         const experienceNum = parseFloat(experience.toString());
         return experienceNum % 1 === 0 ? experienceNum.toFixed(0) : experienceNum.toString();
+    }
+
+    encryptQueryParams(queryParams: any) {
+        console.log(queryParams);
     }
 }

@@ -1,19 +1,22 @@
 import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
+import { LoginService } from '../pages/services/auth/login.service';
 import forge from 'node-forge';
 import * as pako from 'pako';
 import * as CryptoJS from 'crypto-js';
 import { tap } from 'rxjs/operators';
 import { jsonDeepParse } from '../functions/shared-functions';
+import { inject } from '@angular/core';
 const aKey = 'T@MiCr097124!iCR';
 const iv: any = "1234567891234567";
 const algorithm = 'aes-256-cbc';
 
 export const requestInterceptors: HttpInterceptorFn = (req, next) => {
+    const loginService = inject(LoginService); // Inject the LoginService
 
     // Retrieve and parse IP object and session info from storage
     const ipObj = jsonDeepParse(localStorage.getItem('ipObj')) || {};
 
-    const session = jsonDeepParse(sessionStorage.getItem('userDetails')) || null;
+    const session = jsonDeepParse(loginService.decrypt(sessionStorage.getItem('userDetails')!)) || null;
     const token = session?.token || null;
     const language = '1';
     const timestamp = Date.now().toString();

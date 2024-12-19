@@ -34,7 +34,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
                     this.isLoggedIn = state;
 
                     if (state) {
-                        const userDetails = this.loginService.getUserDetails();
+                        const userDetails: any = this.loginService.getUserDetails();
                         this.userName = userDetails?.displayName || 'User';
                     } else {
                         this.userName = 'Guest';
