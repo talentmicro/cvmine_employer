@@ -6,6 +6,7 @@ import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { SharedService } from '../services/shared.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from '../services/api.service';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
 
 @Component({
     selector: 'app-applicant-details-page',
@@ -13,7 +14,8 @@ import { ApiService } from '../services/api.service';
     styleUrl: './applicant-details-page.component.scss',
     standalone: true,
     imports: [
-        ImportsModule
+        ImportsModule,
+        NgxDocViewerModule
     ],
     providers: [MessageService]
 })
@@ -24,8 +26,9 @@ export class ApplicantDetailsPageComponent {
     alertId!: number;
     productCode!: number;
     applicationStatuses: any = [];
+    jobTypes: any[] = [];
     notes: any = [];
-    questions: any = [];
+    // questions: any = [];
     dummyApplicantDetails = {
         resumeDetails: {
             "isEdit": 1,
@@ -320,6 +323,7 @@ export class ApplicantDetailsPageComponent {
     currentStatus: string = '';
     note: string = '';
     showConfirmation: boolean = false;
+    fileUrl: string = '';
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -339,17 +343,14 @@ export class ApplicantDetailsPageComponent {
             this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (data) => {
                     if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
-                        console.log(data.data.atsViewMasterData.wfList)
                         this.applicationStatuses = data.data.atsViewMasterData.wfList
                         .map((item: any) => ({
-                            id: item.id,
-                            title: item.title.split(' - ')[0],
+                            statusCode: item.id,
+                            status: item.title.split(' - ')[0],
                         }));
-                        // this.getApplicantDetails();
-                        this.loadingSpinnerService.hide()
-                        this.applicantDetails = this.dummyApplicantDetails;
-                        this.notes = this.dummyApplicantDetails.notes;
-                        this.questions = this.dummyApplicantDetails.questions;
+                        this.jobTypes = data?.data && data?.data?.resumeMasterData?.jobTypeList;
+                        this.getApplicantDetails();
+                        // this.questions = this.dummyApplicantDetails.questions;
                     }
                 },
                 error: (error) => {
@@ -371,13 +372,32 @@ export class ApplicantDetailsPageComponent {
             alertId: Number(this.alertId),
             productCode: Number(this.productCode)
         };
-        console.log(body);
         this.apiService.getApplicationDetails(body).subscribe({
             next: (response) => {
                 if (response.status) {
-                    this.applicantDetails = response.data.list;
-                    this.loadingSpinnerService.hide();
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    console.log(response);
+                    this.applicantDetails = {
+                        "firstName": response?.data?.resumeDetails?.firstName,
+                        "lastName": response?.data?.resumeDetails?.lastName,
+                        "fullName": response?.data?.resumeDetails?.firstName + ' ' + response?.data?.resumeDetails.lastName,
+                        "nameInitials": this.getInitials(response?.data?.resumeDetails?.firstName + ' ' + response?.data?.resumeDetails.lastName),
+                        "position": response?.data?.requirementSummary?.productName,
+                        "status": response?.data?.resumeDetails?.statusTitle,
+                        "statusCode": response?.data?.resumeDetails?.statusCode,
+                        "stageCode": response?.data?.resumeDetails?.stageCode,
+                        "emailId": response?.data?.resumeDetails.emailId,
+                        "mobile": response?.data?.resumeDetails?.mobileIsd + ' ' + response?.data?.resumeDetails?.mobileNumber,
+                        "location": response?.data?.resumeDetails?.presentLocation,
+                        "jobTypes": this.getJobTypes(response?.data?.resumeDetails?.jobType),
+                        "experience": this.formatExperience(response?.data?.resumeDetails?.totalExp),
+                        "noticePeriod": response?.data?.resumeDetails?.noticePeriod,
+                        "keySkills": this.getSkills(response?.data?.resumeDetails?.keySkills),
+                        "originalCVPath": response?.data?.resumeDetails?.originalCVPath
+                    };
+                    this.currentStatus =this.applicantDetails.statusCode;
+                    this.fileUrl = 'https://storage.googleapis.com/ezeone/icanrefer/' + this.applicantDetails.originalCVPath;
+                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.getNotes({type: 401, refId: this.alertId});
                 }
             },
             error: (error: any) => {
@@ -385,6 +405,38 @@ export class ApplicantDetailsPageComponent {
                 this.loadingSpinnerService.hide();
             },
         });
+    }
+
+    getNotes(body: any) {
+        this.loadingSpinnerService.show();
+        this.apiService.getNotes(body).subscribe({
+            next: (response) => {
+                if(response.status) {
+                    console.log(response)
+                    this.notes = response?.data?.list;
+                    this.loadingSpinnerService.hide();
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                    this.loadingSpinnerService.hide();
+                }
+                
+            },
+            error: (error: any) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.loadingSpinnerService.hide();
+            }
+        })
+    }
+
+    getViewerType(fileUrl: string) {
+        if (fileUrl.endsWith('.pdf')) {
+            return 'google';
+        } else if (fileUrl.endsWith('.doc') || fileUrl.endsWith('.docx')) {
+            return 'office';
+        } else {
+            return 'google';
+        }
     }
 
     getInitials(name: string): string {
@@ -399,19 +451,16 @@ export class ApplicantDetailsPageComponent {
         switch (status) {
             case 'Review':
                 return 'secondary';
-
             case 'Interview':
                 return 'info';
-
             case 'Offer':
                 return 'primary';
-
             case 'Onboarding':
                 return 'warning';
-
             case 'Joined':
                 return 'success';
-
+            case 'Dropped':
+                return 'danger';
             default:
                 return '';
         }
@@ -419,40 +468,77 @@ export class ApplicantDetailsPageComponent {
 
     copyToClipboard(value: string): void {
         navigator.clipboard.writeText(value).then(() => {
-          console.log(`${value} copied to clipboard`);
+            console.log(`${value} copied to clipboard`);
         });
     }
 
     onStatusChange(event: any): void {
+        console.log(event);
+        this.note = '';
+        this.selectedStatus = event.value;
         this.showConfirmation = true;
     }
 
     cancelStatusChange(): void {
-        this.selectedStatus = this.currentStatus; // Revert to the current status
+        this.note = '';
         this.showConfirmation = false;
-        console.log(this.showConfirmation);
     }
 
     confirmStatusChange(): void {
-        if (this.selectedStatus) {
-            // Mock API call to update the status
-            this.updateApplicationStatus(this.selectedStatus, this.note);
-            this.showConfirmation = false;
+        if (this.selectedStatus && this.selectedStatus != this.currentStatus) {
+            this.loadingSpinnerService.show();
+            let body = {
+                "alertId": [
+                    Number(this.alertId)
+                ],
+                "stageCode": this.applicantDetails?.stageCode,
+                "statusCode": this.selectedStatus
+            }
+            console.log(body)
+            this.apiService.changeApplicantionStatus(body).subscribe({
+                next: (response: any) => {
+                    this.loadingSpinnerService.hide();
+                    console.log('status change success');
+                    console.log(this.note);
+                    if(this.note) {
+                        const notebody = {
+                            "type": 401,
+                            "refId": this.alertId,
+                            "heading": "Recruiter Notes",
+                            "view_type": 2,
+                            "notes": this.note,
+                            "id": null,
+                            "deleted": null
+                        }
+                        console.log(notebody);
+                        this.apiService.saveNotes(notebody).subscribe({
+                            next: (response) => {
+                                if(response.status) {
+                                    this.note = '';
+                                    this.showConfirmation = false;
+                                    this.getApplicantDetails();
+                                } else {
+                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                                    this.loadingSpinnerService.hide();
+                                }
+                            },
+                            error: (error: any) => {
+                                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                                this.loadingSpinnerService.hide();
+                            }
+                        }) 
+                    } else {
+                        this.getApplicantDetails();
+                    }
+                },
+                error: (error: any) => {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                    this.loadingSpinnerService.hide();
+                }
+            })
+        } else {
+            this.messageService.add({ severity: 'warn', summary: 'Invalid', detail: 'The status is same as current.' });
         }
-    }
-
-    updateApplicationStatus(statusTitle: string, note: string): void {
-        // Replace this with your actual API call
-        console.log('Updated Status:', statusTitle, 'Note:', note);
-
-        this.currentStatus = statusTitle;
-        this.messageService.add({
-            severity: 'success',
-            summary: 'Status Updated',
-            detail: 'Application status updated successfully.',
-        });
-
-        this.note = '';
     }
 
     isSubmitDisabled(): boolean {
@@ -460,7 +546,31 @@ export class ApplicantDetailsPageComponent {
     }
     
     submitNote(): void {
-        console.log('Note Submitted:', this.note);
+        this.loadingSpinnerService.show();
+        const body = {
+            "type": 401,
+            "refId": this.alertId,
+            "heading": "Recruiter Notes",
+            "view_type": 2,
+            "notes": this.note,
+            "id": null,
+            "deleted": null
+        }
+        this.apiService.saveNotes(body).subscribe({
+            next: (response) => {
+                if(response.status) {
+                    this.note = '';
+                    this.getNotes({type: 401, refId: this.alertId});
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                    this.loadingSpinnerService.hide();
+                }
+            },
+            error: (error: any) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.loadingSpinnerService.hide();
+            }
+        })
     }
 
     formatExperience(experience: string | number): string {
@@ -471,5 +581,15 @@ export class ApplicantDetailsPageComponent {
     getSkills(skills: string) {
         const skillsArray = JSON.parse(skills);
         return skillsArray?.length > 0 ? skillsArray.map((item: any) => item.title) : [];
+    }
+
+    getJobTypes(jobTypesString: string) {
+        const jobTypesArray = JSON.parse(jobTypesString);
+        if(jobTypesArray?.length > 0) {
+            const jobTypeTitles = this.jobTypes.filter(item => jobTypesArray.includes(item.jobType)).map(item => item.title);
+            return jobTypeTitles.join(', ')
+        } else {
+            return 'Not Selected'
+        }
     }
 }

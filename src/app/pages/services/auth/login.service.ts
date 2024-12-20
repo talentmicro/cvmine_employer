@@ -46,43 +46,6 @@ export class LoginService {
         }
     }
 
-    // login(employeeId: string, password: string): Observable<any> {
-    //     return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
-    //         map((response) => {
-    //             const token = response.data.userDetails.token;
-    //             const userDetails = response.data.userDetails;
-
-    //             if (isPlatformBrowser(this.platformId)) {
-    //                 // Store data in sessionStorage for the browser
-    //                 sessionStorage.setItem('authToken', token);
-    //                 sessionStorage.setItem('userDetails', JSON.stringify(userDetails));
-    //             } else {
-    //                 // Store data in TransferState for the server
-    //                 this.transferState.set(AUTH_TOKEN_KEY, token);
-    //                 this.transferState.set(USER_DETAILS_KEY, userDetails);
-    //             }
-
-    //             // Dispatch the login success action
-    //             this.store.dispatch(loginSuccess({ token, user: userDetails }));
-
-    //             // Update the login state
-    //             this.ngZone.run(() => {
-    //                 this.loginSubject.next(true);
-    //             });
-
-    //             // this.sharedService.fetchAndSetDropdownData({});
-    //             return response;
-    //         }),
-    //         catchError((error) => {
-    //             this.store.dispatch(loginFailure({ error }));
-    //             this.ngZone.run(() => {
-    //                 this.loginSubject.next(false);
-    //             });
-    //             throw error;
-    //         })
-    //     );
-    // }
-
     login(employeeId: string, password: string): Observable<any> {
         return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
             map((response) => {
@@ -142,15 +105,6 @@ export class LoginService {
         });
     }
 
-    // isLoggedIn(): boolean {
-    //     if (isPlatformBrowser(this.platformId)) {
-    //         // Check sessionStorage in the browser
-    //         return !!sessionStorage.getItem('authToken');
-    //     } else {
-    //         // Check TransferState on the server
-    //         return !!this.transferState.get(AUTH_TOKEN_KEY, null);
-    //     }
-    // }
     isLoggedIn(): boolean {
         let token: string | null = null;
     
@@ -166,16 +120,8 @@ export class LoginService {
             }
         }
     
-        return !!token; // Return true if decrypted token exists
+        return !!token;
     }    
-
-    // getAuthToken(): string | null {
-    //     if (isPlatformBrowser(this.platformId)) {
-    //         return sessionStorage.getItem('authToken');
-    //     } else {
-    //         return this.transferState.get(AUTH_TOKEN_KEY, null);
-    //     }
-    // }
 
     getAuthToken(): string | null {
         if (isPlatformBrowser(this.platformId)) {
@@ -186,16 +132,6 @@ export class LoginService {
             return encryptedToken ? this.decrypt(encryptedToken) : null;
         }
     }
-    
-
-    // getUserDetails(): any {
-    //     if (isPlatformBrowser(this.platformId)) {
-    //         const userDetails = sessionStorage.getItem('userDetails');
-    //         return userDetails ? JSON.parse(userDetails) : null;
-    //     } else {
-    //         return this.transferState.get(USER_DETAILS_KEY, null);
-    //     }
-    // }
 
     getUserDetails(): string | null {
         if (isPlatformBrowser(this.platformId)) {

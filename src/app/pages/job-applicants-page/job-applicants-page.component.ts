@@ -244,6 +244,8 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
                 return 'warning';
             case 'Joined':
                 return 'success';
+            case 'Dropped':
+                return 'danger';
             default:
                 return '';
         }

@@ -34,6 +34,7 @@
     "flag-icon-css": "^4.1.7",
     "magnific-popup": "^1.2.0",
     "moment": "^2.30.1",
+    "ngx-doc-viewer": "^15.0.1",
     "ngx-owl-carousel-o": "^18.0.0",
     "ngx-quill": "^27.0.0",
     "pako": "^2.1.0",
