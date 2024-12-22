@@ -136,7 +136,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             
             this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (data) => {
-                    console.log(data);
                     if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
                         this.applicationStatus = data.data.atsViewMasterData.wfList
                         .map((item: any) => ({
@@ -167,7 +166,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             this.selectedStatuses = this.applicationStatus
                 .filter(status => status.label.toLowerCase() === this.status?.toLowerCase())
                 .map(status => status.statusCode); 
-                console.log(this.selectedStatuses);
         }
         const requestBody = {
             ...this.requestBody,
@@ -175,7 +173,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             productCode: this.selectedJobs.length > 0 ? this.selectedJobs : [],
             statusCode: this.selectedStatuses.length > 0 ? this.selectedStatuses : []
         };
-        console.log(requestBody);
         this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
                 if (response.status && response.data && response.data.list) {
@@ -316,6 +313,8 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     encryptQueryParams(queryParams: any) {
-        console.log(queryParams);
+        const queryParamsString = JSON.stringify(queryParams);
+        const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
+        return encryptedQueryParamsString;
     }
 }

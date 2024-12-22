@@ -163,7 +163,6 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         published_date: item.postedDate,
                         status: item.statusTitle,
                     }));
-                    console.log(this.jobsList);
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
                     this.loadingSpinnerService.hide();

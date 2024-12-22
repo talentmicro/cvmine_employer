@@ -87,11 +87,16 @@
                             <!-- Outer Accordion for Questions Section -->
                             <p-accordionTab header="Resume">
                                 <p-accordion>
-                                    <ngx-doc-viewer 
-                                        [url]="fileUrl" 
-                                        [viewer]="getViewerType(fileUrl)"
-                                        style="width: 100%; height: 600px;">
-                                    </ngx-doc-viewer>
+                                    <div *ngIf="applicantDetails.originalCVPath === ''" class="no-notes-message text-center">
+                                        <i class="fa-solid fa-file-circle-exclamation"></i> Resume not found.
+                                    </div>
+                                    <ng-container *ngIf="applicantDetails.originalCVPath != ''">
+                                        <ngx-doc-viewer 
+                                            [url]="fileUrl" 
+                                            [viewer]="getViewerType(fileUrl)"
+                                            style="width: 100%; height: 600px;">
+                                        </ngx-doc-viewer>
+                                    </ng-container>
                                 </p-accordion>
                             </p-accordionTab>
                         </p-accordion>
