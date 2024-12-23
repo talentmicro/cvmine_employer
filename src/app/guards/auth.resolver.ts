@@ -24,9 +24,7 @@ export class AuthResolver implements Resolve<boolean> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
         return new Promise<boolean>((resolve) => {
             if (isPlatformBrowser(this.router.routerState.root)) {
-                // Check if the user is logged in using sessionStorage (browser-specific)
                 const authToken = this.loginService.getAuthToken();
-                
                 if (authToken) {
                     resolve(true);
                 } else {
@@ -34,11 +32,9 @@ export class AuthResolver implements Resolve<boolean> {
                     resolve(false);
                 }
             } else {
-                // Server-side logic (during SSR) using TransferState
                 const authToken = this.transferState.get(AUTH_TOKEN_KEY, null);
-
                 if (authToken) {
-                    resolve(true);  // Already authenticated
+                    resolve(true);
                 } else {
                     resolve(false); // Not authenticated
                 }

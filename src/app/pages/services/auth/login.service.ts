@@ -159,11 +159,17 @@ export class LoginService {
     // Decrypt data
     decrypt(encryptedValue: string): string {
         try {
-            const decipher = forge.cipher.createDecipher('AES-CBC', SECRET_KEY);
-            decipher.start({ iv: IV });
-            decipher.update(forge.util.createBuffer(forge.util.decode64(encryptedValue)));
-            decipher.finish();
-            return decipher.output.toString();
+            if(encryptedValue) {
+                const decipher = forge.cipher.createDecipher('AES-CBC', SECRET_KEY);
+                decipher.start({ iv: IV });
+                decipher.update(forge.util.createBuffer(forge.util.decode64(encryptedValue)));
+                decipher.finish();
+                return decipher.output.toString();
+            } else {
+                // console.error('Decryption error:', 'Invalid Encryption!');
+                return encryptedValue;
+            }
+            
         } catch (err) {
             console.error('Decryption error:', err);
             return encryptedValue;
