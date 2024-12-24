@@ -120,7 +120,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         job_name: item.productName,
                         location: JSON.parse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
-                        shortlisted_applications: item.Shortlist || 0,
+                        shortlisted_applications: item.Screening || 0,
                         interviewed_applications: item.Interview || 0,
                         offered_applications: item.Offer || 0,
                         hired_applications: item.joined || 0,

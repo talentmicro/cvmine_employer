@@ -39,7 +39,7 @@ export class ApiService {
     }
 
     getApplicationDetails(body: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}icrweb/home/resumeDetailsWithMaster_v4`, body);
+        return this.http.post(`${this.baseUrl}icrweb/home/resumeDetailWithMasterData_v4_tal_lite`, body);
     }
 
     changeApplicantionStatus(body: any): Observable<any> {
@@ -72,5 +72,9 @@ export class ApiService {
 
     saveNotes(body: any): Observable<any> {
         return this.http.post(`${this.baseUrl}icrweb/home/save_onboarding_manager_form_notes_tal_lite`, body);
+    }
+
+    logout(body: any) {
+        return this.http.get(`${this.baseUrl}icr/logout`, body);
     }
 }

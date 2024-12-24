@@ -3,13 +3,16 @@ import { Component, HostListener, inject, OnDestroy, OnInit, ChangeDetectorRef }
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LoginService } from '../../pages/services/auth/login.service';
+import { ApiService } from '../../pages/services/api.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-navbar',
     standalone: true,
     imports: [RouterLink, NgClass, RouterLinkActive, NgIf],
     templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss'
+    styleUrl: './navbar.component.scss',
+    providers: [MessageService]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
     private loginService = inject(LoginService);
@@ -23,7 +26,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     constructor(
         public router: Router,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private apiService: ApiService,
+        private messageService: MessageService
     ) {}
 
     ngOnInit(): void {
@@ -56,8 +61,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
         if (window.innerWidth < 992) {
             this.classApplied = !this.classApplied;
         }
-        this.loginService.logout();
-        this.router.navigate(['/login']);
+        this.apiService.logout({}).subscribe({
+            next: (response: any) => {
+                if(response.status) {
+                    this.loginService.logout();
+                    this.router.navigate(['/login']);
+                }
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+            }
+        })
     }
     
     ngOnDestroy(): void {

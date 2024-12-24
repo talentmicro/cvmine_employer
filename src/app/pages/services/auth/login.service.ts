@@ -50,6 +50,7 @@ export class LoginService {
         return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
             map((response) => {
                 const token = response.data.userDetails.token;
+                console.log(token);
                 const userDetails = JSON.stringify(response.data.userDetails);
     
                 const encryptedToken = this.encrypt(token);

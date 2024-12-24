@@ -173,8 +173,10 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             productCode: this.selectedJobs.length > 0 ? this.selectedJobs : [],
             statusCode: this.selectedStatuses.length > 0 ? this.selectedStatuses : []
         };
+        console.log(requestBody);
         this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
+                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
@@ -262,6 +264,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             "stageCode": row.stageCode,
             "statusCode": row.status
         }
+        console.log(body2);
         this.apiService.changeApplicantionStatus(body2).subscribe({
             next: (response: any) => {
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
@@ -309,7 +312,10 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
 
     formatExperience(experience: string | number): string {
         const experienceNum = parseFloat(experience.toString());
-        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) : experienceNum.toString();
+        if(experienceNum == 0) {
+            return 'Fresher'
+        }
+        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) + ' years' : experienceNum.toString() + ' years';
     }
 
     encryptQueryParams(queryParams: any) {

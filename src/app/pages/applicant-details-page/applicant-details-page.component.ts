@@ -91,6 +91,7 @@ export class ApplicantDetailsPageComponent {
             alertId: Number(this.alertId),
             productCode: Number(this.productCode)
         };
+        console.log(body);
         this.apiService.getApplicationDetails(body).subscribe({
             next: (response) => {
                 if (response.status) {
@@ -289,8 +290,11 @@ export class ApplicantDetailsPageComponent {
     }
 
     formatExperience(experience: string | number): string {
-        const experienceNum = parseFloat(experience?.toString());
-        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) : experienceNum.toString();
+        const experienceNum = parseFloat(experience.toString());
+        if(experienceNum == 0) {
+            return 'Fresher'
+        }
+        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) + ' years' : experienceNum.toString() + ' years';
     }
 
     getSkills(skills: string) {
