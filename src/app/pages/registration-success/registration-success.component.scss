@@ -1,0 +1,19 @@
+.linear {
+    animation: grow 0.7s linear;
+    // animation: rotate-logo 2s linear;
+}
+
+@keyframes grow {
+    0% {
+        font-size: 0rem;
+    }
+
+    50% {
+        font-size: 3em;
+    }
+
+    100% {
+        font-size: 5em;
+    }
+}
+

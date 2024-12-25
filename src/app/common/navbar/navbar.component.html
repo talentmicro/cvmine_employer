@@ -3,9 +3,16 @@
     [ngClass]="{'sticky': isSticky, 'style-two': router.url === '/index-2' || router.url === '/index-3'}">
     <nav class="navbar navbar-expand-lg bg_dark d-flex justify-content-between align-items-center">
         <div class="container">
-            <a routerLink="/" class="navbar-brand">
-                <img src="img/logo-cvmine.png" alt="Logo"[width]="100">
-            </a>
+            <div class="w-full d-flex justify-content-between align-items-center" style="width: 100%;" >
+                <a routerLink="/" class="navbar-brand">
+                    <img src="img/logo-cvmine.png" alt="Logo"[width]="100">
+                </a>
+                <!-- <button *ngIf="!isLoggedIn" routerLink="/employer">employer</button> -->
+                <!-- <p-button *ngIf="!isLoggedIn" label="Employer" routerLink="/employer" severity="warning" /> -->
+                <div class="employer_btn mr-4" routerLink="/employer">
+                    Employer
+                </div>
+            </div>
             <ul
                 class="category-menu list-unstyle d-none d-xl-block"
                 *ngIf="router.url === '/index-2'"

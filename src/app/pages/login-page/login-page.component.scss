@@ -152,6 +152,7 @@
 
 .sign-up {
     color: #0d63ae; 
+    text-decoration: none;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
@@ -172,7 +173,6 @@
 .creative-card h5 {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #0d63ae;
     margin: 0;
 }
 
@@ -182,8 +182,8 @@
 }
 
 .upgrade-card {
-    background-color: #0d63ae;
-    color: white !important;
+    background : linear-gradient(145deg, #ffffff, #f0f0f0);
+    color:  #0d63ae !important;
     padding: 20px;
     border-radius: 15px;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.2);
@@ -192,6 +192,10 @@
     font-weight: 600;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-decoration: underline;
+}
+
+.upgrade-card h5{
+    color: #0d63ae !important;
 }
 
 .upgrade-card:hover {

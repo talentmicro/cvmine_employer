@@ -1,0 +1,14 @@
+<div class=" container  d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="row px-5">
+        <div class="col-md-12 text-center">
+            <i class="pi pi-verified mb-4 linear" style="font-size: 5rem; color: green;"></i>
+        </div>
+        <div class="col-md-12 text-center">
+            <!-- <h4 class="mb-4" style="color: green;">Congratulations !!!</h4> -->
+            <h1 style="color: green;">{{data.message}}</h1>
+            <p>{{ data.data.successMsg }}</p>
+            <h5 class="mb-3">Registration license key: {{ data.data.regLicenseKey }}</h5>
+            <p-button label="Go to Home" (click)="home()" icon="pi pi-home" />
+        </div>
+    </div>
+</div>

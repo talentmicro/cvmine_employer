@@ -1,0 +1,31 @@
+<div class="container">
+      <input
+        class="form-control search-btn"
+        type="text"
+        id="autocomplete"
+        type="text"
+        placeholder="Search for places"
+      />
+</div>
+  <button class="recenter" (click)="recenterMap()"><span nz-icon nzType="aim" nzTheme="outline" style="margin-right: 2px;"></span> Re-center</button>
+   
+  <div id="map" style="height: 75vh; width: 100%"></div>
+   
+   @if (isCardShow) {
+      <div class="container my-5">
+        <div class="row">
+          <div class="mb-4 col" (click)="focusLocation(loc.title)" *ngFor="let loc of markerAddressArray; let i = index">
+            <div class="card" >
+              <div class="card-header" style="background-color: #fff;">
+                <h5 class="card-heading">{{loc.title? loc.title:"Location "+ (i+1)}}</h5>
+                <div style="width: 30px; height: 4px; background-color: rgb(102, 102, 233); border-radius: 20px;"></div>
+              </div>
+              <div class="card-body">
+                <p>{{loc.address}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+   }
+  
