@@ -22,7 +22,7 @@ export const routes: Routes = [
     { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
-    { path: 'job-applicant/:id', component: ApplicantDetailsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'job-applicant', component: ApplicantDetailsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     {
         path: 'job',
         canActivate: [authGuard],

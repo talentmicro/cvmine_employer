@@ -257,6 +257,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
     }
 
     onJobSelected(event: any) {
+        this.loadingSpinnerService.show();
         let productCode;
         if(this.editMode){
             productCode = event;
@@ -298,6 +299,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             "cvminePostings": JSON.parse(response.data.jobDetails[0].cvminePostings)
                         }
                         this.setStepperFormData();
+                        this.loadingSpinnerService.hide();
                     }
                 },
                 error: (error: any) => {

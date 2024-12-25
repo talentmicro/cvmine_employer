@@ -120,7 +120,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         job_name: item.productName,
                         location: JSON.parse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
-                        shortlisted_applications: item.Shortlist || 0,
+                        shortlisted_applications: item.Screening || 0,
                         interviewed_applications: item.Interview || 0,
                         offered_applications: item.Offer || 0,
                         hired_applications: item.joined || 0,
@@ -163,7 +163,6 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         published_date: item.postedDate,
                         status: item.statusTitle,
                     }));
-                    console.log(this.jobsList);
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
                     this.loadingSpinnerService.hide();
@@ -283,6 +282,12 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     formatLocations(locations: any[]) {
         const allLocations = locations.map(item => item.title);
         return allLocations.length > 0 ? allLocations : ['Unknown'];
+    }
+
+    encryptQueryParams(queryParams: any) {
+        const queryParamsString = JSON.stringify(queryParams);
+        const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
+        return encryptedQueryParamsString;
     }
 
 }

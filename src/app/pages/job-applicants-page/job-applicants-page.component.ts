@@ -43,6 +43,8 @@ interface Applicant {
 
 export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     @ViewChild('dt2') dt2!: Table;
+    encryptedQueryParamsString?: string;
+    queryParamsString?: string;
     jobCode?: string;
     status?: string;
     applicantsList: Applicant[] = [];
@@ -124,11 +126,16 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
             this.loadingSpinnerService.show()
-            this.jobCode = params['jobCode'];
-            this.status = params['status'];
+            this.encryptedQueryParamsString = params['q'];
+            if(this.encryptedQueryParamsString) {
+                this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
+                const queryParams = JSON.parse(this.queryParamsString);
+                this.jobCode = queryParams?.jobCode;
+                this.status = queryParams?.status;
+            }
+            
             this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (data) => {
-                    console.log(data);
                     if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
                         this.applicationStatus = data.data.atsViewMasterData.wfList
                         .map((item: any) => ({
@@ -159,7 +166,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             this.selectedStatuses = this.applicationStatus
                 .filter(status => status.label.toLowerCase() === this.status?.toLowerCase())
                 .map(status => status.statusCode); 
-                console.log(this.selectedStatuses);
         }
         const requestBody = {
             ...this.requestBody,
@@ -170,6 +176,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         console.log(requestBody);
         this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
+                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
@@ -236,6 +243,8 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
                 return 'warning';
             case 'Joined':
                 return 'success';
+            case 'Dropped':
+                return 'danger';
             default:
                 return '';
         }
@@ -255,6 +264,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             "stageCode": row.stageCode,
             "statusCode": row.status
         }
+        console.log(body2);
         this.apiService.changeApplicantionStatus(body2).subscribe({
             next: (response: any) => {
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
@@ -302,6 +312,15 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
 
     formatExperience(experience: string | number): string {
         const experienceNum = parseFloat(experience.toString());
-        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) : experienceNum.toString();
+        if(experienceNum == 0) {
+            return 'Fresher'
+        }
+        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) + ' years' : experienceNum.toString() + ' years';
+    }
+
+    encryptQueryParams(queryParams: any) {
+        const queryParamsString = JSON.stringify(queryParams);
+        const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
+        return encryptedQueryParamsString;
     }
 }

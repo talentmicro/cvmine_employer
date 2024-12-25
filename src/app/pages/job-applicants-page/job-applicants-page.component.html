@@ -123,7 +123,8 @@
                     <td class="p-3">
                         <div class="row">
                             <span><b>
-                                <a [routerLink]="['']">
+                                <a [routerLink]="['/job-applicant']" [queryParams]="{ q: encryptQueryParams({resId: applicant.resId, alertId: applicant.alertId, productCode: applicant.job_code }) }">
+                                <!-- <a [routerLink]="['/job-applicant']" [queryParams]="{ q: encryptQueryParams({resId: applicant.resId, alertId: applicant.alertId, productCode: applicant.job_code }) }"> -->
                                     <div class="row">
                                         <div style="font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" class="col-12" pTooltip="{{applicant.applicant_name}}" tooltipPosition="top" [autoHide]="false">
                                             {{applicant.applicant_name}}
@@ -149,7 +150,7 @@
                         {{formatAppliedDate(applicant.application_date)}}
                     </td>
                     <td class="p-1" style="font-size: 14px;">
-                        {{ formatExperience(applicant.experience_in_years) }} years
+                        {{ formatExperience(applicant.experience_in_years) }}
                     </td>
                     <td class="p-1" >
                         <div pTooltip="{{applicant.skills.join(', ')}}" tooltipPosition="top" [autoHide]="false">
@@ -168,7 +169,7 @@
                         
                     </td>
                     
-                    <td class="p-1" style="font-size: 14px;">
+                    <td class="p-1 text-center" style="font-size: 14px;">
                         {{applicant.location}}
                     </td>
                     <td class="p-1 text-center">
