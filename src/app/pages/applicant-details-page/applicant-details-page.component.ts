@@ -91,11 +91,11 @@ export class ApplicantDetailsPageComponent {
             alertId: Number(this.alertId),
             productCode: Number(this.productCode)
         };
-        console.log(body);
+        // console.log(body);
         this.apiService.getApplicationDetails(body).subscribe({
             next: (response) => {
                 if (response.status) {
-                    console.log(response);
+                    // console.log(response);
                     this.applicantDetails = {
                         "firstName": response?.data?.resumeDetails?.firstName,
                         "lastName": response?.data?.resumeDetails?.lastName,
@@ -134,7 +134,7 @@ export class ApplicantDetailsPageComponent {
                 if(response.status) {
                     this.notes = response?.data?.list;
                     this.loadingSpinnerService.hide();
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                 } else {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
                     this.loadingSpinnerService.hide();
@@ -187,7 +187,7 @@ export class ApplicantDetailsPageComponent {
 
     copyToClipboard(value: string): void {
         navigator.clipboard.writeText(value).then(() => {
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: "Copied!" });
+            // this.messageService.add({ severity: 'success', summary: 'Success', detail: "Copied!" });
         });
     }
 
@@ -212,11 +212,10 @@ export class ApplicantDetailsPageComponent {
                 "stageCode": this.applicantDetails?.stageCode,
                 "statusCode": this.selectedStatus
             }
-            console.log(body)
+            // console.log(body)
             this.apiService.changeApplicantionStatus(body).subscribe({
                 next: (response: any) => {
                     this.loadingSpinnerService.hide();
-                    console.log(this.note);
                     if(this.note) {
                         const notebody = {
                             "type": 401,

@@ -86,7 +86,7 @@
                                 1
                             </span>
                         </button>
-                        <div class="dropdown-menu top-1 border-0"
+                        <!-- <div class="dropdown-menu top-1 border-0"
                             [class.active]="notificationsDropdownClassApplied">
                             <h3 class="fs-20 fw-semibold mb-15">Notifications</h3>
                             <ul class="list-unstyle">
@@ -115,7 +115,7 @@
                                     </span>
                                 </li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="option-item">
@@ -151,7 +151,7 @@
                         </a>
                     </li>
                 </ul>
-                <div *ngIf="isLoggedIn" class="other-options d-flex align-items-center justify-content-end"
+                <!-- <div *ngIf="isLoggedIn" class="other-options d-flex align-items-center justify-content-end"
                     [ngClass]="{'d-none': router.url === '/index-2' || router.url === '/index-3'}">
                     <div class="notif-option position-relative">
                         <button class="dropdown-toggle d-flex align-items-center position-relative bg-transparent border-0 transition"
@@ -171,11 +171,11 @@
                                     <p class="fs-15 fw-semibold font_secondary text-title">
                                         No notifications!
                                     </p>
-                                    <!-- <span class="fs-14 text-paraTwo d-block">
+                                    <span class="fs-14 text-paraTwo d-block">
                                         2 hours ago
-                                    </span> -->
+                                    </span>
                                 </li>
-                                <!-- <li class="position-relative read">
+                                <li class="position-relative read">
                                     <p class="fs-15 fw-semibold font_secondary text-title">
                                         You have <span>4</span> new messages
                                     </p>
@@ -190,11 +190,11 @@
                                     <span class="fs-14 text-paraTwo d-block">
                                         1 day ago
                                     </span>
-                                </li> -->
+                                </li>
                             </ul>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div *ngIf="!isLoggedIn" class="auth-buttons my-2 ms-auto">
                     <a *ngIf="router.url === '/register'" routerLink="/login" class="link style-four fw-medium mx-2">
                         Login

@@ -49,9 +49,9 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     status?: string;
     applicantsList: Applicant[] = [];
     jobsList: Array<{ job_code: string; job_name: string }> = [];
-    page = 1;
-    pageSize = 10;
-    currentPage = 0;
+    limit: number = 10;
+    page: number = 1;
+    totalRecords!: number;
     searchText: string = '';
     applicationStatus: Array<{ statusCode: number; label: string }> = [];
     searchedKeyword: string = '';
@@ -67,7 +67,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         ],
         "statusCode": [],
         "startPage": 1,
-        "limit": 40,
+        "limit": 10,
         "reasons": null,
         "bookmarks": [],
         "sort": [],
@@ -171,12 +171,14 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             ...this.requestBody,
             search: this.searchedKeyword.trim(),
             productCode: this.selectedJobs.length > 0 ? this.selectedJobs : [],
-            statusCode: this.selectedStatuses.length > 0 ? this.selectedStatuses : []
+            statusCode: this.selectedStatuses.length > 0 ? this.selectedStatuses : [],
+            limit: this.limit,
+            startPage: this.page
         };
-        console.log(requestBody);
+        // console.log(requestBody);
         this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
-                console.log(response);
+                // console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
@@ -193,8 +195,9 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
                         resId: item.resId,
                         stageCode: item.stageCode
                     }));
+                    this.totalRecords = response?.data?.count;
                     this.loadingSpinnerService.hide();
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                 }
             },
             error: (error: any) => {
@@ -264,10 +267,10 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             "stageCode": row.stageCode,
             "statusCode": row.status
         }
-        console.log(body2);
+        // console.log(body2);
         this.apiService.changeApplicantionStatus(body2).subscribe({
             next: (response: any) => {
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                 this.getApplicants();
             },
             error: (error: any) => {
@@ -322,5 +325,12 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         const queryParamsString = JSON.stringify(queryParams);
         const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
         return encryptedQueryParamsString;
+    }
+
+    onPageChange(event: any): void {
+        this.page = event.first / event.rows + 1;
+        this.limit = event.rows;
+        this.loadingSpinnerService.show();
+        this.getApplicants();
     }
 }

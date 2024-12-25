@@ -54,6 +54,9 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     formGroup!: FormGroup;
     searchedKeyword: string = '';
     selectedStatuses: number[] = [];
+    limit: number = 10;
+    page: number = 1;
+    totalRecords!: number;
     requestBody = {
         "search": "",
         "sellerCode": null,
@@ -63,7 +66,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         "updatedToDate": null,
         "publishingType": null,
         "startPage": 1,
-        "limit": 50,
+        "limit": 10,
         "productCode": [],
         "status": null,
         "dateFilterType": null,
@@ -107,11 +110,17 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     getAllJobListings(): void {
-        this.apiService.getJobListings(this.requestBody).subscribe({
+        const body = {
+            ...this.requestBody,
+            limit: this.limit,
+            startPage: this.page
+        }
+        // console.log(body);
+        this.apiService.getJobListings(body).subscribe({
             next: (response) => {
-                console.log(response);
+                // console.log(response);
                 if (response.status && response.data && response.data.list) {
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
                     this.loadingSpinnerService.hide();
                     this.jobsList = response.data.list.map((item: any) => ({
@@ -123,11 +132,12 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         shortlisted_applications: item.Screening || 0,
                         interviewed_applications: item.Interview || 0,
                         offered_applications: item.Offer || 0,
-                        hired_applications: item.joined || 0,
-                        dropped_applications: item.AllDropped || 0,
+                        hired_applications: item.Joined || 0,
+                        dropped_applications: item.Dropped || 0,
                         published_date: item.postedDate,
                         status: item.statusTitle,
                     }));
+                    this.totalRecords = response?.data?.count;
                 }
             },
             error: (error: any) => {
@@ -147,7 +157,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         this.loadingSpinnerService.show();
         this.apiService.getJobListings(requestBody).subscribe({
             next: (response) => {
-                console.log(response);
+                // console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.jobsList = response.data.list.map((item: any) => ({
                         id: item.productCode,
@@ -163,7 +173,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         published_date: item.postedDate,
                         status: item.statusTitle,
                     }));
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
                     this.loadingSpinnerService.hide();
                 }
@@ -214,11 +224,11 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     onRowExpand(event: TableRowExpandEvent) {
-        this.messageService.add({ severity: 'info', summary: 'Job Expanded', detail: event.data.name, life: 3000 });
+        // this.messageService.add({ severity: 'info', summary: 'Job Expanded', detail: event.data.name, life: 3000 });
     }
 
     onRowCollapse(event: TableRowCollapseEvent) {
-        this.messageService.add({ severity: 'success', summary: 'Job Collapsed', detail: event.data.name, life: 3000 });
+        // this.messageService.add({ severity: 'success', summary: 'Job Collapsed', detail: event.data.name, life: 3000 });
     }
 
     clear(table: Table) {
@@ -254,7 +264,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         this.apiService.changeJobStatus(body).subscribe({
             next: (response) => {
                 if(response.status) {
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.getAllJobListings();
                 }
             },
@@ -288,6 +298,13 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         const queryParamsString = JSON.stringify(queryParams);
         const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
         return encryptedQueryParamsString;
+    }
+
+    onPageChange(event: any): void {
+        this.page = event.first / event.rows + 1;
+        this.limit = event.rows;
+        this.loadingSpinnerService.show();
+        this.getAllJobListings();
     }
 
 }
