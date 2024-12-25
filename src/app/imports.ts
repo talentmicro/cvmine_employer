@@ -210,7 +210,8 @@ import { NgModule } from '@angular/core';
         StyleClassModule,
         IconFieldModule,
         InputIconModule,
-        AutoFocusModule
+        AutoFocusModule,
+        FloatLabelModule
     ],
     exports: [
         AvatarModule,
@@ -317,7 +318,8 @@ import { NgModule } from '@angular/core';
         FloatLabelModule,
         IconFieldModule,
         InputIconModule,
-        AutoFocusModule
+        AutoFocusModule,
+        FloatLabelModule
     ]
 })
 

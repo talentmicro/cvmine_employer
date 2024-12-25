@@ -53,4 +53,28 @@ export class ApiService {
     saveJob(body: any): Observable<any> {
         return this.http.post(`${this.baseUrl}icrweb/home/saveProductNewJob_v3_tal_lite`, body);
     }
+
+    checkUserID(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icr/pwdResetOtpWeb`, body);
+    }
+
+    verifyCode(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icr/verifyOtpWeb`, body);
+    }
+
+    resetPassword(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icr/resetPassword`, body);
+    }
+
+    getNotes(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icrweb/home/get_onboarding_manager_form_notes_tal_lite`, body);
+    }
+
+    saveNotes(body: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}icrweb/home/save_onboarding_manager_form_notes_tal_lite`, body);
+    }
+
+    logout(body: any) {
+        return this.http.get(`${this.baseUrl}icr/logout`, body);
+    }
 }

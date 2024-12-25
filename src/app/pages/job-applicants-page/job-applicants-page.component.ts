@@ -1,13 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { ApiService } from '../services/api.service';
 import { MessageService } from 'primeng/api';
 import { ImportsModule } from '../../imports';
 import { Table } from 'primeng/table';
+import { SharedService } from '../services/shared.service';
 
 interface Applicant {
     application_id: number;
@@ -40,8 +41,10 @@ interface Applicant {
     providers: [MessageService]
 })
 
-export class JobApplicantsPageComponent implements OnInit {
+export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     @ViewChild('dt2') dt2!: Table;
+    encryptedQueryParamsString?: string;
+    queryParamsString?: string;
     jobCode?: string;
     status?: string;
     applicantsList: Applicant[] = [];
@@ -51,7 +54,11 @@ export class JobApplicantsPageComponent implements OnInit {
     currentPage = 0;
     searchText: string = '';
     applicationStatus: Array<{ statusCode: number; label: string }> = [];
-
+    searchedKeyword: string = '';
+    selectedJobs: number[] = [];
+    selectedStatuses: number[] = [];
+    onSearch: boolean = false;
+    private destroy$ = new Subject<void>();
     requestBody = {
         "sellerCode": [],
         "search": null,
@@ -112,24 +119,65 @@ export class JobApplicantsPageComponent implements OnInit {
         private route: ActivatedRoute,
         private loadingSpinnerService: LoadingService,
         private apiService: ApiService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private sharedService: SharedService
     ) {}
 
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
-            this.jobCode = params['jobCode'];
-            this.status = params['status'];
-            this.getDropdownValues();
+            this.loadingSpinnerService.show()
+            this.encryptedQueryParamsString = params['q'];
+            if(this.encryptedQueryParamsString) {
+                this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
+                const queryParams = JSON.parse(this.queryParamsString);
+                this.jobCode = queryParams?.jobCode;
+                this.status = queryParams?.status;
+            }
+            
+            this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
+                next: (data) => {
+                    if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
+                        this.applicationStatus = data.data.atsViewMasterData.wfList
+                        .map((item: any) => ({
+                            statusCode: item.id,
+                            label: item.title.split(' - ')[0],
+                        }));
+                        this.getAllJobs();
+                    }
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                    this.loadingSpinnerService.hide();
+                },
+            });
         });
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     getApplicants(): void {
-        this.loadingSpinnerService.show();
-        this.apiService.getApplicants(this.requestBody).subscribe({
+        if(!this.onSearch && this.jobCode) {
+            this.selectedJobs.push(Number(this.jobCode));
+        }
+        if(!this.onSearch && this.status) {
+            this.selectedStatuses = this.applicationStatus
+                .filter(status => status.label.toLowerCase() === this.status?.toLowerCase())
+                .map(status => status.statusCode); 
+        }
+        const requestBody = {
+            ...this.requestBody,
+            search: this.searchedKeyword.trim(),
+            productCode: this.selectedJobs.length > 0 ? this.selectedJobs : [],
+            statusCode: this.selectedStatuses.length > 0 ? this.selectedStatuses : []
+        };
+        console.log(requestBody);
+        this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
+                console.log(response);
                 if (response.status && response.data && response.data.list) {
-                    this.loadingSpinnerService.hide();
-                    console.log(response.data.list);
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
                         job_code: item.productCode,
@@ -145,6 +193,8 @@ export class JobApplicantsPageComponent implements OnInit {
                         resId: item.resId,
                         stageCode: item.stageCode
                     }));
+                    this.loadingSpinnerService.hide();
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                 }
             },
             error: (error: any) => {
@@ -154,26 +204,31 @@ export class JobApplicantsPageComponent implements OnInit {
         });
     }
 
-    getDropdownValues(): void {
-        const body = {};
-        this.loadingSpinnerService.show();
-        this.apiService.getDropdownsData(body).subscribe({
+    getAllJobs(): void {
+        const body = {
+            "activeJobs": 1
+        }
+        this.apiService.getJobListings(body).subscribe({
             next: (response) => {
-                if (response.status && response.data && response.data.atsViewMasterData.wfList) {
-                    this.loadingSpinnerService.hide();
-                    this.applicationStatus = response.data.atsViewMasterData.wfList
-                    .map((item: any) => ({
-                        statusCode: item.id,
-                        label: item.title.split(' - ')[0],
+                if (response.status && response.data && response.data.list) {
+                    this.jobsList = response.data.list.map((item: any) => ({
+                        job_code: item.productCode,
+                        job_name: item.productName,
                     }));
                     this.getApplicants();
                 }
             },
             error: (error: any) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error fetching job data' });
                 this.loadingSpinnerService.hide();
             },
         });
+    }
+
+    onSearchFilter() {
+        this.onSearch = true;
+        this.loadingSpinnerService.show();
+        this.getApplicants();
     }
 
     getSeverity(status: string): any {
@@ -188,6 +243,8 @@ export class JobApplicantsPageComponent implements OnInit {
                 return 'warning';
             case 'Joined':
                 return 'success';
+            case 'Dropped':
+                return 'danger';
             default:
                 return '';
         }
@@ -200,37 +257,6 @@ export class JobApplicantsPageComponent implements OnInit {
 
     onStatusChange(row: Applicant): void {
         this.loadingSpinnerService.show();
-        // let body1 = {
-        //     "resId": row.resId,
-        //     "alertId": row.alertId,
-        //     "productCode": row.job_code
-        // };
-
-        // this.apiService.getApplicationDetails(body1).subscribe({
-        //     next: (response: any) => {
-        //         let body2 = {
-        //             "alertId": [
-        //                 row.alertId
-        //             ],
-        //             "stageCode": response.data.resumeDetails.stageCode,
-        //             "statusCode": row.status
-        //         }
-        //         this.apiService.changeApplicantionStatus(body2).subscribe({
-        //             next: (response: any) => {
-        //                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-        //                 this.getApplicants();
-        //             },
-        //             error: (error: any) => {
-        //                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-        //                 this.loadingSpinnerService.hide();
-        //             }
-        //         })
-        //     },
-        //     error: (error: any) => {
-        //         this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-        //         this.loadingSpinnerService.hide();
-        //     }
-        // });
         let body2 = {
             "alertId": [
                 row.alertId
@@ -238,6 +264,7 @@ export class JobApplicantsPageComponent implements OnInit {
             "stageCode": row.stageCode,
             "statusCode": row.status
         }
+        console.log(body2);
         this.apiService.changeApplicantionStatus(body2).subscribe({
             next: (response: any) => {
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
@@ -285,6 +312,15 @@ export class JobApplicantsPageComponent implements OnInit {
 
     formatExperience(experience: string | number): string {
         const experienceNum = parseFloat(experience.toString());
-        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) : experienceNum.toString();
+        if(experienceNum == 0) {
+            return 'Fresher'
+        }
+        return experienceNum % 1 === 0 ? experienceNum.toFixed(0) + ' years' : experienceNum.toString() + ' years';
+    }
+
+    encryptQueryParams(queryParams: any) {
+        const queryParamsString = JSON.stringify(queryParams);
+        const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
+        return encryptedQueryParamsString;
     }
 }

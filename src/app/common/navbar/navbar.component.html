@@ -135,11 +135,11 @@
             <div class="collapse navbar-collapse">
                 <ul *ngIf="isLoggedIn" class="navbar-nav"
                     [ngClass]="{'ms-auto': router.url === '/index-2'}">
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a routerLink="/dashboard" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                             Home
                         </a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a routerLink="/job-listings" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                             Jobs
@@ -169,13 +169,13 @@
                             <ul class="list-unstyle">
                                 <li class="position-relative unread">
                                     <p class="fs-15 fw-semibold font_secondary text-title">
-                                        You have <span>3</span> new messages
+                                        No notifications!
                                     </p>
-                                    <span class="fs-14 text-paraTwo d-block">
+                                    <!-- <span class="fs-14 text-paraTwo d-block">
                                         2 hours ago
-                                    </span>
+                                    </span> -->
                                 </li>
-                                <li class="position-relative read">
+                                <!-- <li class="position-relative read">
                                     <p class="fs-15 fw-semibold font_secondary text-title">
                                         You have <span>4</span> new messages
                                     </p>
@@ -190,7 +190,7 @@
                                     <span class="fs-14 text-paraTwo d-block">
                                         1 day ago
                                     </span>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>
@@ -234,7 +234,7 @@
     </div>
     <div class="offcanvas-body">
         <div *ngIf="isLoggedIn" class="accordion">
-            <div class="accordion-item rounded-0 border-0">
+            <!-- <div class="accordion-item rounded-0 border-0">
                 <button
                     type="button"
                     routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
@@ -242,7 +242,7 @@
                 >
                     Home
                 </button>
-            </div>
+            </div> -->
             <div class="accordion-item rounded-0 border-0">
                 <button type="button"
                     routerLink="/job-listings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"

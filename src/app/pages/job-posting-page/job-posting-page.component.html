@@ -43,7 +43,7 @@
                                     </div>
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="existingJob" class="form-label fw-bold">Job Title</label>
+                                            <label for="existingJob" class="form-label fw-bold">Job Title<span class="required">*</span></label>
                                             <input type="text" pInputText placeholder="Enter job title" formControlName="jobTitle" />
                                             <small class="error-text" 
                                                 *ngIf="firstStepForm.get('jobTitle')?.hasError('required') && firstStepForm.get('jobTitle')?.touched">
@@ -57,13 +57,16 @@
                                     </div>
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="jobDescription" class="form-label fw-bold">Job Description</label>
-                                            <textarea rows="5" 
+                                            <label for="jobDescription" class="form-label fw-bold">Job Description<span class="required">*</span></label>
+                                            <!-- <textarea rows="5" 
                                                 cols="30" 
                                                 pInputTextarea 
                                                 placeholder="Enter job description"
                                                 formControlName="jobDescription">
-                                            </textarea>
+                                            </textarea> -->
+                                            <quill-editor formControlName="jobDescription"
+                                                [styles]="{ height: '200px', width: '100%' }" [modules]="quillModules">
+                                            </quill-editor>
                                             <small class="error-text" 
                                                 *ngIf="firstStepForm.get('jobDescription')?.hasError('required') && firstStepForm.get('jobDescription')?.touched">
                                                 Job description is required.
@@ -89,7 +92,7 @@
                                 <form [formGroup]="secondStepForm">
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="jobType" class="form-label fw-bold">Job Type</label>
+                                            <label for="jobType" class="form-label fw-bold">Job Type<span class="required">*</span></label>
                                         </div>
                                         <div class="checkbox-container flex-container">
                                             <div *ngFor="let job of jobTypes" class="checkbox-item">
@@ -107,7 +110,7 @@
                         
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="jobLocation" class="form-label fw-bold">Job Location</label>
+                                            <label for="jobLocation" class="form-label fw-bold">Job Location<span class="required">*</span></label>
                                         </div>
                                         <p-multiSelect [options]="cityList" 
                                             optionLabel="title"
@@ -123,7 +126,7 @@
                         
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
-                                            <label for="skills" class="form-label fw-bold">Skills</label>
+                                            <label for="skills" class="form-label fw-bold">Skills<span class="required">*</span></label>
                                         </div>
                                         <p-chips 
                                             formControlName="skills" 
@@ -138,54 +141,61 @@
                                     <div class="row">
                                         <div class="col-12 col-lg-6 mb-3">
                                             <div class="col-12">
-                                                <label for="experience" class="form-label fw-bold">Experience (in Years)</label>
+                                                <label for="experience" class="form-label fw-bold">Experience (in Years)<span class="required">*</span></label>
                                             </div>
-                                            <div class="d-flex align-items-center">
-                                                <p-inputNumber 
-                                                    formControlName="experienceFrom" 
-                                                    [min]="0" 
-                                                    [step]="0.1" 
-                                                    [showButtons]="false" 
-                                                    class="w-50" 
-                                                    placeholder="From (years)" 
-                                                    mode="decimal">
-                                                </p-inputNumber>
-                                                <p-inputNumber 
-                                                    formControlName="experienceTo" 
-                                                    [min]="0" 
-                                                    [step]="0.1" 
-                                                    [showButtons]="false" 
-                                                    class="w-50" 
-                                                    placeholder="To (years)" 
-                                                    mode="decimal">
-                                                </p-inputNumber>
+                                            <div class="row">
+                                                <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                                                    <p-inputNumber 
+                                                        formControlName="experienceFrom" 
+                                                        [min]="0" 
+                                                        [step]="0.1" 
+                                                        [showButtons]="false" 
+                                                        class="w-75" 
+                                                        placeholder="From (years)" 
+                                                        mode="decimal">
+                                                    </p-inputNumber>
+                                                    <div class="col-12">
+                                                        <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceFrom')?.hasError('required') && secondStepForm.get('experienceFrom')?.touched">
+                                                            Experience from is required.
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                                                    <p-inputNumber 
+                                                        formControlName="experienceTo" 
+                                                        [min]="0" 
+                                                        [step]="0.1" 
+                                                        [showButtons]="false" 
+                                                        class="w-75" 
+                                                        placeholder="To (years)" 
+                                                        mode="decimal">
+                                                    </p-inputNumber>
+                                                    <div class="col-12">
+                                                        <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceTo')?.hasError('required') && secondStepForm.get('experienceTo')?.touched">
+                                                            Experience to is required.
+                                                        </small>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceFrom')?.hasError('required') && secondStepForm.get('experienceFrom')?.touched">
-                                                From experience is required.
-                                            </small>
-                                            <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceTo')?.hasError('required') && secondStepForm.get('experienceTo')?.touched">
-                                                To experience is required.
-                                            </small>
-                                            <small class="error-text mx-1" *ngIf="secondStepForm.hasError('invalidExperienceRange') && secondStepForm.touched">
+                                            <small class="error-text mx-1" *ngIf="secondStepForm.hasError('invalidExperienceRange') && (secondStepForm.get('experienceFrom')?.value && secondStepForm.get('experienceTo')?.value)">
                                                 "From" experience must be less than "To" experience.
                                             </small>
                                         </div>
                             
                                         <div class="col-12 col-lg-6 mb-3">
                                             <div class="col-12">
-                                                <label for="experience" class="form-label fw-bold">Expected Salary</label>
+                                                <label for="experience" class="form-label fw-bold">Expected Salary<span class="required">*</span></label>
                                             </div>
                                             <div class="col-12 d-flex align-items-center">
                                                 <div class="col-3">
                                                     <p-dropdown formControlName="currency"
                                                         [options]="currencies"
                                                         optionLabel="currencySymbol"
-                                                        optionValue="currencySymbol"
+                                                        optionValue="id"
                                                         [filter]="true"
                                                         placeholder="Currency">
                                                     </p-dropdown>
                                                 </div>
-
                                                 <div class="col-6">
                                                     <p-inputNumber 
                                                         formControlName="salaryFrom" 
@@ -215,27 +225,39 @@
                                                     </p-dropdown>
                                                 </div>
                                             </div>
-                                            <small class="error-text mx-1" 
-                                                *ngIf="secondStepForm.get('currency')?.hasError('required') && secondStepForm.get('currency')?.touched">
-                                                Currency is required.
-                                            </small>
-                                            <small class="error-text mx-1" 
-                                                *ngIf="secondStepForm.get('salaryFrom')?.hasError('required') && secondStepForm.get('salaryTo')?.hasError('required') && (secondStepForm.get('salaryFrom')?.touched || secondStepForm.get('salaryTo')?.touched)">
-                                                Salary range is required.
-                                            </small>
-                                            <small class="error-text mx-1" *ngIf="secondStepForm.hasError('invalidSalaryRange') && (secondStepForm.get('salaryFrom')?.touched || secondStepForm.get('salaryTo')?.touched)">
-                                                Salary "From" must be less than "To".
-                                            </small>
-                                            <small class="error-text mx-1" 
-                                                *ngIf="secondStepForm.get('period')?.hasError('required') && secondStepForm.get('period')?.touched">
-                                                Duration period is required.
-                                            </small>
+                                            <div class="col-12">
+                                                <div class="col-12">
+                                                    <small class="error-text mx-1" 
+                                                        *ngIf="secondStepForm.get('currency')?.hasError('required') && secondStepForm.get('currency')?.touched">
+                                                        Currency is required.
+                                                    </small>
+                                                </div>
+                                                <div class="col-12">
+                                                    <small class="error-text mx-1" 
+                                                        *ngIf="secondStepForm.get('salaryFrom')?.hasError('required') && secondStepForm.get('salaryTo')?.touched">
+                                                        Salary from is required.
+                                                    </small>
+                                                    <small class="error-text mx-1" 
+                                                        *ngIf="secondStepForm.get('salaryTo')?.hasError('required') && secondStepForm.get('salaryTo')?.touched">
+                                                        Salary to is required.
+                                                    </small>
+                                                    <small class="error-text mx-1" *ngIf="secondStepForm.hasError('invalidSalaryRange') && (secondStepForm.get('salaryFrom')?.value || secondStepForm.get('salaryTo')?.value)">
+                                                        Salary "From" must be less than "To".
+                                                    </small>
+                                                </div>
+                                                <div class="col-12">
+                                                    <small class="error-text mx-1" 
+                                                        *ngIf="secondStepForm.get('period')?.hasError('required') && secondStepForm.get('period')?.touched">
+                                                        Duration period is required.
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                         
                                     <div class="row mt-2">
                                         <div class="col-12 col-lg-6 mb-3 justify-content-around">
-                                            <label for="noticePeriod" class="form-label fw-bold">Notice Period</label>
+                                            <label for="noticePeriod" class="form-label fw-bold">Notice Period<span class="required">*</span></label>
                                             <div class="d-flex align-items-center justify-content-around">
                                                 <p-radioButton 
                                                     formControlName="noticePeriodType" 
@@ -257,38 +279,40 @@
                                         </div>
                                     
                                         <div class="col-12 col-lg-6 mb-3" *ngIf="secondStepForm.get('noticePeriodType')?.value === 'Other'">
-                                            <label for="noticePeriodRange" class="form-label fw-bold">Notice Period Range (in Days)</label>
+                                            <label for="noticePeriodRange" class="form-label fw-bold">Notice Period Range (in Days)<span class="required">*</span></label>
                                             <div class="d-flex align-items-center">
-                                                <div class="col-6">
-                                                    <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-12 col-lg-6 mb-3 mb-lg-0">
                                                         <p-inputNumber 
                                                             formControlName="noticeFrom" 
                                                             [min]="0" 
                                                             [showButtons]="false" 
-                                                            class="w-50 mr-2" 
+                                                            class="w-75 mr-2" 
                                                             placeholder="From (days)">
                                                         </p-inputNumber>
+                                                        <div class="col-12">
+                                                            <small class="error-text" *ngIf="secondStepForm.get('noticeFrom')?.hasError('required') && secondStepForm.get('noticeFrom')?.touched">
+                                                                Notice period "From" is required.
+                                                            </small>
+                                                        </div>
                                                     </div>
-                                                    <small class="error-text" *ngIf="secondStepForm.get('noticeFrom')?.hasError('required') && secondStepForm.get('noticeFrom')?.touched">
-                                                        Notice period "From" is required.
-                                                    </small>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="col-12">
+                                                    <div class="col-12 col-lg-6 mb-3 mb-lg-0">
                                                         <p-inputNumber 
                                                             formControlName="noticeTo" 
                                                             [min]="0" 
                                                             [showButtons]="false" 
-                                                            class="w-50" 
+                                                            class="w-75" 
                                                             placeholder="To (days)">
                                                         </p-inputNumber>
+                                                        <div class="col-12">
+                                                            <small class="error-text" *ngIf="secondStepForm.get('noticeTo')?.hasError('required') && secondStepForm.get('noticeTo')?.touched">
+                                                                Notice period "To" is required.
+                                                            </small>
+                                                        </div>
                                                     </div>
-                                                    <small class="error-text" *ngIf="secondStepForm.get('noticeTo')?.hasError('required') && secondStepForm.get('noticeTo')?.touched">
-                                                        Notice period "To" is required.
-                                                    </small>
                                                 </div>
                                             </div>
-                                            <small class="error-text" *ngIf="secondStepForm.hasError('invalidNoticePeriodRange') && (secondStepForm.get('noticeFrom')?.touched && secondStepForm.get('noticeTo')?.touched)">
+                                            <small class="error-text" *ngIf="secondStepForm.hasError('invalidNoticePeriodRange') && (secondStepForm.get('noticeFrom')?.value && secondStepForm.get('noticeTo')?.value)">
                                                 Notice period "From" must be less than "To".
                                             </small>
                                         </div>
@@ -313,7 +337,7 @@
                                         <div class="row align-items-center mb-3">
                                             <div class="col-12 col-md-6">
                                                 <div class="col-12">
-                                                    <label class="form-label fw-bold">Add Question</label>
+                                                    <label class="form-label fw-bold">Add Question<span class="required">*</span></label>
                                                 </div>
                                                 <input type="text"
                                                     pInputText
@@ -450,7 +474,7 @@
                                         <div class="row">
                                             <div class="col-12 col-md-4">
                                                 <div class="col-12">
-                                                    <label for="noOfQuestion" class="fw-bold">Number of Questions</label>
+                                                    <label for="noOfQuestion" class="fw-bold">Number of Questions<span class="required">*</span></label>
                                                 </div>
                                                 <div class="col-12">
                                                     <p-inputNumber 
@@ -468,7 +492,7 @@
                                             </div>
                                             <div class="col -12 col-md-4">
                                                 <div class="col-12">
-                                                    <label for="difficulty" class="fw-bold">Difficulty</label>
+                                                    <label for="difficulty" class="fw-bold">Difficulty<span class="required">*</span></label>
                                                 </div>
                                                 <p-dropdown
                                                     formControlName="difficulty"
@@ -481,7 +505,7 @@
                                             </div>
                                             <div class="col-12 col-md-4">
                                                 <div class="col-12">
-                                                    <label for="requiredAssessmentScore" class="fw-bold">Cut-off Score</label>
+                                                    <label for="requiredAssessmentScore" class="fw-bold">Cut-off Score<span class="required">*</span></label>
                                                 </div>
                                                 <div class="col-12">
                                                     <p-inputNumber 
@@ -520,3 +544,7 @@
         </div>
     </div>
 </div>
+<!-- 
+<quill-editor formControlName="jobDescription"
+                                                [styles]="{ height: '200px' }" [modules]="quillModules">
+                                            </quill-editor> -->

@@ -1,5 +1,4 @@
-<!-- <app-navbar /> -->
-<!-- Blog Details -->
+<p-toast />
 <div class="container my-3">
     <div class="row">
         <div class="col-lg-8">
@@ -7,7 +6,7 @@
                 <div class="applicant-banner">
                     <!-- Job Name Header -->
                     <div class="job-name-header my-3">
-                        <h3>Application for {{ applicantDetails.jobName }}</h3>
+                        <h3 class="m-0">{{ applicantDetails?.position }}</h3>
                     </div>
                     <!-- Applicant Card -->
                     <p-card class="applicant-card">
@@ -15,79 +14,99 @@
                         <ng-template pTemplate="header">
                             <div class="card-header">
                                 <p-tag
-                                    [value]="applicantDetails.applicationStatus"
-                                    [severity]="getSeverity(applicantDetails.applicationStatus)"
+                                    [value]="applicantDetails?.status"
+                                    [severity]="getSeverity(applicantDetails?.status)"
                                     class="status-tag">
                                 </p-tag>
                             </div>
                         </ng-template>
                         <!-- Card Body -->
-                        <div class="banner-content">
+                        <div class="banner-content row">
                             <!-- Left Section -->
-                            <div class="left-section">
+                            <div class="left-section col-12 col-md-4">
                                 <!-- Avatar -->
                                 <p-avatar 
-                                    [label]="getInitials(applicantDetails.applicantName)" 
+                                    [label]="applicantDetails?.nameInitials"
                                     size="xlarge" 
                                     shape="circle"
                                     styleClass="applicant-avatar">
                                 </p-avatar>
-                                <h2 class="applicant-name">{{ applicantDetails.applicantName }}</h2>
+                                <h2 class="applicant-name">{{ applicantDetails?.fullName }}</h2>
                             </div>
                         
                             <!-- Right Section -->
-                            <div class="right-section">
-                                <!-- Personal Details -->
+                            <div class="right-section col-12 col-md-8">
                                 <div class="details-row">
                                     <i class="pi pi-envelope"></i>
-                                    <span><strong>Email:</strong> {{ applicantDetails.email }}</span>
+                                    <span><strong>Email: </strong> {{ applicantDetails?.emailId }}</span>
                                     <i class="pi pi-copy copy-icon" 
-                                        (click)="copyToClipboard(applicantDetails.email)">
+                                        (click)="copyToClipboard(applicantDetails?.resumeDetails?.emailId)">
                                     </i>
                                 </div>
                                 <div class="details-row">
                                     <i class="pi pi-phone"></i>
-                                    <span><strong>Phone:</strong> {{ applicantDetails.phoneNumber }}</span>
+                                    <span><strong>Phone: </strong> {{ applicantDetails?.mobile }}</span>
                                     <i class="pi pi-copy copy-icon" 
-                                        (click)="copyToClipboard(applicantDetails.phoneNumber)">
+                                        (click)="copyToClipboard(applicantDetails?.mobile)">
                                     </i>
                                 </div>
                                 <div class="details-row">
                                     <i class="pi pi-map-marker"></i>
-                                    <span><strong>Location:</strong> {{ applicantDetails.location }}</span>
+                                    <span><strong>Location: </strong> {{ applicantDetails?.location }}</span>
                                 </div>
                             </div>
                         </div>
                         <!-- Bottom Section -->
-                        <div class="bottom-section">
+                        <div class="bottom-section row">
                             <!-- Job Details -->
-                            <div class="job-details">
-                                <p><strong>Job Type:</strong> {{ applicantDetails.jobType }}</p>
-                                <p><strong>Experience:</strong> {{ applicantDetails.experience }}</p>
-                                <p><strong>Notice Period:</strong> {{ applicantDetails.noticePeriod }}</p>
+                            <div class="job-details col-12 col-md-5">
+                                <p><strong>Job Type: </strong> {{ applicantDetails?.jobTypes }}</p>
+                                <p><strong>Experience: </strong> {{ applicantDetails?.experience }}</p>
+                                <p><strong>Notice Period: </strong> {{ applicantDetails?.noticePeriod == 0 ? 'Immediate Joinee': applicantDetails?.noticePeriod + ' days' }} </p>
                             </div>
                         
                             <!-- Skills -->
-                            <div class="skills-container">
+                            <div class="skills-container col-12 col-md-6">
                                 <h5>Key Skills</h5>
                                 <div class="skills-list">
-                                    <p-chip 
-                                        *ngFor="let skill of applicantDetails.skills" 
+                                    <!-- <p-chip 
+                                        *ngFor="let skill of getSkills(applicantDetails.resumeDetails.keySkills)" 
                                         [label]="skill" 
                                         class="skill-chip">
-                                    </p-chip>
+                                    </p-chip> -->
+                                    <span *ngFor="let skill of applicantDetails?.keySkills" 
+                                        class="skill-chip">{{ skill }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </p-card>
 
-                    <!--Questions-->
                     <div class="mt-5">
                         <p-accordion [activeIndex]="0">
                             <!-- Outer Accordion for Questions Section -->
+                            <p-accordionTab header="Resume">
+                                <p-accordion>
+                                    <div *ngIf="applicantDetails.originalCVPath === ''" class="no-notes-message text-center">
+                                        <i class="fa-solid fa-file-circle-exclamation"></i> Resume not found.
+                                    </div>
+                                    <ng-container *ngIf="applicantDetails.originalCVPath != ''">
+                                        <ngx-doc-viewer 
+                                            [url]="fileUrl" 
+                                            [viewer]="getViewerType(fileUrl)"
+                                            style="width: 100%; height: 600px;">
+                                        </ngx-doc-viewer>
+                                    </ng-container>
+                                </p-accordion>
+                            </p-accordionTab>
+                        </p-accordion>
+                    </div>
+
+                    <!--Questions-->
+                    <!-- <div class="mt-5">
+                        <p-accordion [activeIndex]="0">
                             <p-accordionTab header="Questions">
                                 <p-accordion>
-                                    <!-- Inner Accordion for each question -->
                                     <p-accordionTab *ngFor="let question of questions; let i = index" [header]="question.title">
                                         <div class="question-details">
                                             <div class="question-text">
@@ -107,7 +126,7 @@
                                 </p-accordion>
                             </p-accordionTab>
                         </p-accordion>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -119,9 +138,9 @@
                     </h3>
                     <p-dropdown 
                         [options]="applicationStatuses" 
-                        [(ngModel)]="selectedStatus" 
-                        optionLabel="title" 
-                        optionValue="title" 
+                        [(ngModel)]="applicantDetails.statusCode" 
+                        optionLabel="status" 
+                        optionValue="statusCode" 
                         placeholder="Select Status"
                         (onChange)="onStatusChange($event)">
                     </p-dropdown>
@@ -156,7 +175,7 @@
                         placeholder="Enter note"
                         style="background-color: white;">
                     </textarea>
-                    <div class="mt-2 d-flex justify-content-end">
+                    <div class="my-2 d-flex justify-content-end">
                         <button
                             pButton
                             type="button"
@@ -174,20 +193,16 @@
                         <div *ngIf="notes.length === 0" class="no-notes-message">
                             No notes available.
                         </div>
-
                         <div  *ngFor="let note of notes" class="note-entry">
-                            <p>{{ note.text }}</p>
-                            <small class="note-timestamp">{{ note.timestamp | date: 'short' }}</small>
+                            <p style="font-size: 1rem;">{{ note.notes }}</p>
+                            <p class="d-flex justify-content-between m-0">
+                                <small class="note-timestamp">{{ note.crDate | date: 'short' }}</small>
+                                <small class="note-timestamp">- {{ note.createdBy }}</small>
+                            </p>
                         </div>
                     </p-scrollPanel>
                 </div>
-                  
             </div>
         </div>
     </div>
 </div>
-<!-- End Blog Details -->
-
-<!-- <app-footer /> -->
-
-<!-- <app-back-to-top /> -->

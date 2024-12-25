@@ -463,9 +463,9 @@
     right: 0;
     background-color: #77b1ad;
     color: #fff;
-    padding: 0.5rem 1.5rem;
+    padding: 0.3rem 1rem;
     border-radius: 0.5rem;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: bold;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -497,22 +497,24 @@
 }
 
 .left-section {
-    flex: 0 0 35%;
     text-align: center;
 }
 
-.applicant-avatar {
+:host ::ng-deep .applicant-avatar {
     margin-bottom: 1rem;
-    width: 100px;
-    height: 100px;
-    font-size: 2rem;
-    background-color: #0066cc;
+    width: 100px !important;
+    height: 100px !important;
+    background-color: #b5d6f7;
     color: #fff;
+}
+
+:host ::ng-deep .p-avatar-text {
+    font-size: 3rem;
 }
 
 .applicant-name {
     margin: 1rem 0;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #333;
 }
@@ -551,12 +553,8 @@
 }
 
 .job-details {
-    flex: 1;
+    // flex: 1;
     color: #333;
-}
-
-.skills-container {
-    flex: 1;
 }
 
 .skills-list {
@@ -566,11 +564,12 @@
 }
 
 .skill-chip {
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.5rem;
     background-color: #e0f7fa;
     color: #00796b;
     font-weight: bold;
 }
-
 
 .note-entry {
     background: #f9f9f9;
@@ -627,4 +626,14 @@ p-accordionTab .p-accordion-header-content {
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #fafafa;
+}
+
+// .applicant-avatar {
+
+// }
+
+@media only screen and (max-width: 768px) {
+    .banner-content {
+        gap: 0;
+    }
 }

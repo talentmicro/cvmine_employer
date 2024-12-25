@@ -3,13 +3,16 @@ import { Component, HostListener, inject, OnDestroy, OnInit, ChangeDetectorRef }
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LoginService } from '../../pages/services/auth/login.service';
+import { ApiService } from '../../pages/services/api.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-navbar',
     standalone: true,
     imports: [RouterLink, NgClass, RouterLinkActive, NgIf],
     templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss'
+    styleUrl: './navbar.component.scss',
+    providers: [MessageService]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
     private loginService = inject(LoginService);
@@ -17,41 +20,36 @@ export class NavbarComponent implements OnInit, OnDestroy {
     userName: string = 'Guest';
     private destroy$ = new Subject<void>();
     userDropdownOpen: boolean = false;
+    classApplied = false;
+    isSticky: boolean = false;
+    notificationsDropdownClassApplied = false;
 
     constructor(
         public router: Router,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private apiService: ApiService,
+        private messageService: MessageService
     ) {}
 
     ngOnInit(): void {
-        // this.isLoggedIn = this.loginService.isLoggedIn();
-        // console.log(this.isLoggedIn);
-        // if (this.isLoggedIn) {
-        //     const userDetails = this.loginService.getUserDetails();
-        //     this.userName = userDetails?.displayName || 'User';
-        // }
-
         this.loginService.loginState$
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (state) => {
-                    console.log('Navbar: Detected loginState$ change:', state);
                     this.isLoggedIn = state;
 
                     if (state) {
-                        const userDetails = this.loginService.getUserDetails();
+                        const userDetails: any = this.loginService.getUserDetails();
                         this.userName = userDetails?.displayName || 'User';
                     } else {
                         this.userName = 'Guest';
                     }
-
                     this.cdr.detectChanges();
                 },
                 error: (err) => {
                     console.error('Navbar: Error in loginState$ subscription:', err);
                 }
             });
-
     }
 
     toggleUserDropdown(): void {
@@ -60,8 +58,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
     
     logout(): void {
         this.userDropdownOpen = !this.userDropdownOpen;
-        this.loginService.logout();
-        this.router.navigate(['/login']);
+        if (window.innerWidth < 992) {
+            this.classApplied = !this.classApplied;
+        }
+        this.apiService.logout({}).subscribe({
+            next: (response: any) => {
+                if(response.status) {
+                    this.loginService.logout();
+                    this.router.navigate(['/login']);
+                }
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+            }
+        })
     }
     
     ngOnDestroy(): void {
@@ -69,8 +79,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    // Navbar Sticky
-    isSticky: boolean = false;
     @HostListener('window:scroll', ['$event'])
     checkScroll() {
         const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -81,14 +89,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
         }
     }
 
-    // Menu Trigger
-    classApplied = false;
     toggleClass() {
         this.classApplied = !this.classApplied;
     }
 
-    // Notifications Dropdown
-    notificationsDropdownClassApplied = false;
     notificationsDropdownToggleClass() {
         this.notificationsDropdownClassApplied = !this.notificationsDropdownClassApplied;
     }
@@ -96,36 +100,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
     openSectionIndex: number = -1;
     openSectionIndex2: number = -1;
     openSectionIndex3: number = -1;
-    toggleSection(index: number): void {
-        if (this.openSectionIndex === index) {
-            this.openSectionIndex = -1;
-        } else {
-            this.openSectionIndex = index;
-        }
-    }
-    toggleSection2(index: number): void {
-        if (this.openSectionIndex2 === index) {
-            this.openSectionIndex2 = -1;
-        } else {
-            this.openSectionIndex2 = index;
-        }
-    }
-    toggleSection3(index: number): void {
-        if (this.openSectionIndex3 === index) {
-            this.openSectionIndex3 = -1;
-        } else {
-            this.openSectionIndex3 = index;
-        }
-    }
-    isSectionOpen(index: number): boolean {
-        return this.openSectionIndex === index;
-    }
-    isSectionOpen2(index: number): boolean {
-        return this.openSectionIndex2 === index;
-    }
-    isSectionOpen3(index: number): boolean {
-        return this.openSectionIndex3 === index;
-    }
 
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: Event): void {
+        const target = event.target as HTMLElement;
+
+        const clickedInsideUserDropdown = target.closest('.user-icon');
+        const clickedInsideNotificationsDropdown = target.closest('.notif-option');
+
+        if (!clickedInsideUserDropdown) {
+            this.userDropdownOpen = false;
+        }
+
+        if (!clickedInsideNotificationsDropdown) {
+            this.notificationsDropdownClassApplied = false;
+        }
+
+        this.cdr.detectChanges();
+    }
 
 }

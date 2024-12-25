@@ -33,22 +33,22 @@
     --fontSize: 16px;
     --transition: all ease .5s;
 }
-@font-face {
-    font-family: "Sharp-Grotesk-bold";
-    src: url(../public/fonts/SharpGrotesk-Bold20.otf);
-}
-@font-face {
-    font-family: "Sharp-Grotesk-Semibold";
-    src: url(../public/fonts/SharpGrotesk-SemiBold20.otf);
-}
-@font-face {
-    font-family: "Sharp-Grotesk-Medium";
-    src: url(../public/fonts/SharpGrotesk-Medium20.otf);
-}
-@font-face {
-    font-family: "Sharp-Grotesk-Regular";
-    src: url(../public/fonts/SharpGrotesk-Light20.otf);
-}
+// @font-face {
+//     font-family: "Sharp-Grotesk-bold";
+//     src: url(../public/fonts/SharpGrotesk-Bold20.otf);
+// }
+// @font-face {
+//     font-family: "Sharp-Grotesk-Semibold";
+//     src: url(../public/fonts/SharpGrotesk-SemiBold20.otf);
+// }
+// @font-face {
+//     font-family: "Sharp-Grotesk-Medium";
+//     src: url(../public/fonts/SharpGrotesk-Medium20.otf);
+// }
+// @font-face {
+//     font-family: "Sharp-Grotesk-Regular";
+//     src: url(../public/fonts/SharpGrotesk-Light20.otf);
+// }
 * {
     box-sizing: border-box;
 }
@@ -1589,4 +1589,74 @@ padding: 0.25rem !important;
 .p-stepper-nav {
     overflow-y: hidden;
     height: auto;
+}
+
+/* Default button styling */
+.submit-button {
+    color: rgb(255, 113, 18) !important; /* Initial text color */
+    border: 2px solid rgb(255, 113, 18) !important; /* Border color */
+    background: transparent; /* Transparent background */
+    transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out; /* Smooth transition */
+    position: relative;
+    overflow: hidden; /* For the animation effect */
+    padding: 4px 8px;
+    border-radius: 5px;
+}
+
+/* On hover: fill the button with color */
+.submit-button:hover {
+    color: white !important; /* Change text to white */
+    background: rgb(255, 113, 18) !important; /* Fill with color */
+}
+
+/* Spinner inside button */
+.submit-button .p-button-loading-icon {
+    color: gray !important; /* Keep spinner gray */
+}
+
+/* Adding animation effect to hover fill */
+.submit-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgb(255, 113, 18) !important;
+    z-index: 0;
+    transition: left 0.4s ease-in-out;
+}
+
+.submit-button:hover::before {
+    left: 0;
+}
+
+/* Ensure text stays on top of the animation */
+.submit-button span {
+    position: relative;
+    z-index: 1;
+}
+
+.submit-button:disabled {
+    color: rgb(255, 113, 18); /* Text color stays orange */
+    border: 2px solid rgb(255, 113, 18); /* Border stays orange */
+    background: white; /* White background when disabled */
+    cursor: not-allowed; /* Make cursor indicate the button is disabled */
+}
+
+/* Disable hover effect on the disabled button */
+.submit-button:disabled:hover {
+    background: white; /* Keep white background on hover */
+    color: rgb(255, 113, 18); /* Keep text color orange */
+}
+
+.resend-button {
+    color: white !important; /* Initial text color */
+    border: 2px solid rgb(255, 113, 18) !important; /* Border color */
+    background: rgb(255, 113, 18) !important; /* Transparent background */
+    transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out; /* Smooth transition */
+    position: relative;
+    overflow: hidden; /* For the animation effect */
+    padding: 4px 8px;
+    border-radius: 5px;
 }

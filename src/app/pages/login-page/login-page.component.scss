@@ -198,3 +198,42 @@
     transform: scale(1.02);
     box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.3);
 }
+
+:host ::ng-deep .p-dialog {
+    background: linear-gradient(135deg, rgb(13, 99, 174), rgb(58, 141, 207));
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: white; /* Ensures text is visible on the gradient */
+}
+
+:host ::ng-deep .p-dialog-header {
+    background: transparent;
+    border-bottom: none;
+    color: white;
+}
+
+:host ::ng-deep .p-dialog-content {
+    padding: 1.5rem;
+}
+
+:host ::ng-deep .p-dialog-footer {
+    border-top: none;
+    background: transparent;
+    padding: 1rem;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header-close {
+    color: rgb(255, 113, 18);
+    font-size: 1.2rem;
+    opacity: 0.9;
+    transition: transform 0.2s, opacity 0.2s;
+    background-color: transparent;
+    border: none;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header-close:hover {
+    transform: scale(1.2);
+    opacity: 1;
+    background-color: transparent !important;
+    box-shadow: none;
+}

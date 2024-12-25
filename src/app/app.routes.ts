@@ -8,17 +8,19 @@ import { JobPostingPageComponent } from './pages/job-posting-page/job-posting-pa
 import { authGuard, redirectIfAuthenticatedGuard } from './guards/auth.guard';
 import { ApplicantDetailsPageComponent } from './pages/applicant-details-page/applicant-details-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { AuthResolver } from './guards/auth.resolver';
 
 export const routes: Routes = [
-    { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard] },
-    { path: 'register', component: RegisterPageComponent, canActivate: [redirectIfAuthenticatedGuard] },
-    { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard] },
-    { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard] },
-    { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard] },
-    { path: 'job-applicant/:id', component: ApplicantDetailsPageComponent, canActivate: [authGuard] },
+    { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'register', component: RegisterPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'job-applicant', component: ApplicantDetailsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     {
         path: 'job',
         canActivate: [authGuard],
+        resolve: { isLoggedIn: AuthResolver },
         children: [
             { path: '', redirectTo: 'add', pathMatch: 'full' },
             { path: 'add', component: JobPostingPageComponent },

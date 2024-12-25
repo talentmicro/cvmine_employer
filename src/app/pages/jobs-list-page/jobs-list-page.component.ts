@@ -1,15 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ImportsModule } from '../../imports';
-
-// prime-ng imports
 import { Table } from 'primeng/table';
 import { ApiService } from '../services/api.service';
 import { LoadingService } from '../../common/loading-spinner/loading.service';
 import { MessageService } from 'primeng/api';
 import { TableRowCollapseEvent, TableRowExpandEvent } from 'primeng/table';
+import { SharedService } from '../services/shared.service';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { Subject, takeUntil } from 'rxjs';
 
 interface Job {
     id: number;
@@ -36,19 +37,23 @@ interface Job {
         CommonModule, 
         FormsModule,
         ReactiveFormsModule,
-        ImportsModule
+        ImportsModule,
+        FloatLabelModule
     ],
     providers: [MessageService]
 })
 
-export class JobsListPageComponent implements OnInit {
+export class JobsListPageComponent implements OnInit, OnDestroy {
     @ViewChild('dt2') dt2!: Table;
     jobsList: Job[] = [];
     selectedJobs!: Job;
     expandedRows = {};
+    private destroy$ = new Subject<void>();
     jobStatuses: Array<{ value: string; label: string, status: number; statusTitle: string }> = []
     loading: boolean = true;
     formGroup!: FormGroup;
+    searchedKeyword: string = '';
+    selectedStatuses: number[] = [];
     requestBody = {
         "search": "",
         "sellerCode": null,
@@ -58,7 +63,7 @@ export class JobsListPageComponent implements OnInit {
         "updatedToDate": null,
         "publishingType": null,
         "startPage": 1,
-        "limit": 40,
+        "limit": 50,
         "productCode": [],
         "status": null,
         "dateFilterType": null,
@@ -68,17 +73,43 @@ export class JobsListPageComponent implements OnInit {
     constructor(
         private apiService: ApiService,
         private loadingSpinnerService: LoadingService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private sharedService: SharedService
     ) {}
 
     ngOnInit(): void {
-        this.getDropdownValues();
+        this.loadingSpinnerService.show();
+        this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
+            next: (data) => {
+                if (data && data?.data?.jobMasterData && data?.data?.jobMasterData?.jobStatusList) {
+                    this.jobStatuses = data.data.jobMasterData.jobStatusList
+                        .filter((item: any) => item.status !== 10)
+                        .map((item: any) => ({
+                            status: item.status,
+                            statusTitle: item.statusTitle,
+                            value: item.statusTitle.toLowerCase(),
+                            label: item.statusTitle,
+                        }));
+                    this.getAllJobListings();
+                }
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                this.loading = false;
+                this.loadingSpinnerService.hide();
+            },
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     getAllJobListings(): void {
-        this.loadingSpinnerService.show();
         this.apiService.getJobListings(this.requestBody).subscribe({
             next: (response) => {
+                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.loading = false;
@@ -87,9 +118,9 @@ export class JobsListPageComponent implements OnInit {
                         id: item.productCode,
                         job_code: item.productCode,
                         job_name: item.productName,
-                        location: item.jobLocation,
+                        location: JSON.parse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
-                        shortlisted_applications: item.Shortlist || 0,
+                        shortlisted_applications: item.Screening || 0,
                         interviewed_applications: item.Interview || 0,
                         offered_applications: item.Offer || 0,
                         hired_applications: item.joined || 0,
@@ -107,30 +138,68 @@ export class JobsListPageComponent implements OnInit {
         });
     }
 
-    getDropdownValues(): void {
+    onSearch(): void {
+        const requestBody = {
+            ...this.requestBody,
+            search: this.searchedKeyword.trim(),
+            status: this.selectedStatuses.length > 0 ? this.selectedStatuses : null
+        };
         this.loadingSpinnerService.show();
-        const body = {};
-        this.apiService.getDropdownsData(body).subscribe({
+        this.apiService.getJobListings(requestBody).subscribe({
             next: (response) => {
-                if (response.status && response.data && response.data.jobMasterData.jobStatusList) {
-                    this.jobStatuses = response.data.jobMasterData.jobStatusList
-                    .filter((item: any) => item.status !== 10)
-                    .map((item: any) => ({
-                        status: item.status,
-                        statusTitle: item.statusTitle,
-                        value: item.statusTitle.toLowerCase(),
-                        label: item.statusTitle
+                console.log(response);
+                if (response.status && response.data && response.data.list) {
+                    this.jobsList = response.data.list.map((item: any) => ({
+                        id: item.productCode,
+                        job_code: item.productCode,
+                        job_name: item.productName,
+                        location: JSON.parse(item.prefJobseekerBranch),
+                        total_applications: item.totalResCount,
+                        shortlisted_applications: item.Shortlist || 0,
+                        interviewed_applications: item.Interview || 0,
+                        offered_applications: item.Offer || 0,
+                        hired_applications: item.joined || 0,
+                        dropped_applications: item.AllDropped || 0,
+                        published_date: item.postedDate,
+                        status: item.statusTitle,
                     }));
-                    this.getAllJobListings();
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.loading = false;
+                    this.loadingSpinnerService.hide();
                 }
             },
-            error: (error: any) => {
+            error: (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
                 this.loading = false;
                 this.loadingSpinnerService.hide();
             },
         });
     }
+
+    // getDropdownValues(): void {
+    //     this.loadingSpinnerService.show();
+    //     const body = {};
+    //     this.apiService.getDropdownsData(body).subscribe({
+    //         next: (response) => {
+    //             if (response.status && response.data && response.data.jobMasterData.jobStatusList) {
+    //                 this.jobStatuses = response.data.jobMasterData.jobStatusList
+    //                 .filter((item: any) => item.status !== 10)
+    //                 .map((item: any) => ({
+    //                     status: item.status,
+    //                     statusTitle: item.statusTitle,
+    //                     value: item.statusTitle.toLowerCase(),
+    //                     label: item.statusTitle
+    //                 }));
+    //                 this.getAllJobListings();
+    //             }
+    //         },
+    //         error: (error: any) => {
+    //             this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+    //             this.loading = false;
+    //             this.loadingSpinnerService.hide();
+    //         },
+    //     });
+    // }
 
     expandAll() {
         // this.expandedRows = this.jobsList.reduce((acc: { [key: string]: boolean }, j) => (acc[j.id] = true) && acc, {});
@@ -152,40 +221,32 @@ export class JobsListPageComponent implements OnInit {
         this.messageService.add({ severity: 'success', summary: 'Job Collapsed', detail: event.data.name, life: 3000 });
     }
 
-
-    ngAfterViewInit(): void {
-        
-    }
-
     clear(table: Table) {
         table.clear();
     }
 
-    onGlobalFilter(event: Event) {
-        const input = event.target as HTMLInputElement;
-        this.dt2.filterGlobal(input.value, 'contains');
-    }
+    // onGlobalFilter(event: Event) {
+    //     const input = event.target as HTMLInputElement;
+    //     this.dt2.filterGlobal(input.value, 'contains');
+    // }
 
     getSeverity(status: string): any {
         switch (status) {
             case 'closed':
                 return 'danger';
-
             case 'published':
                 return 'success';
-
             case 'pending':
                 return 'info';
-
             case 'paused':
                 return 'warning';
-
             default:
                 return '';
         }
     }
 
     onJobStatusChange(row: Job): void {
+        this.loadingSpinnerService.show();
         let body = {
             "status": this.jobStatuses.find(item => item.statusTitle === row.status)?.status,
             "productCode": row.id,
@@ -216,6 +277,17 @@ export class JobsListPageComponent implements OnInit {
         };
         const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
         return formattedDate;
+    }
+
+    formatLocations(locations: any[]) {
+        const allLocations = locations.map(item => item.title);
+        return allLocations.length > 0 ? allLocations : ['Unknown'];
+    }
+
+    encryptQueryParams(queryParams: any) {
+        const queryParamsString = JSON.stringify(queryParams);
+        const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);
+        return encryptedQueryParamsString;
     }
 
 }
