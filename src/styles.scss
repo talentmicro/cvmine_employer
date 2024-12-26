@@ -493,6 +493,7 @@ select {
     }
     &.style-four {
         color: var(--whiteColor);
+        z-index: 0;
 
         &:before {
             background-color: var(--primaryColor);

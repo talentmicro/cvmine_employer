@@ -2,88 +2,19 @@
 <div class="navbar-area style-one position-relative"
     [ngClass]="{'sticky': isSticky, 'style-two': router.url === '/index-2' || router.url === '/index-3'}">
     <nav class="navbar navbar-expand-lg bg_dark d-flex justify-content-between align-items-center">
-        <div class="container">
+        <div class="container nav-container">
             <div class="w-full d-flex justify-content-between align-items-center" style="width: 100%;" >
                 <a routerLink="/" class="navbar-brand">
                     <img src="img/logo-cvmine.png" alt="Logo"[width]="100">
                 </a>
                 <!-- <button *ngIf="!isLoggedIn" routerLink="/employer">employer</button> -->
                 <!-- <p-button *ngIf="!isLoggedIn" label="Employer" routerLink="/employer" severity="warning" /> -->
-                <div class="employer_btn mr-4" routerLink="/employer">
+                <!-- <div class="employer_btn mr-4" routerLink="/employer">
                     Employer
-                </div>
+                </div> -->
             </div>
-            <ul
-                class="category-menu list-unstyle d-none d-xl-block"
-                *ngIf="router.url === '/index-2'"
-            >
-                <li>
-                    <a href="javascript:void(0)" class="category-menu-title fw-medium">
-                        <span class="d-none d-xxl-inline">
-                            Categories
-                        </span>
-                        <img src="img/icons/category.svg" alt="Icon">
-                    </a>
-                    <ul class="list-unstyle position-absolute bg-white transition">
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Web Development
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Digital Marketing
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Graphics Design
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Data Science
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                SEO & SEM
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Health & Fitness
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Business
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Art & Photography
-                            </a>
-                        </li>
-                        <li>
-                            <a routerLink="/jobs-grid">
-                                <i class="ri-arrow-right-line"></i>
-                                Cooking
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
             <div class="other-options d-flex align-items-center justify-content-end d-lg-none">
-                <div *ngIf="isLoggedIn" class="option-item"
+                <!-- <div *ngIf="isLoggedIn" class="option-item"
                     [ngClass]="{'d-none': router.url === '/index-2' || router.url === '/index-3'}">
                     <div class="notif-option position-relative">
                         <button type="button" (click)="notificationsDropdownToggleClass()"
@@ -93,7 +24,7 @@
                                 1
                             </span>
                         </button>
-                        <!-- <div class="dropdown-menu top-1 border-0"
+                        <div class="dropdown-menu top-1 border-0"
                             [class.active]="notificationsDropdownClassApplied">
                             <h3 class="fs-20 fw-semibold mb-15">Notifications</h3>
                             <ul class="list-unstyle">
@@ -122,9 +53,9 @@
                                     </span>
                                 </li>
                             </ul>
-                        </div> -->
+                        </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="option-item">
                     <button
                         class="navbar-toggler"
@@ -147,6 +78,11 @@
                             Home
                         </a>
                     </li> -->
+                    <li class="nav-item">
+                        <div class="employer_btn mt-3" routerLink="/employer">
+                            Employer
+                        </div>
+                    </li>
                     <li class="nav-item">
                         <a routerLink="/job-listings" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                             Jobs
@@ -203,7 +139,7 @@
                     </div>
                 </div> -->
                 <div *ngIf="!isLoggedIn" class="auth-buttons my-2 ms-auto">
-                    <a *ngIf="router.url === '/register'" routerLink="/login" class="link style-four fw-medium mx-2">
+                    <a *ngIf="router.url === '/employer'" routerLink="/login" class="link style-four fw-medium mx-2">
                         Login
                     </a>
                     <!-- <a *ngIf="router.url === '/login'" routerLink="/register" class="btn style-four mx-2">
@@ -264,14 +200,21 @@
                     Applicants
                 </button>
             </div>
+            <div class="accordion-item rounded-0 border-0">
+                <button type="button"
+                    routerLink="/job-applicants" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                    class="employer_btn my-3">
+                    Employer
+                </button>
+            </div>
         </div>
         <div *ngIf="!isLoggedIn" class="other-options d-flex align-items-center"
             [ngClass]="{'d-none': router.url === '/index-2' || router.url === '/index-3'}">
             <a routerLink="/login" class="link style-four fw-medium">
                 Login
             </a>
-            <a routerLink="/register" class="btn style-four">
-                Register
+            <a routerLink="/employer" class="btn style-four">
+                Employer
             </a>
         </div>
         <div *ngIf="isLoggedIn" class="user-icon position-relative my-3">

@@ -3,7 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { LoginService } from '../pages/services/auth/login.service';
 import { LoadingService } from '../common/loading-spinner/loading.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = async (route, state) => {
     const loginService = inject(LoginService);
     const loadingService = inject(LoadingService);
     const router = inject(Router);
@@ -13,9 +13,8 @@ export const authGuard: CanActivateFn = (route, state) => {
         loadingService.hide();
         return true;
     }
-
-    loadingService.hide();
     router.navigate(['/login']);
+    loadingService.hide();
     return false;
 };
 

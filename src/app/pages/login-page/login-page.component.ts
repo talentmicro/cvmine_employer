@@ -39,6 +39,7 @@ export class LoginPageComponent{
         private messageService: MessageService,
         private apiService: ApiService
     ) {
+        console.log("Login component called.")
         this.loginForm = this.fb.group({
             employeeId: ['', [Validators.required]],
             password: ['', [

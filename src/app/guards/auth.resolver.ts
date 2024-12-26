@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
@@ -18,17 +18,18 @@ export class AuthResolver implements Resolve<boolean> {
     constructor(
         private loginService: LoginService,
         private router: Router,
+        @Inject(PLATFORM_ID) private platformId: Object,
         private transferState: TransferState
     ) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
         return new Promise<boolean>((resolve) => {
-            if (isPlatformBrowser(this.router.routerState.root)) {
+            if (isPlatformBrowser(this.platformId)) {
                 const authToken = this.loginService.getAuthToken();
                 if (authToken) {
                     resolve(true);
                 } else {
-                    this.router.navigate(['/login']);
+                    // this.router.navigate(['/login']);
                     resolve(false);
                 }
             } else {
@@ -36,7 +37,7 @@ export class AuthResolver implements Resolve<boolean> {
                 if (authToken) {
                     resolve(true);
                 } else {
-                    resolve(false); // Not authenticated
+                    resolve(false);
                 }
             }
         });

@@ -15,7 +15,7 @@ import { RegistrationFailedComponent } from './pages/registration-failed/registr
 
 export const routes: Routes = [
     { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
-    { path: 'register', component: RegisterPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
+    // { path: 'register', component: RegisterPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'employer', component: RegistrationComponent },
     { path: 'reg-success', component: RegistrationSuccessComponent },
     { path: 'reg-failed', component: RegistrationFailedComponent },
