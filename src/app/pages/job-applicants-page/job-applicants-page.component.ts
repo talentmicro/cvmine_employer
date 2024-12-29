@@ -213,7 +213,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         const body = {
             "activeJobs": 1
         }
-        this.apiService.getJobListings(body).subscribe({
+        this.apiService.getJobs(body).subscribe({
             next: (response) => {
                 if (response.status && response.data && response.data.list) {
                     this.jobsList = response.data.list.map((item: any) => ({
