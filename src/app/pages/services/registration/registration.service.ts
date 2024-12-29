@@ -51,4 +51,9 @@ export class RegistrationService {
       }
     );
   }
+
+  applyCoupon(request:any){
+    console.log(request);
+    return this.http.post(this.url + 'tallite_reg_apply_coupon', request);
+  }
 }

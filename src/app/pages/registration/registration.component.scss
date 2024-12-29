@@ -7,9 +7,9 @@
   border-radius: revert-layer;
 }
 
-::ng-deep .p-inputgroup {
-  width: 60% !important;
-}
+// ::ng-deep .p-inputgroup {
+//   width: 100% !important;
+// }
 
 ::ng-deep .p-inputgroup-addon {
   padding: 0rem 0.75rem;
@@ -856,4 +856,133 @@ p-dropdown {
 
 ::ng-deep .p-inputotp{
   width: 50% !important;
+}
+
+
+
+
+///////////////////////////////////////////////////////
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-top: 2em;
+  margin-bottom: 0;
+}
+
+.text-accent {
+  color: #00A1AB;
+}
+
+.fs-500 {
+  font-size: 1.3125rem;
+  margin: 0;
+}
+
+.mb {
+  margin-bottom: 0.5em;
+}
+
+.plans {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 2em 0;
+}
+
+.plan {
+  width: 19rem;
+  padding: 2em;
+  border-radius: 1em;
+  margin: 0 1em 1em;
+}
+
+.plan--light {
+  color: #4E4E4E;
+  // background: linear-gradient(-45deg, #E5E3E8, #FAFAFA);
+  background-color: #fff;
+}
+
+.plan--light .plan-price {
+  color: #00A1AB;
+}
+
+.plan--light .btn {
+  color: #FFF;
+  // background: var(--primaryColor);
+}
+
+.plan--accent {
+  color: #fff !important;
+  background: linear-gradient(180deg, #8ab7ff, #336395);
+  scale: 1.1;
+  height: fit-content;
+
+  .plan-description{
+   color: #fff; 
+  }
+}
+
+.plan--accent .btn {
+  color: #4E4E4E;
+  background: #FFF;
+}
+
+.plan-title {
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+  color: var(--primary-800);
+}
+
+.plan-price {
+  text-align: center;
+  margin: 0;
+  font-size: 2.2rem;
+  line-height: 1;
+  font-weight: 900;
+  color: #fff;
+}
+
+.plan-price span {
+  // display: block;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.plan-description {
+  margin: 2em 0;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  border-radius: 0.25em;
+  text-decoration: none;
+  font-weight: 700;
+  color: #FFF;
+  background: var(--primaryColor);
+  transition: 0.3s;
+}
+
+.btn:hover {
+  // opacity: 0.7;
+  background-color: var(--secondaryColor);
+}
+
+.btn-mb {
+  margin-bottom: 3em;
+}
+
+.btn--light {
+  color: #4E4E4E;
+  background: #FFF;
+}
+
+.btn--dark {
+  color: #FFF;
+  background: #4E4E4E;
 }
