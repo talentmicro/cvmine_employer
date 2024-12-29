@@ -72,6 +72,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         "dateFilterType": null,
         "jobType": null,
     }
+    isInitialLoad: boolean = true;
 
     constructor(
         private apiService: ApiService,
@@ -186,31 +187,6 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    // getDropdownValues(): void {
-    //     this.loadingSpinnerService.show();
-    //     const body = {};
-    //     this.apiService.getDropdownsData(body).subscribe({
-    //         next: (response) => {
-    //             if (response.status && response.data && response.data.jobMasterData.jobStatusList) {
-    //                 this.jobStatuses = response.data.jobMasterData.jobStatusList
-    //                 .filter((item: any) => item.status !== 10)
-    //                 .map((item: any) => ({
-    //                     status: item.status,
-    //                     statusTitle: item.statusTitle,
-    //                     value: item.statusTitle.toLowerCase(),
-    //                     label: item.statusTitle
-    //                 }));
-    //                 this.getAllJobListings();
-    //             }
-    //         },
-    //         error: (error: any) => {
-    //             this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-    //             this.loading = false;
-    //             this.loadingSpinnerService.hide();
-    //         },
-    //     });
-    // }
-
     expandAll() {
         // this.expandedRows = this.jobsList.reduce((acc: { [key: string]: boolean }, j) => (acc[j.id] = true) && acc, {});
         this.expandedRows = this.jobsList.reduce((acc, j) => {
@@ -301,6 +277,10 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     onPageChange(event: any): void {
+        if (this.isInitialLoad) {
+            this.isInitialLoad = false;
+            return;
+        }
         this.page = event.first / event.rows + 1;
         this.limit = event.rows;
         this.loadingSpinnerService.show();
