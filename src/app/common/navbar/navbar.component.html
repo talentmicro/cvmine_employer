@@ -78,11 +78,11 @@
                             Home
                         </a>
                     </li> -->
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <div class="employer_btn mt-3" routerLink="/employer">
                             Employer
                         </div>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a routerLink="/job-listings" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                             Jobs
@@ -200,13 +200,13 @@
                     Applicants
                 </button>
             </div>
-            <div class="accordion-item rounded-0 border-0">
+            <!-- <div class="accordion-item rounded-0 border-0">
                 <button type="button"
                     routerLink="/job-applicants" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
                     class="employer_btn my-3">
                     Employer
                 </button>
-            </div>
+            </div> -->
         </div>
         <div *ngIf="!isLoggedIn" class="other-options d-flex align-items-center"
             [ngClass]="{'d-none': router.url === '/index-2' || router.url === '/index-3'}">
@@ -214,7 +214,7 @@
                 Login
             </a>
             <a routerLink="/employer" class="btn style-four">
-                Employer
+                Sign Up
             </a>
         </div>
         <div *ngIf="isLoggedIn" class="user-icon position-relative my-3">
