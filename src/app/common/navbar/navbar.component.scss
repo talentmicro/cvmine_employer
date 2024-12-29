@@ -1067,7 +1067,7 @@
     display: none;
     min-width: 150px;
     padding: 10px;
-    background-color: rgb(255, 113, 18);
+    background-color: rgb(193, 219, 243);
     color: white;
     border-radius: 5px;
     z-index: 1050;
@@ -1096,22 +1096,16 @@
     color: #fff;
     background-color: var(--secondaryColor);
     font-weight: 600;
-    // border: 1px solid var(--secondaryColor);
     border-radius: 5px;
     padding: 3px 9px;
     cursor: pointer;
     transition: all 0.4s ease-in-out;
-    margin-right: 20px !important;
-
-    // &::before {
-    //     background-color: var(--secondaryColor);
-    // }
-    // &::after {
-    //     background-color: var(--primaryColor);
-    // }
-
+    border: none;
     &:hover{
         background-color: var(--primaryColor);
     }
 }
 
+.nav-container {
+    flex-wrap: nowrap !important;
+}

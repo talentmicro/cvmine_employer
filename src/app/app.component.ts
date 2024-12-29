@@ -40,11 +40,6 @@ export class AppComponent implements OnInit {
                 this.viewportScroller.scrollToPosition([0, 0]);
             }
         });
-        
-        // this.loadingService.loading$.subscribe((loading) => {
-        //     this.isLoading = loading;
-        //     this.cdr.detectChanges();
-        // });
     }
 
     ngOnInit(): void {
