@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import * as forge from 'node-forge';
 
@@ -12,8 +12,8 @@ const IV = '1234567891234567'; // Initialization vector
 })
 
 export class SharedService {
-    private masterDropdowns = new BehaviorSubject<any>(null); // BehaviorSubject to store dropdown data
-    public masterDropdowns$ = this.masterDropdowns.asObservable(); // Observable for components to subscribe to
+    private masterDropdowns = new BehaviorSubject<any>(null);
+    public masterDropdowns$ = this.masterDropdowns.asObservable().pipe(distinctUntilChanged());
 
     constructor(
         private http: HttpClient,
@@ -21,9 +21,12 @@ export class SharedService {
     ) {}
 
     fetchAndSetDropdownData(body: any): void {
-        this.apiService.getDropdownsData(body).subscribe((data) => {
-            this.masterDropdowns.next(data);
-        });
+        if (!this.masterDropdowns.getValue()) {
+            this.apiService.getDropdownsData(body).subscribe({
+                next: (data) => this.masterDropdowns.next(data),
+                error: (err) => console.error('Failed to fetch dropdown data:', err),
+            });
+        }
     }
 
     getMasterDropdowns() {

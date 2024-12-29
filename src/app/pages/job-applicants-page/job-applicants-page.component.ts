@@ -114,6 +114,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         "nationalities": null
     }
     filteredJobs!: Observable<{ job_code: string; job_name: string }[]>;
+    isInitialLoad = true;
 
     constructor(
         private route: ActivatedRoute,
@@ -142,7 +143,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
                             statusCode: item.id,
                             label: item.title.split(' - ')[0],
                         }));
-                        this.getAllJobs();
+                        // this.getAllJobs();
                     }
                 },
                 error: (error) => {
@@ -150,6 +151,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
                     this.loadingSpinnerService.hide();
                 },
             });
+            this.getAllJobs();
         });
     }
 
@@ -328,6 +330,10 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     onPageChange(event: any): void {
+        if (this.isInitialLoad) {
+            this.isInitialLoad = false;
+            return;
+        }
         this.page = event.first / event.rows + 1;
         this.limit = event.rows;
         this.loadingSpinnerService.show();
