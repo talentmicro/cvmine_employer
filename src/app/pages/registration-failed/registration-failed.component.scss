@@ -1,0 +1,15 @@
+.linear {
+    // animation: grow 0.7s linear;
+    animation: rotate-logo 2s linear;
+}
+
+
+
+@keyframes rotate-logo {
+    from {
+      transform: rotateY(0deg);
+    }
+    to {
+      transform: rotateY(360deg);
+    }
+  }

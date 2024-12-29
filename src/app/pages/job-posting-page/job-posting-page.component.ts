@@ -274,7 +274,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
         if (productCode) {
             this.apiService.getJobDetails(body).subscribe({
                 next: (response) => {
-                    console.log(response);
+                    // console.log(response);
                     if (response.status && response.data) {
                         this.selectedExistingJobDetails = {
                             "jobCode": response.data.jobDetails[0].productCode,
@@ -314,7 +314,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
         if(questionString) {
             const customQuestions = JSON.parse(questionString);
             this.savedCustomQuestions = customQuestions;
-            console.log(customQuestions);
+            // console.log(customQuestions);
             if(customQuestions?.length > 0) {
                 return customQuestions;
             } else {
@@ -400,6 +400,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             this.thirdStepForm.get('question')?.clearValidators();
             this.thirdStepForm.get('question')?.updateValueAndValidity();
         }
+        console.log(this.secondStepForm.hasError('invalidSalaryRange'));
     }
 
     get questionFormArray(): FormArray {
@@ -465,8 +466,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
     salaryRangeValidator(control: AbstractControl): ValidationErrors | null {
         const salaryFrom = control.get('salaryFrom')?.value;
         const salaryTo = control.get('salaryTo')?.value;
-        
-        if (salaryFrom !== null && salaryTo !== null && salaryFrom >= salaryTo) {
+        if (salaryFrom !== null && salaryTo !== null && Number(salaryFrom) >= Number(salaryTo)) {
             return { 'invalidSalaryRange': true };
         }
         return null;
@@ -547,12 +547,12 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                     responseInput: item.additionalResponse === 'Required' ? 1 : 2
                 };
             });
-            console.log("saved", this.savedCustomQuestions);
-            console.log("formarray", customQuestions)
+            // console.log("saved", this.savedCustomQuestions);
+            // console.log("formarray", customQuestions)
             const originalQuestionIds = this.savedCustomQuestions?.map(q => q.id);
             const addedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
             const deletedQuestionIds = originalQuestionIds.filter(id => !addedQuestionIds.includes(id));
-            console.log('deleted questions ID', deletedQuestionIds);
+            // console.log('deleted questions ID', deletedQuestionIds);
             const jobData = {
                 data: [{
                     "sellerCode": Number(this.userDetails.sellerCode),
@@ -754,11 +754,11 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                     "lobDetails": null
                 }]
             };
-            console.log(jobData);
+            // console.log(jobData);
             this.apiService.saveJob(jobData).subscribe((response) => {
                 if(response.status) {
-                    console.log(response);
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    // console.log(response);
+                    // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.firstStepForm.reset();
                     this.secondStepForm.reset();
                     this.thirdStepForm.reset();

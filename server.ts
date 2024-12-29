@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser'; // Add cookie-parser
 import { TransferState, makeStateKey } from '@angular/core';
 
 // Define a TransferState key for auth
-const AUTH_STATE_KEY = makeStateKey<boolean>('authState');
+const AUTH_TOKEN_KEY = makeStateKey<string | null>('authToken');
 
 export function app(): express.Express {
     const server = express();
@@ -38,10 +38,10 @@ export function app(): express.Express {
 
         // Check for auth token in cookies
         const authToken = req.cookies['authToken'] || null;
-        const isLoggedIn = !!authToken; // Determine login status based on the presence of the token
+        // const isLoggedIn = !!authToken; // Determine login status based on the presence of the token
 
         const transferState = new TransferState();
-        transferState.set(AUTH_STATE_KEY, isLoggedIn); // Add auth state to TransferState
+        transferState.set(AUTH_TOKEN_KEY, authToken); // Add auth state to TransferState
 
         commonEngine
             .render({
@@ -62,7 +62,7 @@ export function app(): express.Express {
 }
 
 function run(): void {
-    const port = process.env['PORT'] || 16020;
+    const port = process.env['PORT'] || 15020;
 
     // Start up the Node server
     const server = app();

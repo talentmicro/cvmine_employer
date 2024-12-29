@@ -9,10 +9,16 @@ import { authGuard, redirectIfAuthenticatedGuard } from './guards/auth.guard';
 import { ApplicantDetailsPageComponent } from './pages/applicant-details-page/applicant-details-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { AuthResolver } from './guards/auth.resolver';
+import { RegistrationComponent } from './pages/registration/registration.component';
+import { RegistrationSuccessComponent } from './pages/registration-success/registration-success.component';
+import { RegistrationFailedComponent } from './pages/registration-failed/registration-failed.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
-    { path: 'register', component: RegisterPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
+    // { path: 'register', component: RegisterPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'employer', component: RegistrationComponent },
+    { path: 'reg-success', component: RegistrationSuccessComponent },
+    { path: 'reg-failed', component: RegistrationFailedComponent },
     { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },

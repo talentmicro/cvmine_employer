@@ -48,25 +48,27 @@
     flex-direction: column;
     min-height: 100vh; /* Full viewport height */
     margin: 0;
-  }
-  
-  /* Navbar styling */
-  app-navbar {
+}
+
+/* Navbar styling */
+app-navbar {
     height: 62px;
     flex-shrink: 0; /* Prevent shrinking */
-  }
-  
-  /* Main content container */
-  .router-container {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* Main content container */
+.router-container {
     flex-grow: 1; /* Expand to take available space */
     display: flex;
     flex-direction: column;
     overflow: auto; /* Allows scrolling if content overflows */
-  }
-  
-  /* Footer styling */
-  app-footer {
+}
+
+/* Footer styling */
+app-footer {
     height: 62px;
     flex-shrink: 0; /* Prevent shrinking */
-  }
-  
+}

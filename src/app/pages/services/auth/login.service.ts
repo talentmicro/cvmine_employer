@@ -50,7 +50,7 @@ export class LoginService {
         return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
             map((response) => {
                 const token = response.data.userDetails.token;
-                console.log(token);
+                // console.log(token);
                 const userDetails = JSON.stringify(response.data.userDetails);
     
                 const encryptedToken = this.encrypt(token);
@@ -85,7 +85,6 @@ export class LoginService {
             })
         );
     }
-    
 
     logout(): void {
         if (isPlatformBrowser(this.platformId)) {
@@ -94,7 +93,7 @@ export class LoginService {
         } else {
             // Clear TransferState on the server
             this.transferState.set(AUTH_TOKEN_KEY, null);
-            this.transferState.set(USER_DETAILS_KEY, null);
+            // this.transferState.set(USER_DETAILS_KEY, null);
         }
 
         // Dispatch the logout action
@@ -108,19 +107,27 @@ export class LoginService {
 
     isLoggedIn(): boolean {
         let token: string | null = null;
-    
-        if (isPlatformBrowser(this.platformId)) {
-            const encryptedToken = sessionStorage.getItem('authToken');
-            if (encryptedToken) {
-                token = this.decrypt(encryptedToken);
-            }
-        } else {
-            const encryptedToken = this.transferState.get(AUTH_TOKEN_KEY, null);
-            if (encryptedToken) {
-                token = this.decrypt(encryptedToken);
-            }
+        const encryptedToken = sessionStorage?.getItem('authToken');
+        if (encryptedToken) {
+            token = this.decrypt(encryptedToken);
         }
-    
+        // const dtoken = this.transferState.get(AUTH_TOKEN_KEY, null);
+        // console.log(dtoken);
+        // const ttoken = this.decrypt(dtoken!);
+        // console.log(ttoken);
+        // if (isPlatformBrowser(this.platformId)) {
+        //     const encryptedToken = sessionStorage.getItem('authToken');
+        //     if (encryptedToken) {
+        //         token = this.decrypt(encryptedToken);
+        //     }
+        // } else {
+        //     const encryptedToken = this.transferState.get(AUTH_TOKEN_KEY, null);
+        //     console.log(encryptedToken);
+        //     if (encryptedToken) {
+        //         token = this.decrypt(encryptedToken);
+        //         console.log(token);
+        //     }
+        // }
         return !!token;
     }    
 
