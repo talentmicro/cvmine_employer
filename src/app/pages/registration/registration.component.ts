@@ -119,7 +119,7 @@ export class RegistrationComponent {
   otp: any = null;
   loading = false;
   setOfCheckedId = new Set<number>();
-  current = 4;
+  current = 0;
   stepsLength!: number;
   current_product: any = null;
   index = 'First-content';
