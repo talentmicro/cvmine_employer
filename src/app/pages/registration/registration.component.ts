@@ -1,12 +1,10 @@
 import { Component, ElementRef, HostListener, Inject, OnChanges, OnInit, PLATFORM_ID, SimpleChanges, ViewChild, } from '@angular/core';
 import { Subject } from 'rxjs';
-// import { NzStepsModule } from 'ng-zorro-antd/steps';
 import { ToastModule } from 'primeng/toast';
 import { CardModule } from 'primeng/card';
 import { StepperModule } from 'primeng/stepper';
 import { StepsModule } from 'primeng/steps';
 import { MessageService } from 'primeng/api';
-// import { NzButtonModule } from 'ng-zorro-antd/button';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -24,42 +22,20 @@ import {
   ValidatorFn,
   FormBuilder,
 } from '@angular/forms';
-// import { NzFormModule } from 'ng-zorro-antd/form';
-// import { NzUploadChangeParam, NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-// import { Select } from 'primeng/select';
-// import { NzIconModule } from 'ng-zorro-antd/icon';
-// import { NzGridModule } from 'ng-zorro-antd/grid';
-// import { NgOtpInputModule } from 'ng-otp-input';
 import { InputOtpModule } from 'primeng/inputotp';
 import { RadioButtonModule } from 'primeng/radiobutton';
-// import { jsonParse, onlyNumbersRegX } from '../functions/shared-functions';
-import { jsonParse, jsonDeepParse, onlyNumbersRegX } from '../../functions/shared-functions';
+import { jsonParse, jsonDeepParse, getIP } from '../../functions/shared-functions';
 import { CheckboxModule } from 'primeng/checkbox';
-import { RadioButton } from 'primeng/radiobutton';
-// import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { RegistrationService } from '../services/registration/registration.service';
-// import { NzMessageModule, NzMessageService, } from 'ng-zorro-antd/message';
-// import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { Observable, Subscription } from 'rxjs';
 import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
-// import { SelectModule } from 'primeng/select';
-// import { FilesService } from '../services/fileService/files.service';
-// import { MediaComponent } from '../controls/media/media.component';
-// import { NzCardComponent } from 'ng-zorro-antd/card';
-// import { TmCaptchComponent } from '../controls/tm-captch/tm-captch.component';
-// import { NzStatus } from 'ng-zorro-antd/core/types';
-// import { NzModalService } from 'ng-zorro-antd/modal';
 import { DialogModule } from 'primeng/dialog';
-// import { LoaderComponent } from '../loader/loader.component';
 import { Router } from '@angular/router';
 import { TermsComponent } from "../terms/terms.component";
 import { GoogleMapComponent } from "../google-map/google-map.component";
-// import { TermsComponent } from '../terms/terms.component';
-// import { GoogleMapComponent } from '../google-map/google-map.component';
-// import { FilesService } from '../services/files/files.service';
 
 @Component({
   selector: 'app-registration',
@@ -89,45 +65,42 @@ import { GoogleMapComponent } from "../google-map/google-map.component";
     ToastModule,
     TermsComponent,
     GoogleMapComponent
-],
+  ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss',
   providers: [MessageService]
 })
 export class RegistrationComponent {
-  // [x: string]: NzButtonSize;
 
-  activeStep: number = 0;
+  // stepItems = [
+  //   { label: 'Select a Product', command: (event: any) => this.messageService.add({ severity: 'info', summary: 'First Step', detail: event.item.label }) },
+  //   { label: 'Registration details' },
+  //   { label: 'Contact' },
+  //   { label: 'Address' },
+  //   { label: 'Password' },
+  //   { label: 'KYC FEE' },
+  //   { label: 'Payment' },
+  // ];
 
-  stepItems = [
-    { label: 'Select a Product', command: (event: any) => this.messageService.add({severity:'info', summary:'First Step', detail: event.item.label}) },
+
+  // stepItems1 = [
+  //   { label: 'Select a Product' },
+  //   { label: 'Registration details' },
+  //   { label: 'Contact' },
+  //   { label: 'Address' },
+  //   { label: 'Password' },
+  // ];
+
+  stepItem2 = [
     { label: 'Registration details' },
     { label: 'Contact' },
     { label: 'Address' },
     { label: 'Password' },
     { label: 'KYC FEE' },
-    { label: 'Payment' },
-  ];
-
-  stepItems1 = [
-    { label: 'Select a Product' },
-    { label: 'Registration details' },
-    { label: 'Contact' },
-    { label: 'Address' },
-    { label: 'Password' },
-  ];
-
-  stepItem2=[
-    { label: 'Registration details' },
-    { label: 'Contact' },
-    { label: 'Address' },
-    { label: 'Password' },
-    { label: 'KYC FEE' },
-    { label: 'Payment' },
   ]
 
 
-
+  couponCardList: any;
   query_param_flag: boolean = false;
   passwordVisible = false;
   Re_passwordVisible = false;
@@ -147,11 +120,10 @@ export class RegistrationComponent {
   loading = false;
   setOfCheckedId = new Set<number>();
   current = 0;
-  stepsLength!:number;
+  stepsLength!: number;
   current_product: any = null;
   index = 'First-content';
   employer_form!: FormGroup;
-  // coupon_form !: UntypedFormGroup;
   pinterval: any;
   show_map = 1;
   interval!: number;
@@ -188,7 +160,7 @@ export class RegistrationComponent {
   step_valid = 4;
   files = [];
   documentUploaded: boolean = true;
-  current_ip: any;
+  current_ip: any = getIP(this.platform_id) || {};
   valid_captcha: boolean = false;
   captcha_loading_interval: any;
   valid_captcha_flag = false;
@@ -317,6 +289,8 @@ export class RegistrationComponent {
 
   ngOnInit(): void {
 
+    console.log(this.current_ip);
+
     if (isPlatformBrowser(this.platform_id)) {
       // Safe to use navigator here
       navigator.permissions.query({ name: 'geolocation' })
@@ -336,18 +310,17 @@ export class RegistrationComponent {
       this.createForm();
       this.getMasters();
       this.queryParams = this.activated_route.snapshot.queryParams;
-     
+
     }
 
     if (this.isBrowser()) {
       let ip: any = localStorage.getItem('getipobject');
-      this.current_ip = jsonParse(ip);
     }
 
-    if(this.employer_form?.controls?.['annualSubscription']?.value > 0) {
-      this.stepsLength=7;
-    }else{
-      this.stepsLength=5;
+    if (this.employer_form?.controls?.['annualSubscription']?.value > 0) {
+      this.stepsLength = 7;
+    } else {
+      this.stepsLength = 5;
     }
 
 
@@ -387,9 +360,9 @@ export class RegistrationComponent {
         mobileIsd: ['+91', Validators.required],
         mobileNumber: [
           null,
-          [Validators.required,mobileNumberLengthValidator(10) ],
+          [Validators.required, mobileNumberLengthValidator(10)],
         ],
-        addressLine1: [null, [Validators.required, Validators.maxLength(100)]],
+        addressLine1: [null, [Validators.maxLength(100)]],
         addressLine2: [null, [Validators.required, Validators.maxLength(100)]],
 
         latitude: [null],
@@ -431,13 +404,53 @@ export class RegistrationComponent {
     );
   }
 
-  showApply=false;
+  showApply = false;
 
-  isCoupon(){
-    this.showApply=!this.showApply
+  isCoupon() {
+    this.showApply = !this.showApply
   }
-  applyCoupon(){
-    console.log("Apply click")
+  applyCoupon() {
+    console.log(this.employer_form.value.prepaidCode);
+
+    if (this.employer_form.value.prepaidCode != null && this.employer_form.value.prepaidCode != '') {
+      const obj = {
+        prepaidCode: this.employer_form.value.prepaidCode.toUpperCase(),
+      }
+
+      console.log(obj);
+      this.registration.applyCoupon(obj).subscribe((res: any) => {
+        if (res && res['data']) {
+          console.log(res['data'].list);
+          this.couponCardList = jsonDeepParse(res['data'].list);
+        } else {
+          const obj = this.masters.talliteBusinessProductList.find((ele: any) => ele.shortCode === "TM199");
+          this.couponCardList = jsonDeepParse(obj.childProductList);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: res['message'] });
+        }
+
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+
+      });
+    }
+    else {
+      const obj = this.masters.talliteBusinessProductList.find((ele: any) => ele.shortCode === "TM199");
+      this.couponCardList = jsonDeepParse(obj.childProductList);
+    }
+
+  }
+
+  talliteProductId: any=null;
+
+  onSubscribeChange(id: any) {
+    if (this.talliteProductId === id) {
+      this.talliteProductId = null;
+    } else {
+      this.talliteProductId = id;
+      console.log(this.talliteProductId);
+    }
   }
 
   checkPassword(): any {
@@ -449,12 +462,12 @@ export class RegistrationComponent {
 
   }
   value_id = null;
-  productTypeChanged(ev: any, item: { id: number; shortCode: any; param_index: number; amount: number; currency: any; }) {
+  productTypeChanged(ev: any, item: { id: number; shortCode: any; param_index: number; amount: number; currency: any; childProductList: any }) {
     this.param_index = item.id;
     console.log(this.param_index);
     console.log(item);
-    console.log(this.masters.talliteBusinessProductList);
-    console.log(this.masters.talliteBusinessProductList[8]);
+    this.couponCardList = jsonDeepParse(item.childProductList);
+    console.log(this.couponCardList);
     this.setOfCheckedId.clear();
     this.setOfCheckedId.add(item.id);
 
@@ -512,7 +525,6 @@ export class RegistrationComponent {
       this.step_valid = step;
     }
     console.log(this.employer_form.get('productTypeId')?.value);
-    // this.messageService.add({ severity: 'warn', summary: 'Invalid', detail: this.employer_form.get('productTypeId')?.value });
     this.current += val;
     console.log(this.current)
     window.scrollTo({
@@ -533,12 +545,6 @@ export class RegistrationComponent {
       this.msg = '';
     }
 
-    // if (event.fileList) {
-    //   this.fileList=event.fileList;
-    //   this.fileList.forEach(file => {
-    //     file.name = file.fileName;
-    //   });
-    // }
   }
 
   onOtpChange(event: any) {
@@ -586,20 +592,12 @@ export class RegistrationComponent {
             if (res['data'].valid) {
               this.verification_status = true;
               this.nzStatusAvailability()
-              // this.notification_srv.success('Success', res['data']['displayMsg'], {
-              //   nzPlacement: 'topRight',
-              //   nzClass: 'bg-green'
-              // });
               this.messageService.add({ severity: 'success', summary: 'Success', detail: res['data']['displayMsg'] });
 
               this.verification_message = res['data']['displayMsg'];
             } else {
               this.verification_status = false;
               this.nzStatusAvailability()
-              // this.notification_srv.error('Error', res['data']['displayMsg'], {
-              //   nzPlacement: 'topRight',
-              //   nzClass: 'bg-danger'
-              // });
 
               this.messageService.add({ severity: 'error', summary: 'Error', detail: res['data']['displayMsg'] });
 
@@ -612,10 +610,6 @@ export class RegistrationComponent {
           }
         });
     } else {
-      // this.notification_srv.error('Error', 'Please enter Short code to proceed', {
-      //   nzPlacement: 'topRight',
-      //   nzClass: 'bg-danger'
-      // });
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please enter Short code to proceed' });
     }
   }
@@ -633,29 +627,13 @@ export class RegistrationComponent {
           console.log(res)
           this.otpLength = res['data'].otpLength;
           this.viewOtpfield = true;
-          // this.notification_srv.success('Success', res['message'], {
-          //   nzPlacement: 'topRight',
-          //   nzClass: 'bg-green'
-          // });
-          this.messageService.add({ severity: 'success', summary: 'Success', detail:  res['message'] });
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: res['message'] });
 
-
-          // let matDialogConfig = new MatDialogConfig();
         } else {
-          // this.notification_srv.error('Error', res['message'], {
-          //   nzPlacement: 'topRight',
-          //   nzClass: 'bg-danger'
-          // });
-
-          this.messageService.add({ severity: 'error', summary: 'Error', detail:  res['message'] });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: res['message'] });
         }
       });
     } else {
-      // this.notification_srv.error('Error', 'Please Enter a valid Email ID to proceed', {
-      //   nzPlacement: 'topRight',
-      //   nzClass: 'bg-danger'
-      // });
-
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Enter a valid Email ID to proceed' });
     }
   }
@@ -684,43 +662,22 @@ export class RegistrationComponent {
       this.registration.verifyOTP(req).subscribe((res: { [x: string]: any; }) => {
         if (res && res['status']) {
           this.email_verification.verification = true;
-          // this.notification_srv.success('Success', res['message'], {
-          //   nzPlacement: 'topRight',
-          //   nzClass: 'bg-green'
-          // });
 
           this.messageService.add({ severity: 'success', summary: 'Success', detail: res['message'] });
 
           this.viewOtpfield = false;
-          // let matDialogConfig = new MatDialogConfig();
         } else {
-
-
-
-          // this.notification_srv.error('Error', res['message'], {
-          //   nzPlacement: 'topRight',
-          //   nzClass: 'bg-danger'
-          // });
-
           this.messageService.add({ severity: 'error', summary: 'Error', detail: res['message'] });
         }
       });
     } else {
 
-
-      // this.notification_srv.error('Error', 'Please Enter a valid OTP', {
-      //   nzPlacement: 'topRight',
-      //   nzClass: 'bg-danger'
-      // });
-
-      this.messageService.add({ severity: 'error', summary: 'Error', detail:'Please Enter a valid OTP' });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Enter a valid OTP' });
 
     }
   }
 
   getMasters() {
-    // let ipAddress = {};
-    // var retrievedObject = localStorage.getItem('getipobject');
     this.masters_loading = true;
     this.registration.getMasters().subscribe(
       (res: { [x: string]: any; }) => {
@@ -785,16 +742,10 @@ export class RegistrationComponent {
             }
           }
 
-          // setTimeout(() => {
-          //   try {
-          //     this.addRecaptchaScript();
-          //   }
-          //   catch (err) {
-          //     console.log(err)
-          //   }
-          // })
+          const obj = this.masters.talliteBusinessProductList.find((ele: any) => ele.shortCode === "TM199");
+          console.log(obj);
 
-          this.productTypeChanged(null,this.masters.talliteBusinessProductList[8]);
+          this.productTypeChanged(null, obj);
 
           this.masters_loading = false;
 
@@ -912,35 +863,19 @@ export class RegistrationComponent {
         },
         (err: any) => {
           this.loader_flag = false;
-          // this.notification_srv.error('Error', 'Please Enter a valid OTP', {
-          //   nzPlacement: 'topRight',
-          //   nzClass: 'bg-danger'
-          // });
 
-          this.messageService.add({ severity: 'error', summary: 'Error', detail:'Please Enter a valid OTP' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Enter a valid OTP' });
           // Optionally navigate to a failure page or show an error message
         }
       );
     } else {
       this.loader_flag = false;
       if (!this.verification_status) {
-        // this.notification_srv.error('Error', 'Please verify Short code to continue', {
-        //   nzPlacement: 'topRight',
-        //   nzClass: 'bg-danger'
-        // });
-        this.messageService.add({ severity: 'error', summary: 'Error', detail:'Please verify Short code to continue' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please verify Short code to continue' });
       } else if (!this.employer_form.value.terms) {
-        // this.notification_srv.error('Error', 'Please Agree to Terms and Conditions', {
-        //   nzPlacement: 'topRight',
-        //   nzClass: 'bg-danger'
-        // });
-        this.messageService.add({ severity: 'error', summary: 'Error', detail:'Please Agree to Terms and Conditions' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Agree to Terms and Conditions' });
       } else if (!this.valid_captcha_flag) {
-        // this.notification_srv.error('Error', 'Please verify Captcha to continue', {
-        //   nzPlacement: 'topRight',
-        //   nzClass: 'bg-danger'
-        // });
-        this.messageService.add({ severity: 'error', summary: 'Error', detail:'Please verify Captcha to continue' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please verify Captcha to continue' });
       }
     }
   }
@@ -972,7 +907,7 @@ export class RegistrationComponent {
       inputAmount: this.employer_form.value.annualSubscription,
       currency: this.employer_form.value.annualSubscriptionCurrency,
       regLicenseKey: data?.regLicenseKey,
-      talliteProductId: this.current_product?.id,
+      talliteProductId: this.talliteProductId,
       emailId: this.employer_form.value.emailId,
     })
     this.registration
@@ -980,7 +915,7 @@ export class RegistrationComponent {
         inputAmount: this.employer_form.value.annualSubscription,
         currency: this.employer_form.value.annualSubscriptionCurrency,
         regLicenseKey: data?.regLicenseKey,
-        talliteProductId: this.current_product?.id,
+        talliteProductId: this.talliteProductId,
         emailId: this.employer_form.value.emailId,
       })
       .subscribe((res: { [x: string]: any; }) => {
@@ -993,13 +928,7 @@ export class RegistrationComponent {
             this.loader_flag = false;
           }
         } else {
-          // this.notification_srv.error('Error', res['message'], {
-          //   nzPlacement: 'topRight',
-          //   nzClass: 'bg-danger'
-          // });
-
           this.messageService.add({ severity: 'error', summary: 'Error', detail: res['message'] });
-
           this.loader_flag = false;
         }
       });
@@ -1073,7 +1002,7 @@ export class RegistrationComponent {
 
   // Handles file removal
   removeFile(file: any) {
-    this.fileList = this.fileList.filter((f:any) => f !== file);
+    this.fileList = this.fileList.filter((f: any) => f !== file);
   }
 
   // Handles the upload process
@@ -1084,24 +1013,24 @@ export class RegistrationComponent {
     this.fileList = []; // Clear the file list after upload
   }
 
-  cardSelect:boolean=false;
-  card_id!:number;
+  cardSelect: boolean = false;
+  card_id!: number;
 
-  plan_selected(type:number){
-    if(type===1){
-      this.card_id=type;
-      if(!this.cardSelect){
-        this.cardSelect=true;
+  plan_selected(type: number) {
+    if (type === 1) {
+      this.card_id = type;
+      if (!this.cardSelect) {
+        this.cardSelect = true;
       }
-    }else if(type===2){
-      this.card_id=type;
-      if(!this.cardSelect){
-        this.cardSelect=true;
+    } else if (type === 2) {
+      this.card_id = type;
+      if (!this.cardSelect) {
+        this.cardSelect = true;
       }
-    }else{
-      this.card_id=type;
-      if(!this.cardSelect){
-        this.cardSelect=true;
+    } else {
+      this.card_id = type;
+      if (!this.cardSelect) {
+        this.cardSelect = true;
       }
     }
   }
