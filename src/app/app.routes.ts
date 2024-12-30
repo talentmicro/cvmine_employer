@@ -12,6 +12,8 @@ import { AuthResolver } from './guards/auth.resolver';
 import { RegistrationComponent } from './pages/registration/registration.component';
 import { RegistrationSuccessComponent } from './pages/registration-success/registration-success.component';
 import { RegistrationFailedComponent } from './pages/registration-failed/registration-failed.component';
+import { PaymentFailureComponent } from './pages/payment-failure/payment-failure.component';
+import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
@@ -19,6 +21,8 @@ export const routes: Routes = [
     { path: 'employer', component: RegistrationComponent },
     { path: 'reg-success', component: RegistrationSuccessComponent },
     { path: 'reg-failed', component: RegistrationFailedComponent },
+    { path: 'payment-success', component: PaymentSuccessComponent },
+    { path: 'payment-failure', component: PaymentFailureComponent },
     { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },

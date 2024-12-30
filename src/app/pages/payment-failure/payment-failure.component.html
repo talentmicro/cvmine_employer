@@ -1,0 +1,37 @@
+<div class="page-failure">
+    <div class="background">
+        <div class="container cont d-flex justify-content-center align-items-center">
+            <div class="row">
+                <div class="modalbox error col-sm-8 col-md-6 col-lg-6 center animate">
+                    <div class="icon">
+                        <i class="pi pi-thumbs-down"
+                            style="color: #fff; font-size: 3rem; text-align: center; padding-top: 28px;"></i>
+                    </div>
+                    <!--/.icon-->
+                    <h1 style="color: #f44336;" class="mt-3" >Your payment is unsuccessful!</h1>
+                    <p>
+                        <span>
+                            Oops! Something went wrong,
+                        </span>
+                        <br>
+                        <span>
+                            Payment could not be completed.
+                            Any amount deduced will be refunded back.
+                        </span>
+
+                        <br> <span>
+                            You will be redirected to
+                        </span>
+                        <a (click)="goToBase()" style="cursor: pointer; color: var(--blue-500);" id="url">
+                            https://employer-uat.cvmine.com
+                        </a> <span id="in"> in </span>
+                        <span id="timer">{{countdown}}</span>s
+                    </p>
+                    <a href="https://employer-uat.cvmine.com/"><button type="button" class="redo btn" onclick="loadSessionID()">Try Again</button></a>
+                    
+                    <!-- <span class="change">-- Click here --</span> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
