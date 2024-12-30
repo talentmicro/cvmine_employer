@@ -421,7 +421,7 @@
                                     </p-accordion> -->
                                     <!-- Accordion to hold the table -->
                                     <p-accordion *ngIf="questionFormArray?.length && questionFormArray.length > 0">
-                                        <p-accordionTab header="Questions">
+                                        <p-accordionTab header="{{questionFormArray.length > 0 ? 'Questions (' + questionFormArray.length + ')' : 'Questions'}}">
                                             <p-table [value]="questionFormArray.controls" class="p-datatable-gridlines">
                                                 <ng-template pTemplate="header">
                                                     <tr>
