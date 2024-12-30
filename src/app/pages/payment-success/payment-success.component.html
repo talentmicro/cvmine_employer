@@ -12,10 +12,10 @@
                         <br> <span id="redirect_warning">
                             Your will be redirected to
                         </span>
-                        <a href="https://employer-uat.cvmine.com/" onclick="goToBase()" style="cursor: pointer; color: var(--blue-500);" id="url">
-                            https://jsrating.com/search
+                        <a (click)="goToBase()" style="cursor: pointer; color: var(--blue-500);" id="url">
+                            https://employer-uat.cvmine.com
                         </a> <span id="in">in </span>
-                        <span id="timer"> 20 </span>s
+                        <span id="timer">{{countdown}}</span>s
                     </p>
                     <a href="https://employer-uat.cvmine.com/"><button type="button" class="redo btn" onclick="goToBase()" id="ok">Ok</button></a>
                     
