@@ -852,12 +852,14 @@ export class RegistrationComponent {
                 message: res['message']
               }
               const serializedObj = JSON.stringify(route_data);
-              this.router.navigate(['/reg-success'], { queryParams: { data: serializedObj } });
+              // this.router.navigate(['/reg-success'], { queryParams: { data: serializedObj } });
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: res['message'] });
               this.loader_flag = false;
             }
           } else {
 
-            this.router.navigate(['/reg-failed'], { queryParams: { message: res['message'] } });
+            // this.router.navigate(['/reg-failed'], { queryParams: { message: res['message'] } });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: res['message'] });
             this.loader_flag = false;
           }
         },
@@ -909,6 +911,7 @@ export class RegistrationComponent {
       regLicenseKey: data?.regLicenseKey,
       talliteProductId: this.talliteProductId,
       emailId: this.employer_form.value.emailId,
+      prepaidCode:this.employer_form.value.prepaidCode,
     })
     this.registration
       .proceedToPay({
@@ -917,6 +920,7 @@ export class RegistrationComponent {
         regLicenseKey: data?.regLicenseKey,
         talliteProductId: this.talliteProductId,
         emailId: this.employer_form.value.emailId,
+        prepaidCode:this.employer_form.value.prepaidCode,
       })
       .subscribe((res: { [x: string]: any; }) => {
         console.log(res);
