@@ -212,7 +212,7 @@
                             <label for="integeronly">Email ID <span class="p-error">*</span>:</label>
                             <p-inputGroup class="email_inputGroup">
                                 <input id="emailId" type="text" formControlName="emailId" pInputText
-                                    placeholder="Enter Email ID" />
+                                    placeholder="Enter Email ID" [readonly]="email_verification.verification" />
 
                                 <span *ngIf="!email_verification.verification" class="p-inputgroup-addon"
                                     style="background-color: green; color: #fff; cursor: pointer;"

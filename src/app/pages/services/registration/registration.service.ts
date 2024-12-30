@@ -19,7 +19,7 @@ export class RegistrationService {
     return this.http.post(this.url + 'validate_company_shortcode', request);
   }
   saveRegistration(request:any) {
-    return this.http.post(this.url + 'save_company_signup', request);
+    return this.http.post(this.url + 'save_company_signup_tal_lite', request);
   }
 
   proceedToPay(request:any) {
