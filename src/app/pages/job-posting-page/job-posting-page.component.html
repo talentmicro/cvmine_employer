@@ -152,7 +152,8 @@
                                                         [showButtons]="false" 
                                                         class="w-75" 
                                                         placeholder="From (years)" 
-                                                        mode="decimal">
+                                                        mode="decimal"
+                                                        [maxFractionDigits]="2">
                                                     </p-inputNumber>
                                                     <div class="col-12">
                                                         <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceFrom')?.hasError('required') && secondStepForm.get('experienceFrom')?.touched">
@@ -168,7 +169,8 @@
                                                         [showButtons]="false" 
                                                         class="w-75" 
                                                         placeholder="To (years)" 
-                                                        mode="decimal">
+                                                        mode="decimal"
+                                                        [maxFractionDigits]="2">
                                                     </p-inputNumber>
                                                     <div class="col-12">
                                                         <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceTo')?.hasError('required') && secondStepForm.get('experienceTo')?.touched">

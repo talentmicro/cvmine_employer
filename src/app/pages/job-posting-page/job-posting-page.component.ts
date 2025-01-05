@@ -299,7 +299,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             "cvminePostings": JSON.parse(response.data.jobDetails[0].cvminePostings)
                         }
                         this.setStepperFormData();
-                        this.loadingSpinnerService.hide();
+                        // this.loadingSpinnerService.hide();
                     }
                 },
                 error: (error: any) => {
@@ -456,7 +456,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
         const experienceFrom = control.get('experienceFrom')?.value;
         const experienceTo = control.get('experienceTo')?.value;
         
-        if (experienceFrom !== null && experienceTo !== null && experienceFrom >= experienceTo) {
+        if (experienceFrom !== null && experienceTo !== null && Number(experienceFrom) >= Number(experienceTo)) {
             return { 'invalidExperienceRange': true };
         }
         return null;
