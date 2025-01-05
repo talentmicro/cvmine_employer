@@ -123,9 +123,11 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             }));
                         this.currencies = data.data.alertMasterData.currencyList;
                         if (this.editMode) {
+                            this.getAllJobs();
                             this.onJobSelected(params['id']);
+                        } else {
+                            this.getAllJobs();
                         }
-                        this.getAllJobs();
                     }
                 },
                 error: (error) => {
@@ -278,6 +280,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                     if (response.status && response.data) {
                         this.selectedExistingJobDetails = {
                             "jobCode": response.data.jobDetails[0].productCode,
+                            "productCodeText": response.data.jobDetails[0].productCodeText,
                             "jobTitle": response.data.jobDetails[0].productName,
                             "jobDescription": response.data.jobDetails[0].description,
                             "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
@@ -299,7 +302,9 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             "cvminePostings": JSON.parse(response.data.jobDetails[0].cvminePostings)
                         }
                         this.setStepperFormData();
-                        // this.loadingSpinnerService.hide();
+                        if(!this.editMode) {
+                            this.loadingSpinnerService.hide();
+                        }
                     }
                 },
                 error: (error: any) => {
@@ -396,7 +401,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
         //         }));
         //     });
         // }
-        // if(this.editMode && this.selectedExistingJobDetails?.questions.length > 0) {
+        // if(this.selectedExistingJobDetails?.questions.length > 0) {
         //     this.thirdStepForm.get('question')?.clearValidators();
         //     this.thirdStepForm.get('question')?.updateValueAndValidity();
         // }
@@ -547,19 +552,19 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             //         responseInput: item.additionalResponse === 'Required' ? 1 : 2
             //     };
             // });
-            // console.log("saved", this.savedCustomQuestions);
-            // console.log("formarray", customQuestions)
+            // // console.log("saved", this.savedCustomQuestions);
+            // // console.log("formarray", customQuestions)
             // const originalQuestionIds = this.savedCustomQuestions?.map(q => q.id);
             // const addedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
             // const deletedQuestionIds = originalQuestionIds.filter(id => !addedQuestionIds.includes(id));
-            // console.log('deleted questions ID', deletedQuestionIds);
+            // // console.log('deleted questions ID', deletedQuestionIds);
             const jobData = {
                 data: [{
                     "sellerCode": Number(this.userDetails.sellerCode),
                     "customerId": null,
                     "productName": this.firstStepForm.get('jobTitle')?.value,
                     "jobTitleId": 0,
-                    "productCodeText": "",
+                    "productCodeText": this.editMode ? this.selectedExistingJobDetails.productCodeText : "",
                     "intJobCode": null,
                     "employerName": this.userDetails.displayName,
                     "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
