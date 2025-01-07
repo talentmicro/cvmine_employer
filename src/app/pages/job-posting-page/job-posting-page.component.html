@@ -152,7 +152,8 @@
                                                         [showButtons]="false" 
                                                         class="w-75" 
                                                         placeholder="From (years)" 
-                                                        mode="decimal">
+                                                        mode="decimal"
+                                                        [maxFractionDigits]="2">
                                                     </p-inputNumber>
                                                     <div class="col-12">
                                                         <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceFrom')?.hasError('required') && secondStepForm.get('experienceFrom')?.touched">
@@ -168,7 +169,8 @@
                                                         [showButtons]="false" 
                                                         class="w-75" 
                                                         placeholder="To (years)" 
-                                                        mode="decimal">
+                                                        mode="decimal"
+                                                        [maxFractionDigits]="2">
                                                     </p-inputNumber>
                                                     <div class="col-12">
                                                         <small class="error-text mx-1" *ngIf="secondStepForm.get('experienceTo')?.hasError('required') && secondStepForm.get('experienceTo')?.touched">
@@ -324,12 +326,13 @@
                                     <p-button severity="danger" label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" styleClass="back-button" />
                                 </div>
                                 <div class="col-6 text-end">
-                                    <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="secondStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" />
+                                    <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="secondStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" /> -->
+                                    <p-button label="Submit" icon="pi pi-arrow-right" iconPos="right" [disabled]="secondStepForm.invalid" styleClass="next-button" (click)="submit()"/>
                                 </div>
                             </div>
                         </ng-template>
                     </p-stepperPanel>
-                    <p-stepperPanel header="Job Questionnaires">
+                    <!-- <p-stepperPanel header="Job Questionnaires">
                         <ng-template pTemplate="content" let-prevCallback="prevCallback" let-index="index">
                             <div class="flex flex-column h-12rem">
                                 <form [formGroup]="thirdStepForm">
@@ -388,38 +391,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <p-accordion>
-                                        <p-accordionTab *ngFor="let question of questionFormArray.controls; let i = index"
-                                            [header]="'Question ' + (i + 1)">
-                                            <div class="row d-flex justify-content-between align-items-center">
-                                                <div class="col-12 col-lg-8">
-                                                    <p><strong>Question:</strong> {{ question.get('question')?.value }}</p>
-                                                    <p>
-                                                        <strong>Expected Response:</strong>
-                                                        {{ question.get('deciderResponse')?.value }}
-                                                    </p>
-                                                    <p>
-                                                        <strong>Additional Response:</strong>
-                                                        {{ question.get('additionalResponse')?.value }}
-                                                    </p>
-                                                </div>
-                                                <div class="col-12 col-lg-4 text-end text-lg-center">
-                                                    <p-button
-                                                        label="Edit"
-                                                        icon="pi pi-pencil"
-                                                        (onClick)="editQuestion(i)">
-                                                    </p-button>
-                                                    <p-button
-                                                        label="Delete"
-                                                        icon="pi pi-trash"
-                                                        class="p-button-danger"
-                                                        (onClick)="deleteQuestion(i)">
-                                                    </p-button>
-                                                </div>
-                                            </div>
-                                        </p-accordionTab>
-                                    </p-accordion> -->
-                                    <!-- Accordion to hold the table -->
+                                
                                     <p-accordion *ngIf="questionFormArray?.length && questionFormArray.length > 0">
                                         <p-accordionTab header="{{questionFormArray.length > 0 ? 'Questions (' + questionFormArray.length + ')' : 'Questions'}}">
                                             <p-table [value]="questionFormArray.controls" class="p-datatable-gridlines">
@@ -469,7 +441,6 @@
                                         </p-checkbox>
                                     </div>
                                 
-                                    <!-- Tallite GPT Additional Inputs -->
                                     <div *ngIf="thirdStepForm.get('useTalliteGPT')?.value" class="mt-3">
                                         <div class="row">
                                             <div class="col-12 col-md-4">
@@ -533,18 +504,13 @@
                                     <p-button label="Back" icon="pi pi-arrow-left" iconPos="left" (onClick)="prevCallback.emit()" styleClass="back-button"/>
                                 </div>
                                 <div class="col-6 text-end">
-                                    <!-- <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" /> -->
                                     <p-button label="Submit" icon="pi pi-arrow-right" iconPos="right" [disabled]="thirdStepForm.invalid || questionFormArray.length === 0" styleClass="next-button" (click)="submit()"/>
                                 </div>
                             </div>
                         </ng-template>
-                    </p-stepperPanel>
+                    </p-stepperPanel> -->
                 </p-stepper>
             </div>
         </div>
     </div>
 </div>
-<!-- 
-<quill-editor formControlName="jobDescription"
-                                                [styles]="{ height: '200px' }" [modules]="quillModules">
-                                            </quill-editor> -->

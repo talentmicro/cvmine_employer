@@ -46,7 +46,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
     userDetails!: any;
     firstStepForm!: FormGroup;
     secondStepForm!: FormGroup;
-    thirdStepForm!: FormGroup;
+    // thirdStepForm!: FormGroup;
     editMode: boolean = false;
     existing: any[] = [
         { name: 'Yes', key: 'yes' },
@@ -123,9 +123,11 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             }));
                         this.currencies = data.data.alertMasterData.currencyList;
                         if (this.editMode) {
+                            this.getAllJobs();
                             this.onJobSelected(params['id']);
+                        } else {
+                            this.getAllJobs();
                         }
-                        this.getAllJobs();
                     }
                 },
                 error: (error) => {
@@ -177,27 +179,27 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             noticeTo: [null],
         }, { validator: [this.experienceRangeValidator, this.salaryRangeValidator, this.noticePeriodRangeValidator] });
         this.initializeJobTypeFromString('');
-        this.thirdStepForm = this.fb.group({
-            questionId: [0],
-            question: ['', Validators.required],
-            deciderResponse: ['Yes', Validators.required],
-            additionalResponse: ['Not Required', Validators.required],
-            useTalliteGPT: [false],
-            noOfQuestion: [null, [Validators.min(1), Validators.max(10)]],
-            difficulty: [''],
-            requiredAssessmentScore: [null, [Validators.min(1), Validators.max(100), Validators.pattern('^\\d*(\\.\\d+)?$')]],
-            questions: this.fb.array([]),
-        });
+        // this.thirdStepForm = this.fb.group({
+        //     questionId: [0],
+        //     question: ['', Validators.required],
+        //     deciderResponse: ['Yes', Validators.required],
+        //     additionalResponse: ['Not Required', Validators.required],
+        //     useTalliteGPT: [false],
+        //     noOfQuestion: [null, [Validators.min(1), Validators.max(10)]],
+        //     difficulty: [''],
+        //     requiredAssessmentScore: [null, [Validators.min(1), Validators.max(100), Validators.pattern('^\\d*(\\.\\d+)?$')]],
+        //     questions: this.fb.array([]),
+        // });
 
         this.toggleNoticePeriodValidators(this.secondStepForm.get('noticePeriodType')?.value);
-        this.toggleTalliteQuestionsControls(this.thirdStepForm.get('useTalliteGPT')?.value)
+        // this.toggleTalliteQuestionsControls(this.thirdStepForm.get('useTalliteGPT')?.value)
 
         this.secondStepForm.get('noticePeriodType')?.valueChanges.subscribe(value => {
             this.toggleNoticePeriodValidators(value);
         });
-        this.thirdStepForm.get('useTalliteGPT')?.valueChanges.subscribe(value => {
-            this.toggleTalliteQuestionsControls(value);
-        });
+        // this.thirdStepForm.get('useTalliteGPT')?.valueChanges.subscribe(value => {
+        //     this.toggleTalliteQuestionsControls(value);
+        // });
     }
 
     getLocations() {
@@ -278,6 +280,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                     if (response.status && response.data) {
                         this.selectedExistingJobDetails = {
                             "jobCode": response.data.jobDetails[0].productCode,
+                            "productCodeText": response.data.jobDetails[0].productCodeText,
                             "jobTitle": response.data.jobDetails[0].productName,
                             "jobDescription": response.data.jobDetails[0].description,
                             "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
@@ -299,7 +302,9 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             "cvminePostings": JSON.parse(response.data.jobDetails[0].cvminePostings)
                         }
                         this.setStepperFormData();
-                        this.loadingSpinnerService.hide();
+                        if(!this.editMode) {
+                            this.loadingSpinnerService.hide();
+                        }
                     }
                 },
                 error: (error: any) => {
@@ -376,78 +381,77 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
         );
         this.secondStepForm.get('noticeFrom')?.setValue(this.selectedExistingJobDetails?.noticePeriodFrom ?? null);
         this.secondStepForm.get('noticeTo')?.setValue(this.selectedExistingJobDetails?.noticePeriodTo || null);
-        this.thirdStepForm.get('question')?.setValue('');
-        this.thirdStepForm.get('deciderResponse')?.setValue(this.selectedExistingJobDetails?.deciderResponse || 'Yes');
-        this.thirdStepForm.get('additionalResponse')?.setValue(this.selectedExistingJobDetails?.additionalResponse || 'Not Required');
-        this.thirdStepForm.get('useTalliteGPT')?.setValue(this.selectedExistingJobDetails?.useTalliteGPT || false);
-        this.thirdStepForm.get('noOfQuestion')?.setValue(this.selectedExistingJobDetails?.noOfQuestions || null);
-        this.thirdStepForm.get('difficulty')?.setValue(this.selectedExistingJobDetails?.difficulty || '');
-        this.thirdStepForm.get('requiredAssessmentScore')?.setValue(this.selectedExistingJobDetails?.cutoffScore || null);
+        // this.thirdStepForm.get('question')?.setValue('');
+        // this.thirdStepForm.get('deciderResponse')?.setValue(this.selectedExistingJobDetails?.deciderResponse || 'Yes');
+        // this.thirdStepForm.get('additionalResponse')?.setValue(this.selectedExistingJobDetails?.additionalResponse || 'Not Required');
+        // this.thirdStepForm.get('useTalliteGPT')?.setValue(this.selectedExistingJobDetails?.useTalliteGPT || false);
+        // this.thirdStepForm.get('noOfQuestion')?.setValue(this.selectedExistingJobDetails?.noOfQuestions || null);
+        // this.thirdStepForm.get('difficulty')?.setValue(this.selectedExistingJobDetails?.difficulty || '');
+        // this.thirdStepForm.get('requiredAssessmentScore')?.setValue(this.selectedExistingJobDetails?.cutoffScore || null);
 
-        if (this.selectedExistingJobDetails?.questions) {
-            const questionsArray = this.thirdStepForm.get('questions') as FormArray;
-            this.selectedExistingJobDetails?.questions.forEach((question: any) => {
-                questionsArray.push(this.fb.group({
-                    id: [this.questionFormArray.length + 1],
-                    questionId: [question.id],
-                    question: [question?.question],
-                    deciderResponse: [question?.expectedAnswer === 1 ? 'Yes' : 'No'],
-                    additionalResponse: [question?.responseInput === 1 ? 'Required' : 'Not Required'],
-                }));
-            });
-        }
-        if(this.editMode && this.selectedExistingJobDetails?.questions.length > 0) {
-            this.thirdStepForm.get('question')?.clearValidators();
-            this.thirdStepForm.get('question')?.updateValueAndValidity();
-        }
-        console.log(this.secondStepForm.hasError('invalidSalaryRange'));
+        // if (this.selectedExistingJobDetails?.questions) {
+        //     const questionsArray = this.thirdStepForm.get('questions') as FormArray;
+        //     this.selectedExistingJobDetails?.questions.forEach((question: any) => {
+        //         questionsArray.push(this.fb.group({
+        //             id: [this.questionFormArray.length + 1],
+        //             questionId: [question.id],
+        //             question: [question?.question],
+        //             deciderResponse: [question?.expectedAnswer === 1 ? 'Yes' : 'No'],
+        //             additionalResponse: [question?.responseInput === 1 ? 'Required' : 'Not Required'],
+        //         }));
+        //     });
+        // }
+        // if(this.selectedExistingJobDetails?.questions.length > 0) {
+        //     this.thirdStepForm.get('question')?.clearValidators();
+        //     this.thirdStepForm.get('question')?.updateValueAndValidity();
+        // }
     }
 
-    get questionFormArray(): FormArray {
-        return this.thirdStepForm.get('questions') as FormArray;
-    }
+    // get questionFormArray(): FormArray {
+    //     return this.thirdStepForm.get('questions') as FormArray;
+    // }
     
-    addQuestion() {
-        const { question, questionId, deciderResponse, additionalResponse } = this.thirdStepForm.value;
-        if (this.thirdStepForm.get('question')?.value) {
-            const questionGroup = this.fb.group({
-                id: [this.questionFormArray.length + 1],
-                questionId: questionId ? [questionId] : 0,
-                question: [question],
-                deciderResponse: [deciderResponse],
-                additionalResponse: [additionalResponse],
-            });
-            this.questionFormArray.push(questionGroup);
-            this.thirdStepForm.patchValue({ questionId: 0, question: '', deciderResponse: 'Yes', additionalResponse: 'Not Required' });
-            this.thirdStepForm.get('question')?.clearValidators();
-            this.thirdStepForm.get('question')?.updateValueAndValidity();
-        }
-    }
+    // addQuestion() {
+    //     const { question, questionId, deciderResponse, additionalResponse } = this.thirdStepForm.value;
+    //     if (this.thirdStepForm.get('question')?.value) {
+    //         const questionGroup = this.fb.group({
+    //             id: [this.questionFormArray.length + 1],
+    //             questionId: questionId ? [questionId] : 0,
+    //             question: [question],
+    //             deciderResponse: [deciderResponse],
+    //             additionalResponse: [additionalResponse],
+    //         });
+    //         this.questionFormArray.push(questionGroup);
+    //         this.thirdStepForm.patchValue({ questionId: 0, question: '', deciderResponse: 'Yes', additionalResponse: 'Not Required' });
+    //         this.thirdStepForm.get('question')?.clearValidators();
+    //         this.thirdStepForm.get('question')?.updateValueAndValidity();
+    //     }
+    // }
     
-    editQuestion(index: number) {
-        const questionGroup = this.questionFormArray.at(index);
-        this.thirdStepForm.patchValue({
-            questionId: questionGroup.get('questionId')?.value,
-            question: questionGroup.get('question')?.value,
-            deciderResponse: questionGroup.get('deciderResponse')?.value,
-            additionalResponse: questionGroup.get('additionalResponse')?.value,
-        });
-        this.questionFormArray.removeAt(index);
-    }
+    // editQuestion(index: number) {
+    //     const questionGroup = this.questionFormArray.at(index);
+    //     this.thirdStepForm.patchValue({
+    //         questionId: questionGroup.get('questionId')?.value,
+    //         question: questionGroup.get('question')?.value,
+    //         deciderResponse: questionGroup.get('deciderResponse')?.value,
+    //         additionalResponse: questionGroup.get('additionalResponse')?.value,
+    //     });
+    //     this.questionFormArray.removeAt(index);
+    // }
     
-    deleteQuestion(index: number) {
-        this.questionFormArray.removeAt(index);
-    }
+    // deleteQuestion(index: number) {
+    //     this.questionFormArray.removeAt(index);
+    // }
     
-    toggleTalliteGPT() {
-        if (!this.thirdStepForm.get('useTalliteGPT')?.value) {
-            this.thirdStepForm.patchValue({
-                noOfQuestion: '',
-                difficulty: '',
-                requiredAssessmentScore: '',
-            });
-        }
-    }
+    // toggleTalliteGPT() {
+    //     if (!this.thirdStepForm.get('useTalliteGPT')?.value) {
+    //         this.thirdStepForm.patchValue({
+    //             noOfQuestion: '',
+    //             difficulty: '',
+    //             requiredAssessmentScore: '',
+    //         });
+    //     }
+    // }
 
     navigate() {
         this.router.navigate(['/job-listings']);
@@ -457,7 +461,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
         const experienceFrom = control.get('experienceFrom')?.value;
         const experienceTo = control.get('experienceTo')?.value;
         
-        if (experienceFrom !== null && experienceTo !== null && experienceFrom >= experienceTo) {
+        if (experienceFrom !== null && experienceTo !== null && Number(experienceFrom) >= Number(experienceTo)) {
             return { 'invalidExperienceRange': true };
         }
         return null;
@@ -506,31 +510,32 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
         noticeToControl?.updateValueAndValidity();
     }
 
-    toggleTalliteQuestionsControls(value: boolean) {
-        const noOfQuestion = this.thirdStepForm.get('noOfQuestion');
-        const difficulty = this.thirdStepForm.get('difficulty');
-        const requiredAssessmentScore = this.thirdStepForm.get('requiredAssessmentScore');
+    // toggleTalliteQuestionsControls(value: boolean) {
+    //     const noOfQuestion = this.thirdStepForm.get('noOfQuestion');
+    //     const difficulty = this.thirdStepForm.get('difficulty');
+    //     const requiredAssessmentScore = this.thirdStepForm.get('requiredAssessmentScore');
 
-        if (value) {
-            noOfQuestion?.setValidators([Validators.required]);
-            difficulty?.setValidators([Validators.required]);
-            requiredAssessmentScore?.setValidators([Validators.required]);
-        } else {
-            noOfQuestion?.clearValidators();
-            difficulty?.clearValidators();
-            requiredAssessmentScore?.clearValidators();
-            noOfQuestion?.reset(null);
-            difficulty?.reset('');
-            requiredAssessmentScore?.reset(null);
-        }
+    //     if (value) {
+    //         noOfQuestion?.setValidators([Validators.required]);
+    //         difficulty?.setValidators([Validators.required]);
+    //         requiredAssessmentScore?.setValidators([Validators.required]);
+    //     } else {
+    //         noOfQuestion?.clearValidators();
+    //         difficulty?.clearValidators();
+    //         requiredAssessmentScore?.clearValidators();
+    //         noOfQuestion?.reset(null);
+    //         difficulty?.reset('');
+    //         requiredAssessmentScore?.reset(null);
+    //     }
 
-        noOfQuestion?.updateValueAndValidity();
-        difficulty?.updateValueAndValidity();
-        requiredAssessmentScore?.updateValueAndValidity();
-    }
+    //     noOfQuestion?.updateValueAndValidity();
+    //     difficulty?.updateValueAndValidity();
+    //     requiredAssessmentScore?.updateValueAndValidity();
+    // }
 
     submit() {
-        if (this.firstStepForm.valid && this.secondStepForm.valid && this.thirdStepForm.valid) {
+        // if (this.firstStepForm.valid && this.secondStepForm.valid && this.thirdStepForm.valid) {
+        if (this.firstStepForm.valid && this.secondStepForm.valid) {
             this.loadingSpinnerService.show();
             const selectedJobTypes: number[] = [];
             jobTypeList.forEach(item => {
@@ -539,27 +544,27 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                 }
             });
             const prefJobseekerBranch = this.cityList.filter(item => this.secondStepForm.get('jobLocation')?.value.includes(item.id));
-            const customQuestions = this.thirdStepForm.get('questions')?.value.map((item: any) => {
-                return {
-                    questionId: item?.questionId,
-                    question: item?.question,
-                    expectedAnswer: item.deciderResponse === 'Yes' ? 1 : 2,
-                    responseInput: item.additionalResponse === 'Required' ? 1 : 2
-                };
-            });
-            // console.log("saved", this.savedCustomQuestions);
-            // console.log("formarray", customQuestions)
-            const originalQuestionIds = this.savedCustomQuestions?.map(q => q.id);
-            const addedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
-            const deletedQuestionIds = originalQuestionIds.filter(id => !addedQuestionIds.includes(id));
-            // console.log('deleted questions ID', deletedQuestionIds);
+            // const customQuestions = this.thirdStepForm.get('questions')?.value.map((item: any) => {
+            //     return {
+            //         questionId: item?.questionId,
+            //         question: item?.question,
+            //         expectedAnswer: item.deciderResponse === 'Yes' ? 1 : 2,
+            //         responseInput: item.additionalResponse === 'Required' ? 1 : 2
+            //     };
+            // });
+            // // console.log("saved", this.savedCustomQuestions);
+            // // console.log("formarray", customQuestions)
+            // const originalQuestionIds = this.savedCustomQuestions?.map(q => q.id);
+            // const addedQuestionIds = customQuestions.filter((q: any) => q.questionId !== 0).map((q: any) => q.questionId);
+            // const deletedQuestionIds = originalQuestionIds.filter(id => !addedQuestionIds.includes(id));
+            // // console.log('deleted questions ID', deletedQuestionIds);
             const jobData = {
                 data: [{
                     "sellerCode": Number(this.userDetails.sellerCode),
                     "customerId": null,
                     "productName": this.firstStepForm.get('jobTitle')?.value,
                     "jobTitleId": 0,
-                    "productCodeText": "",
+                    "productCodeText": this.editMode ? this.selectedExistingJobDetails.productCodeText : "",
                     "intJobCode": null,
                     "employerName": this.userDetails.displayName,
                     "productCode": this.editMode ? this.selectedExistingJobDetails.jobCode : 0,
@@ -669,14 +674,14 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                     "totalCVLimit": null,
                     "badges": null,
                     "sourcingTypes": null,
-                    "jobQuestions":{
-                        "noOfQuestions": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('noOfQuestion')?.value : null,
-                        "difficulty": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('difficulty')?.value : null,
-                        "cutoffScore": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('requiredAssessmentScore')?.value : null,
-                        "useGpt": this.thirdStepForm.get('useTalliteGPT')?.value ? 1 : 0,
-                        "deleteQuestionId": deletedQuestionIds,
-                        "customQuestions": this.questionFormArray.length > 0 ? customQuestions : []
-                    },
+                    // "jobQuestions":{
+                    //     "noOfQuestions": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('noOfQuestion')?.value : null,
+                    //     "difficulty": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('difficulty')?.value : null,
+                    //     "cutoffScore": this.thirdStepForm.get('useTalliteGPT')?.value ? this.thirdStepForm.get('requiredAssessmentScore')?.value : null,
+                    //     "useGpt": this.thirdStepForm.get('useTalliteGPT')?.value ? 1 : 0,
+                    //     "deleteQuestionId": deletedQuestionIds,
+                    //     "customQuestions": this.questionFormArray.length > 0 ? customQuestions : []
+                    // },
                     "assetTemplateId": null,
                     "careerPortalFieldConfigTemplateId": null,
                     "vehicleTypes": null,
@@ -761,7 +766,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.firstStepForm.reset();
                     this.secondStepForm.reset();
-                    this.thirdStepForm.reset();
+                    // this.thirdStepForm.reset();
                     this.selectedLocations = [];
                     this.loadingSpinnerService.hide();
                     this.router.navigate(['/job-listings']);
