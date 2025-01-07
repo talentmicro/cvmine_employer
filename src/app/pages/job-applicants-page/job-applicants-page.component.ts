@@ -302,7 +302,9 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     formatAppliedDate(dateString: string): string {
-        const date = new Date(dateString);
+        console.log(dateString);
+        const utcDateString = dateString.replace(' ', 'T') + 'Z';
+        var localDate = new Date(utcDateString);
         const options: Intl.DateTimeFormatOptions = { 
             day: 'numeric', 
             month: 'short', 
@@ -311,7 +313,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             minute: '2-digit', 
             hour12: true
         };
-        const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
+        const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
         return formattedDate;
     }
 
