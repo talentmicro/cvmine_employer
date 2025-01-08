@@ -16,21 +16,20 @@ import { PaymentFailureComponent } from './pages/payment-failure/payment-failure
 import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
 
 export const routes: Routes = [
-    { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'login', component: LoginPageComponent, canActivate: [redirectIfAuthenticatedGuard] },
     // { path: 'register', component: RegisterPageComponent, canActivate: [redirectIfAuthenticatedGuard], resolve: { isLoggedIn: AuthResolver } },
     { path: 'employer', component: RegistrationComponent },
     { path: 'reg-success', component: RegistrationSuccessComponent },
     { path: 'reg-failed', component: RegistrationFailedComponent },
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment-failure', component: PaymentFailureComponent },
-    { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
-    { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
-    { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
-    { path: 'job-applicant', component: ApplicantDetailsPageComponent, canActivate: [authGuard], resolve: { isLoggedIn: AuthResolver } },
+    { path: 'dashboard', component: HomeDemoOneComponent, canActivate: [authGuard] },
+    { path: 'job-listings', component: JobsListPageComponent, canActivate: [authGuard] },
+    { path: 'job-applicants', component: JobApplicantsPageComponent, canActivate: [authGuard] },
+    { path: 'job-applicant', component: ApplicantDetailsPageComponent, canActivate: [authGuard] },
     {
         path: 'job',
         canActivate: [authGuard],
-        resolve: { isLoggedIn: AuthResolver },
         children: [
             { path: '', redirectTo: 'add', pathMatch: 'full' },
             { path: 'add', component: JobPostingPageComponent },

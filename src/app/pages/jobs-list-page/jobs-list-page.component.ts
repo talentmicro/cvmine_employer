@@ -212,6 +212,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     onGlobalFilter(event: Event) {
+        console.log(event);
         const input = event.target as HTMLInputElement;
         this.dt2.filterGlobal(input.value, 'contains');
     }
