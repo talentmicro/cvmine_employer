@@ -164,9 +164,15 @@ export function showErrorNotification(message: string): void {
 }
 
 export function handleUnauthorized(): void {
+    const loginService = inject(LoginService);
     console.log("Unauthorized access detected. Logging out...");
+    loginService.logout();
 }
 
 export function handleError(error: any): void {
+    const loginService = inject(LoginService);
     console.log("Error Handling:", error);
+    if(error.status === 401) {
+        loginService.logout();
+    }
 }

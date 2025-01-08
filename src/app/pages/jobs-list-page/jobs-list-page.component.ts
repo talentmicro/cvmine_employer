@@ -252,7 +252,8 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     formatPublishedDate(dateString: string): string {
-        const date = new Date(dateString);
+        const utcDateString = dateString.replace(' ', 'T') + 'Z';
+        var localDate = new Date(utcDateString);
         const options: Intl.DateTimeFormatOptions = { 
             day: 'numeric', 
             month: 'short', 
@@ -261,7 +262,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
             minute: '2-digit', 
             hour12: true
         };
-        const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
+        const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
         return formattedDate;
     }
 
