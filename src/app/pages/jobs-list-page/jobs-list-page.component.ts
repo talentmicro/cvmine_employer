@@ -153,7 +153,9 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         const requestBody = {
             ...this.requestBody,
             search: this.searchedKeyword.trim(),
-            status: this.selectedStatuses.length > 0 ? this.selectedStatuses : null
+            status: this.selectedStatuses.length > 0 ? this.selectedStatuses : null,
+            limit: this.limit,
+            startPage: this.page
         };
         this.loadingSpinnerService.show();
         this.apiService.getJobListings(requestBody).subscribe({
@@ -175,6 +177,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         status: item.statusTitle,
                     }));
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.totalRecords = response?.data?.count;
                     this.loading = false;
                     this.loadingSpinnerService.hide();
                 }
@@ -212,7 +215,6 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     onGlobalFilter(event: Event) {
-        console.log(event);
         const input = event.target as HTMLInputElement;
         this.dt2.filterGlobal(input.value, 'contains');
     }
@@ -288,7 +290,8 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         this.page = event.first / event.rows + 1;
         this.limit = event.rows;
         this.loadingSpinnerService.show();
-        this.getAllJobListings();
+        this.onSearch();
+        // this.getAllJobListings();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 

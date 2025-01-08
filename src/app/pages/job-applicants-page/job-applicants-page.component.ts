@@ -9,6 +9,7 @@ import { MessageService } from 'primeng/api';
 import { ImportsModule } from '../../imports';
 import { Table } from 'primeng/table';
 import { SharedService } from '../services/shared.service';
+import { jsonParse } from '../../functions/shared-functions';
 
 interface Applicant {
     application_id: number;
@@ -130,7 +131,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             this.encryptedQueryParamsString = params['q'];
             if(this.encryptedQueryParamsString) {
                 this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
-                const queryParams = JSON.parse(this.queryParamsString);
+                const queryParams = jsonParse(this.queryParamsString);
                 this.jobCode = queryParams?.jobCode;
                 this.status = queryParams?.status;
             }
