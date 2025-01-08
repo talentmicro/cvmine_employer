@@ -211,10 +211,10 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         table.clear();
     }
 
-    // onGlobalFilter(event: Event) {
-    //     const input = event.target as HTMLInputElement;
-    //     this.dt2.filterGlobal(input.value, 'contains');
-    // }
+    onGlobalFilter(event: Event) {
+        const input = event.target as HTMLInputElement;
+        this.dt2.filterGlobal(input.value, 'contains');
+    }
 
     getSeverity(status: string): any {
         switch (status) {
@@ -241,7 +241,9 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
             next: (response) => {
                 if(response.status) {
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                    this.getAllJobListings();
+                    row.status = response.data.statusTitle;
+                    this.loadingSpinnerService.hide();
+                    // this.getAllJobListings();
                 }
             },
             error: (error) => {
@@ -286,6 +288,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         this.limit = event.rows;
         this.loadingSpinnerService.show();
         this.getAllJobListings();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
 }

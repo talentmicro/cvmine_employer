@@ -31,7 +31,8 @@
                                 [(ngModel)]="searchedKeyword"
                                 placeholder="Search Applicant"
                                 styleClass="w-full"
-                                style="height: 53px;" />
+                                style="height: 53px;" 
+                                (keydown.enter)="onSearchFilter()" />
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
                             <p-multiSelect

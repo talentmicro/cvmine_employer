@@ -273,6 +273,10 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         this.apiService.changeApplicantionStatus(body2).subscribe({
             next: (response: any) => {
                 // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                // console.log(response.data);
+                // console.log(row);
+                // row.status = response.data.statusCode;
+                // this.loadingSpinnerService.hide();
                 this.getApplicants();
             },
             error: (error: any) => {
@@ -302,7 +306,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     formatAppliedDate(dateString: string): string {
-        console.log(dateString);
         const utcDateString = dateString.replace(' ', 'T') + 'Z';
         var localDate = new Date(utcDateString);
         const options: Intl.DateTimeFormatOptions = { 
@@ -340,5 +343,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         this.limit = event.rows;
         this.loadingSpinnerService.show();
         this.getApplicants();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
