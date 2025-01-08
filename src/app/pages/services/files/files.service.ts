@@ -10,7 +10,7 @@ import { environment } from '../../../../environments/environment';
 @Injectable()
 export class FilesService {
   url = environment.SERVER_URL;
-  viewer_url = environment.STORAGE_URL
+  viewer_url = environment.STORAGE_URL  
   constructor(
     private http: HttpClient,
     // private notification_srv: NotificationService

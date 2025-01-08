@@ -4,7 +4,7 @@ import { ToastModule } from 'primeng/toast';
 import { CardModule } from 'primeng/card';
 import { StepperModule } from 'primeng/stepper';
 import { StepsModule } from 'primeng/steps';
-import { MessageService } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -36,6 +36,9 @@ import { DialogModule } from 'primeng/dialog';
 import { Router } from '@angular/router';
 import { TermsComponent } from "../terms/terms.component";
 import { GoogleMapComponent } from "../google-map/google-map.component";
+import { BadgeModule } from 'primeng/badge';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { FilesService } from '../services/files/files.service';
 
 @Component({
   selector: 'app-registration',
@@ -64,11 +67,13 @@ import { GoogleMapComponent } from "../google-map/google-map.component";
     RouterModule,
     ToastModule,
     TermsComponent,
-    GoogleMapComponent
+    GoogleMapComponent,
+    BadgeModule,
+    ProgressBarModule,
   ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss',
-  providers: [MessageService]
+  providers: [MessageService, FilesService]
 })
 export class RegistrationComponent {
 
@@ -186,6 +191,8 @@ export class RegistrationComponent {
     private messageService: MessageService,
     private router: Router,
     @Inject(PLATFORM_ID) private platform_id: any,
+    private config: PrimeNGConfig,
+    private file_src: FilesService
   ) {
 
     if (isPlatformBrowser(platform_id)) {
@@ -293,19 +300,19 @@ export class RegistrationComponent {
 
     if (isPlatformBrowser(this.platform_id)) {
       // Safe to use navigator here
-      navigator.permissions.query({ name: 'geolocation' })
-        .then((res) => {
-          if (res['state'] === 'granted') {
-            // Permission granted
-          } else {
-            navigator.geolocation.getCurrentPosition((res) => {
-              console.log(res.coords)
-              this.employer_form.get('latitude')?.patchValue(res.coords.latitude);
-              this.employer_form.get('longitude')?.patchValue(res.coords.longitude);
-              console.log(this.employer_form)
-            });
-          }
-        });
+      // navigator.permissions.query({ name: 'geolocation' })
+      //   .then((res) => {
+      //     if (res['state'] === 'granted') {
+      //       // Permission granted
+      //     } else {
+      //       navigator.geolocation.getCurrentPosition((res) => {
+      //         console.log(res.coords)
+      //         this.employer_form.get('latitude')?.patchValue(res.coords.latitude);
+      //         this.employer_form.get('longitude')?.patchValue(res.coords.longitude);
+      //         console.log(this.employer_form)
+      //       });
+      //     }
+      //   });
 
       this.createForm();
       this.getMasters();
@@ -442,7 +449,7 @@ export class RegistrationComponent {
 
   }
 
-  talliteProductId: any=null;
+  talliteProductId: any = null;
 
   onSubscribeChange(id: any) {
     if (this.talliteProductId === id) {
@@ -524,6 +531,11 @@ export class RegistrationComponent {
     if (step) {
       this.step_valid = step;
     }
+    if (val == 1) {
+      if (!this.is_uploaded) {
+        this.onUpload(1)
+      }
+    }
     console.log(this.employer_form.get('productTypeId')?.value);
     this.current += val;
     console.log(this.current)
@@ -537,14 +549,56 @@ export class RegistrationComponent {
     console.log('done');
   }
 
+  is_uploaded = false;
+
   handleChange(event: any) {
 
     console.log(event)
+    this.fileList = event?.currentFiles;
     console.log(this.fileList)
+    this.is_uploaded = false;
     if (event) {
       this.msg = '';
     }
 
+  }
+
+  convertFilesToBase64(files: any) {
+    return new Observable((obs) => {
+      if (files && files.length) {
+        let converted = [];
+        for (let i = 0; i < files.length; i++) {
+          if (files[i]) {
+            let reader = new FileReader();
+
+            reader.onload = () => {
+              let file = new StandardFile();
+              let extension;
+              try {
+                let length = files[i].name.split('.').length;
+                extension = files[i].name.split('.') ? files[i].name.split('.')[length - 1] : '';
+                if (extension) {
+                  extension = extension.toLowerCase();
+                }
+              }
+              catch (err) {
+                extension = '';
+              }
+
+              file.setFileDetails(files[i].name, files[i].type, reader.result, extension, 1, 0, files[i].size, 1, null)
+              converted.push(file);
+              if (files.length == converted.length) {
+                obs.next(converted);
+              }
+            }
+            reader.readAsDataURL(files[i]);
+          }
+        };
+      }
+      else {
+        obs.next([]);
+      }
+    })
   }
 
   onOtpChange(event: any) {
@@ -911,7 +965,7 @@ export class RegistrationComponent {
       regLicenseKey: data?.regLicenseKey,
       talliteProductId: this.talliteProductId,
       emailId: this.employer_form.value.emailId,
-      prepaidCode:this.employer_form.value.prepaidCode,
+      prepaidCode: this.employer_form.value.prepaidCode,
     })
     this.registration
       .proceedToPay({
@@ -920,7 +974,7 @@ export class RegistrationComponent {
         regLicenseKey: data?.regLicenseKey,
         talliteProductId: this.talliteProductId,
         emailId: this.employer_form.value.emailId,
-        prepaidCode:this.employer_form.value.prepaidCode,
+        prepaidCode: this.employer_form.value.prepaidCode,
       })
       .subscribe((res: { [x: string]: any; }) => {
         console.log(res);
@@ -1014,7 +1068,24 @@ export class RegistrationComponent {
     console.log(event);
     // Logic to upload files to a server
     console.log('Files uploaded:', this.fileList);
-    this.fileList = []; // Clear the file list after upload
+    if (this.fileList?.length) {
+      this.convertFilesToBase64(this.fileList).subscribe(res => {
+        this.file_src.saveAttachments(res, 1).subscribe((files: any) => {
+          console.log(files)
+          if (files?.length) {
+            this.employer_form.get(['registrationDocuments'])?.patchValue(files.map((f: any) => {
+              return {
+                cdnPath: f.a_url,
+                fileName: f.a_fn
+              }
+            }))
+            console.log(this.employer_form.get(['registrationDocuments'])?.value)
+          }
+        })
+      })
+    }
+
+
   }
 
   cardSelect: boolean = false;
@@ -1039,7 +1110,54 @@ export class RegistrationComponent {
     }
   }
 
+  totalSize: number = 0;
 
+  totalSizePercent: number = 0;
+  choose(event: any, callback: any) {
+    callback();
+  }
+
+  onRemoveTemplatingFile(event: any, file: any, removeFileCallback: any, index: any) {
+    removeFileCallback(event, index);
+    this.totalSize -= parseInt(this.formatSize(file.size));
+    this.totalSizePercent = this.totalSize / 10;
+  }
+
+  onClearTemplatingUpload(clear: any) {
+    clear();
+    this.totalSize = 0;
+    this.totalSizePercent = 0;
+  }
+
+  onTemplatedUpload() {
+    this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
+  }
+
+  onSelectedFiles(event: any) {
+    this.files = event.currentFiles;
+    this.files.forEach((file: any) => {
+      this.totalSize += parseInt(this.formatSize(file.size));
+    });
+    this.totalSizePercent = this.totalSize / 10;
+  }
+
+  uploadEvent(callback: any) {
+    callback();
+  }
+
+  formatSize(bytes: any) {
+    const k = 1024;
+    const dm = 3;
+    const sizes: any = this.config.translation.fileSizeTypes;
+    if (bytes === 0) {
+      return `0 ${sizes[0]}`;
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+    return `${formattedSize} ${sizes[i]}`;
+  }
 
 }
 function mobileNumberLengthValidator(length: number): ValidatorFn {
@@ -1061,4 +1179,50 @@ function mobileNumberLengthValidator(length: number): ValidatorFn {
   };
 
 
+}
+
+
+export class StandardFile {
+  fileName: any;
+  mime_type: any;
+  content: any;
+  extension: any;
+  status: any;
+  attachment_id: any;
+  size: any;
+  cdnPath: any;
+  content_type: any;
+  setFileDetails(fileName: any, mime_type: any, content: any, extension: any, status: any, attachment_id: any, size: any, content_type: any, cdnPath: any) {
+    this.fileName = fileName;
+    this.mime_type = mime_type;
+    this.content = content;
+    this.extension = extension;
+    this.status = status;
+    this.attachment_id = attachment_id;
+    this.size = size;
+    this.content_type = content_type || 1;
+    this.cdnPath = cdnPath;
+  }
+
+  constructor(obj = {
+    fileName: null,
+    mime_type: null,
+    content: null,
+    status: null,
+    attachment_id: null,
+    extension: null,
+    size: null,
+    content_type: null,
+    cdnPath: null,
+  }) {
+    this.fileName = obj.fileName;
+    this.mime_type = obj.mime_type;
+    this.content = obj.content;
+    this.extension = obj.extension;
+    this.status = obj.status;
+    this.attachment_id = obj.attachment_id;
+    this.size = obj.size;
+    this.content_type = obj.content_type || 1;
+    this.cdnPath = obj.cdnPath;
+  }
 }
