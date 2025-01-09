@@ -33,24 +33,9 @@
     --fontSize: 16px;
     --transition: all ease .5s;
 }
-// @font-face {
-//     font-family: "Sharp-Grotesk-bold";
-//     src: url(../public/fonts/SharpGrotesk-Bold20.otf);
-// }
-// @font-face {
-//     font-family: "Sharp-Grotesk-Semibold";
-//     src: url(../public/fonts/SharpGrotesk-SemiBold20.otf);
-// }
-// @font-face {
-//     font-family: "Sharp-Grotesk-Medium";
-//     src: url(../public/fonts/SharpGrotesk-Medium20.otf);
-// }
-// @font-face {
-//     font-family: "Sharp-Grotesk-Regular";
-//     src: url(../public/fonts/SharpGrotesk-Light20.otf);
-// }
 * {
     box-sizing: border-box;
+    font-family: var(--primaryFont);
 }
 html {
     scroll-behavior: smooth;
@@ -1565,6 +1550,7 @@ padding: 0.25rem !important;
 
 .p-paginator {
     margin-top: 1rem;
+    justify-content: end !important;
 }
 
 .back-button {

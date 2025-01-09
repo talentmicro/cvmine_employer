@@ -89,8 +89,8 @@
                         </p>
                     </div>
                     <div class="text-center mt-20">
-                        <button class="btn style-four" (click)="onSubmit()">
-                            Login
+                        <button class="btn style-four" (click)="onSubmit()" [disabled]="isLoading">
+                            <i *ngIf="isLoading" class="pi pi-spin pi-spinner mx-1" style="font-size: 1rem"></i> Login
                         </button>
                     </div>
                 </form>

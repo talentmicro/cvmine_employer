@@ -3,12 +3,6 @@
     <div class="row align-items-center mb-10">
         <div class="col-12 table-container">
             <p-table #dt2 [value]="applicantsList" dataKey="id" styleClass="p-datatable-striped"
-                [rowsPerPageOptions]="[10, 25, 50]"
-                [lazy]="true"
-                [paginator]="true"
-                [totalRecords]="totalRecords"
-                [rows]="limit"
-                (onLazyLoad)="onPageChange($event)"
                 [globalFilterFields]="['applicant_name', 'location', 'status']"
                 [tableStyle]="{ 'min-width': '75rem' }" >
                 <ng-template pTemplate="caption">
@@ -31,7 +25,8 @@
                                 [(ngModel)]="searchedKeyword"
                                 placeholder="Search Applicant"
                                 styleClass="w-full"
-                                style="height: 53px;" />
+                                style="height: 53px;" 
+                                (keydown.enter)="onSearchFilter()" />
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
                             <p-multiSelect
@@ -203,10 +198,23 @@
                         <td colspan="9" class="text-center">No applicants found.</td>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="paginatorleft">
+                <!-- <ng-template pTemplate="paginatorleft">
                     <span>Total Records: {{ totalRecords }}</span>
-                </ng-template>
+                </ng-template> -->
             </p-table>
+            <div class="row paginator-container d-flex mt-2">
+                <div class="col-12 col-md-3 d-flex align-items-center">
+                    <span class="ms-auto ms-md-0">Total Records: {{ totalRecords }}</span>
+                </div>
+                <div class="col-12 col-md-9">
+                    <p-paginator
+                        [rows]="limit"
+                        [totalRecords]="totalRecords"
+                        [rowsPerPageOptions]="[5, 10, 20]"
+                        (onPageChange)="onPageChange($event)"
+                    ></p-paginator>
+                </div>
+            </div>
         </div> 
     </div>
 </div>

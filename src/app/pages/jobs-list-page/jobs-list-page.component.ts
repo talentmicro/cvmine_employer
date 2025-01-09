@@ -11,6 +11,7 @@ import { TableRowCollapseEvent, TableRowExpandEvent } from 'primeng/table';
 import { SharedService } from '../services/shared.service';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { Subject, takeUntil } from 'rxjs';
+import { jsonParse } from '../../functions/shared-functions';
 
 interface Job {
     id: number;
@@ -128,7 +129,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         id: item.productCode,
                         job_code: item.productCode,
                         job_name: item.productName,
-                        location: JSON.parse(item.prefJobseekerBranch),
+                        location: jsonParse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
                         shortlisted_applications: item.Screening || 0,
                         interviewed_applications: item.Interview || 0,
@@ -153,7 +154,9 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         const requestBody = {
             ...this.requestBody,
             search: this.searchedKeyword.trim(),
-            status: this.selectedStatuses.length > 0 ? this.selectedStatuses : null
+            status: this.selectedStatuses.length > 0 ? this.selectedStatuses : null,
+            limit: this.limit,
+            startPage: this.page
         };
         this.loadingSpinnerService.show();
         this.apiService.getJobListings(requestBody).subscribe({
@@ -164,7 +167,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         id: item.productCode,
                         job_code: item.productCode,
                         job_name: item.productName,
-                        location: JSON.parse(item.prefJobseekerBranch),
+                        location: jsonParse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
                         shortlisted_applications: item.Shortlist || 0,
                         interviewed_applications: item.Interview || 0,
@@ -175,6 +178,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         status: item.statusTitle,
                     }));
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                    this.totalRecords = response?.data?.count;
                     this.loading = false;
                     this.loadingSpinnerService.hide();
                 }
@@ -211,10 +215,10 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         table.clear();
     }
 
-    // onGlobalFilter(event: Event) {
-    //     const input = event.target as HTMLInputElement;
-    //     this.dt2.filterGlobal(input.value, 'contains');
-    // }
+    onGlobalFilter(event: Event) {
+        const input = event.target as HTMLInputElement;
+        this.dt2.filterGlobal(input.value, 'contains');
+    }
 
     getSeverity(status: string): any {
         switch (status) {
@@ -241,7 +245,9 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
             next: (response) => {
                 if (response.status) {
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                    this.getAllJobListings();
+                    row.status = response.data.statusTitle;
+                    this.loadingSpinnerService.hide();
+                    // this.getAllJobListings();
                 }
             },
             error: (error) => {
@@ -285,7 +291,9 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         this.page = event.first / event.rows + 1;
         this.limit = event.rows;
         this.loadingSpinnerService.show();
-        this.getAllJobListings();
+        this.onSearch();
+        // this.getAllJobListings();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
 }

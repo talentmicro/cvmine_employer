@@ -9,6 +9,7 @@ import { MessageService } from 'primeng/api';
 import { ImportsModule } from '../../imports';
 import { Table } from 'primeng/table';
 import { SharedService } from '../services/shared.service';
+import { jsonParse } from '../../functions/shared-functions';
 
 interface Applicant {
     application_id: number;
@@ -130,7 +131,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             this.encryptedQueryParamsString = params['q'];
             if(this.encryptedQueryParamsString) {
                 this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
-                const queryParams = JSON.parse(this.queryParamsString);
+                const queryParams = jsonParse(this.queryParamsString);
                 this.jobCode = queryParams?.jobCode;
                 this.status = queryParams?.status;
             }
@@ -273,6 +274,10 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         this.apiService.changeApplicantionStatus(body2).subscribe({
             next: (response: any) => {
                 // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                // console.log(response.data);
+                // console.log(row);
+                // row.status = response.data.statusCode;
+                // this.loadingSpinnerService.hide();
                 this.getApplicants();
             },
             error: (error: any) => {
@@ -302,7 +307,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     formatAppliedDate(dateString: string): string {
-        console.log(dateString);
         const utcDateString = dateString.replace(' ', 'T') + 'Z';
         var localDate = new Date(utcDateString);
         const options: Intl.DateTimeFormatOptions = { 
@@ -340,5 +344,6 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         this.limit = event.rows;
         this.loadingSpinnerService.show();
         this.getApplicants();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }

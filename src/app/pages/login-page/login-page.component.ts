@@ -31,6 +31,7 @@ export class LoginPageComponent{
     step: number = 1;
     loading: boolean = false;
     loginForm: FormGroup;
+    isLoading: boolean = false;
 
     constructor(
         private fb: FormBuilder,
@@ -61,6 +62,7 @@ export class LoginPageComponent{
     }
 
     onSubmit(): void {
+        this.isLoading = true;
         if (this.loginForm.valid) {
             const { employeeId, password } = this.loginForm.value;
 
@@ -68,14 +70,17 @@ export class LoginPageComponent{
                 (response) => {
                     this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.router.navigate(['/job-listings']);
+                    this.isLoading = false;
                 },
                 (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                    this.isLoading = false;
                 }
             );
         } else {
             this.loginForm.markAllAsTouched();
             this.messageService.add({ severity: 'warn', summary: 'Invalid', detail: 'Invalid Credentials!' });
+            this.isLoading = false;
         }
     }
 

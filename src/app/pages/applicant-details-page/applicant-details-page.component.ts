@@ -7,6 +7,7 @@ import { SharedService } from '../services/shared.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { jsonParse } from '../../functions/shared-functions';
 
 @Component({
     selector: 'app-applicant-details-page',
@@ -55,7 +56,7 @@ export class ApplicantDetailsPageComponent {
             this.encryptedQueryParamsString = params['q'];
             if(this.encryptedQueryParamsString) {
                 this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
-                const queryParams = JSON.parse(this.queryParamsString);
+                const queryParams = jsonParse(this.queryParamsString);
                 this.resId = Number(queryParams?.resId);
                 this.alertId = Number(queryParams?.alertId);
                 this.productCode = Number(queryParams?.productCode);
@@ -297,12 +298,12 @@ export class ApplicantDetailsPageComponent {
     }
 
     getSkills(skills: string) {
-        const skillsArray = JSON.parse(skills);
+        const skillsArray = jsonParse(skills);
         return skillsArray?.length > 0 ? skillsArray.map((item: any) => item.title) : [];
     }
 
     getJobTypes(jobTypesString: string) {
-        const jobTypesArray = JSON.parse(jobTypesString);
+        const jobTypesArray = jsonParse(jobTypesString);
         if(jobTypesArray?.length > 0) {
             const jobTypeTitles = this.jobTypes.filter(item => jobTypesArray.includes(item.jobType)).map(item => item.title);
             return jobTypeTitles.join(', ')
