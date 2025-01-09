@@ -33,8 +33,8 @@ interface Job {
     styleUrl: './jobs-list-page.component.scss',
     standalone: true,
     imports: [
-        RouterLink, 
-        CommonModule, 
+        RouterLink,
+        CommonModule,
         FormsModule,
         ReactiveFormsModule,
         ImportsModule,
@@ -79,7 +79,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         private loadingSpinnerService: LoadingService,
         private messageService: MessageService,
         private sharedService: SharedService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.loadingSpinnerService.show();
@@ -239,7 +239,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         }
         this.apiService.changeJobStatus(body).subscribe({
             next: (response) => {
-                if(response.status) {
+                if (response.status) {
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
                     this.getAllJobListings();
                 }
@@ -254,12 +254,12 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     formatPublishedDate(dateString: string): string {
         const utcDateString = dateString.replace(' ', 'T') + 'Z';
         var localDate = new Date(utcDateString);
-        const options: Intl.DateTimeFormatOptions = { 
-            day: 'numeric', 
-            month: 'short', 
-            year: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
+        const options: Intl.DateTimeFormatOptions = {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
             hour12: true
         };
         const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
