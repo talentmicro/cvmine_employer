@@ -10,6 +10,7 @@ import { environment } from '../../../../environments/environment';
 import { TransferState, makeStateKey } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import * as forge from 'node-forge';
+import { jsonParse } from '../../../functions/shared-functions';
 
 const SECRET_KEY = 'T@MiCr097124!iCR'; // Encryption key
 const IV = '1234567891234567'; // Initialization vector
@@ -144,10 +145,10 @@ export class LoginService {
     getUserDetails(): string | null {
         if (isPlatformBrowser(this.platformId)) {
             const encryptedDetails = sessionStorage.getItem('userDetails');
-            return encryptedDetails ? JSON.parse(this.decrypt(encryptedDetails)) : null;
+            return encryptedDetails ? jsonParse(this.decrypt(encryptedDetails)) : null;
         } else {
             const encryptedDetails = this.transferState.get(USER_DETAILS_KEY, null);
-            return encryptedDetails ? JSON.parse(this.decrypt(encryptedDetails)) : null;
+            return encryptedDetails ? jsonParse(this.decrypt(encryptedDetails)) : null;
         }
     }
 

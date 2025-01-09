@@ -5,10 +5,10 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
 import cookieParser from 'cookie-parser'; // Add cookie-parser
-import { TransferState, makeStateKey } from '@angular/core';
+// import { TransferState, makeStateKey } from '@angular/core';
 
 // Define a TransferState key for auth
-const AUTH_TOKEN_KEY = makeStateKey<string | null>('authToken');
+// const AUTH_TOKEN_KEY = makeStateKey<string | null>('authToken');
 
 export function app(): express.Express {
     const server = express();
@@ -40,8 +40,8 @@ export function app(): express.Express {
         const authToken = req.cookies['authToken'] || null;
         // const isLoggedIn = !!authToken; // Determine login status based on the presence of the token
 
-        const transferState = new TransferState();
-        transferState.set(AUTH_TOKEN_KEY, authToken); // Add auth state to TransferState
+        // const transferState = new TransferState();
+        // transferState.set(AUTH_TOKEN_KEY, authToken); // Add auth state to TransferState
 
         commonEngine
             .render({
@@ -51,7 +51,7 @@ export function app(): express.Express {
                 publicPath: browserDistFolder,
                 providers: [
                     { provide: APP_BASE_HREF, useValue: baseUrl },
-                    { provide: TransferState, useValue: transferState }, // Provide TransferState to the Angular engine
+                    // { provide: TransferState, useValue: transferState }, // Provide TransferState to the Angular engine
                 ],
             })
             .then((html) => res.send(html))

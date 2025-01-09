@@ -11,6 +11,7 @@ import { TableRowCollapseEvent, TableRowExpandEvent } from 'primeng/table';
 import { SharedService } from '../services/shared.service';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { Subject, takeUntil } from 'rxjs';
+import { jsonParse } from '../../functions/shared-functions';
 
 interface Job {
     id: number;
@@ -128,7 +129,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         id: item.productCode,
                         job_code: item.productCode,
                         job_name: item.productName,
-                        location: JSON.parse(item.prefJobseekerBranch),
+                        location: jsonParse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
                         shortlisted_applications: item.Screening || 0,
                         interviewed_applications: item.Interview || 0,
@@ -166,7 +167,7 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
                         id: item.productCode,
                         job_code: item.productCode,
                         job_name: item.productName,
-                        location: JSON.parse(item.prefJobseekerBranch),
+                        location: jsonParse(item.prefJobseekerBranch),
                         total_applications: item.totalResCount,
                         shortlisted_applications: item.Shortlist || 0,
                         interviewed_applications: item.Interview || 0,
