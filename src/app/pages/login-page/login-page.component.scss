@@ -22,14 +22,14 @@
                 color: var(--titleColor);
 
                 &::placeholder {
-                    color: var(--titleColor);
+                    color: #858F97;
                 }
             }
             .pwd_open {
                 top: 50px;
                 right: 20px;
                 cursor: pointer;
-                color: var(--titleColor);
+                color: #858F97;
             }
         }
     }
@@ -91,7 +91,7 @@
             }
             &.style-two {
                 .pwd_open {
-                    top: 50px;
+                    top: 45px;
                 }
             }
         }

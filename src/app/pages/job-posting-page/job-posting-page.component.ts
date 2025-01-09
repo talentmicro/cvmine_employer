@@ -12,6 +12,7 @@ import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { SharedService } from '../services/shared.service';
 import { LoginService } from '../services/auth/login.service';
 import { Subject, takeUntil } from 'rxjs';
+import { jsonParse } from '../../functions/shared-functions';
 
 interface Job {
     id: number;
@@ -283,8 +284,8 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             "productCodeText": response.data.jobDetails[0].productCodeText,
                             "jobTitle": response.data.jobDetails[0].productName,
                             "jobDescription": response.data.jobDetails[0].description,
-                            "jobTypes": JSON.parse(response.data.jobDetails[0].jobType),
-                            "jobLocations": JSON.parse(response.data.jobDetails[0].prefJobseekerBranch).map((item: any) => item.id),
+                            "jobTypes": jsonParse(response.data.jobDetails[0].jobType),
+                            "jobLocations": jsonParse(response.data.jobDetails[0].prefJobseekerBranch).map((item: any) => item.id),
                             "skills": response.data.jobDetails[0].certiKeywords,
                             "experienceFrom": response.data.jobDetails[0].expFrom,
                             "experienceTo": response.data.jobDetails[0].expTo,
@@ -299,7 +300,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             "difficulty": response.data.jobDetails[0].jobQuestions?.difficultyLevel,
                             "cutoffScore": response.data.jobDetails[0].jobQuestions?.cutoffScore,
                             "questions": this.getCustomQuestions(response.data.jobDetails[0].jobQuestions?.customQuestions),
-                            "cvminePostings": JSON.parse(response.data.jobDetails[0].cvminePostings)
+                            "cvminePostings": jsonParse(response.data.jobDetails[0].cvminePostings)
                         }
                         this.setStepperFormData();
                         if(!this.editMode) {
@@ -317,7 +318,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
 
     getCustomQuestions(questionString: any) {
         if(questionString) {
-            const customQuestions = JSON.parse(questionString);
+            const customQuestions = jsonParse(questionString);
             this.savedCustomQuestions = customQuestions;
             // console.log(customQuestions);
             if(customQuestions?.length > 0) {
