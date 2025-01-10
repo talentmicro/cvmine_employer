@@ -111,7 +111,7 @@ export class ApplicantDetailsPageComponent {
                         "location": response?.data?.resumeDetails?.presentLocation,
                         "jobTypes": this.getJobTypes(response?.data?.resumeDetails?.jobType),
                         "experience": this.formatExperience(response?.data?.resumeDetails?.totalExp),
-                        "noticePeriod": response?.data?.resumeDetails?.noticePeriod,
+                        "noticePeriod": response?.data?.resumeDetails?.noticePeriod ? 'N/A' : response?.data?.resumeDetails?.noticePeriod == 0 ? 'Immediate Joinee' : response?.data?.resumeDetails?.noticePeriod + ' days',
                         "keySkills": this.getSkills(response?.data?.resumeDetails?.keySkills),
                         "originalCVPath": response?.data?.resumeDetails?.originalCVPath
                     };
@@ -299,7 +299,7 @@ export class ApplicantDetailsPageComponent {
 
     getSkills(skills: string) {
         const skillsArray = jsonParse(skills);
-        return skillsArray?.length > 0 ? skillsArray.map((item: any) => item.title) : [];
+        return skillsArray?.length > 0 ? skillsArray.map((item: any) => item.title) : ['Not Mentioned'];
     }
 
     getJobTypes(jobTypesString: string) {

@@ -5,6 +5,9 @@
             <div class="content-left">
                 <div class="applicant-banner">
                     <!-- Job Name Header -->
+                    <button class="post-button my-1" routerLink="/job-applicants">
+                        <i class="pi pi-angle-left me-1"></i>Back
+                    </button>
                     <div class="job-name-header my-3">
                         <h3 class="m-0">{{ applicantDetails?.position }}</h3>
                     </div>
@@ -38,21 +41,21 @@
                             <div class="right-section col-12 col-md-8">
                                 <div class="details-row">
                                     <i class="pi pi-envelope"></i>
-                                    <span><strong>Email: </strong> {{ applicantDetails?.emailId }}</span>
+                                    <span><strong class="me-2">Email: </strong> {{ applicantDetails?.emailId }}</span>
                                     <i class="pi pi-copy copy-icon" 
                                         (click)="copyToClipboard(applicantDetails?.resumeDetails?.emailId)">
                                     </i>
                                 </div>
                                 <div class="details-row">
                                     <i class="pi pi-phone"></i>
-                                    <span><strong>Phone: </strong> {{ applicantDetails?.mobile }}</span>
+                                    <span><strong class="me-2">Phone: </strong> {{ applicantDetails?.mobile ? applicantDetails?.mobile : 'N/A' }}</span>
                                     <i class="pi pi-copy copy-icon" 
                                         (click)="copyToClipboard(applicantDetails?.mobile)">
                                     </i>
                                 </div>
                                 <div class="details-row">
                                     <i class="pi pi-map-marker"></i>
-                                    <span><strong>Location: </strong> {{ applicantDetails?.location }}</span>
+                                    <span><strong class="me-2">Location: </strong> {{ applicantDetails?.location ? applicantDetails?.location : 'N/A' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -60,20 +63,15 @@
                         <div class="bottom-section row">
                             <!-- Job Details -->
                             <div class="job-details col-12 col-md-5">
-                                <p><strong>Job Type: </strong> {{ applicantDetails?.jobTypes }}</p>
-                                <p><strong>Experience: </strong> {{ applicantDetails?.experience }}</p>
-                                <p><strong>Notice Period: </strong> {{ applicantDetails?.noticePeriod == 0 ? 'Immediate Joinee': applicantDetails?.noticePeriod + ' days' }} </p>
+                                <p><strong class="me-2">Job Type: </strong> {{ applicantDetails?.jobTypes }}</p>
+                                <p><strong class="me-2">Experience: </strong> {{ applicantDetails?.experience }}</p>
+                                <p><strong class="me-2">Notice Period: </strong> {{ applicantDetails?.noticePeriod }} </p>
                             </div>
                         
                             <!-- Skills -->
                             <div class="skills-container col-12 col-md-6">
                                 <h5>Key Skills</h5>
                                 <div class="skills-list">
-                                    <!-- <p-chip 
-                                        *ngFor="let skill of getSkills(applicantDetails.resumeDetails.keySkills)" 
-                                        [label]="skill" 
-                                        class="skill-chip">
-                                    </p-chip> -->
                                     <span *ngFor="let skill of applicantDetails?.keySkills" 
                                         class="skill-chip">{{ skill }}
                                     </span>

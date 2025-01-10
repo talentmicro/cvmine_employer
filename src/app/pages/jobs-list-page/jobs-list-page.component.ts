@@ -258,18 +258,22 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     formatPublishedDate(dateString: string): string {
-        const utcDateString = dateString.replace(' ', 'T') + 'Z';
-        var localDate = new Date(utcDateString);
-        const options: Intl.DateTimeFormatOptions = { 
-            day: 'numeric', 
-            month: 'short', 
-            year: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: true
-        };
-        const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
-        return formattedDate;
+        if(dateString) {
+            const utcDateString = dateString.replace(' ', 'T') + 'Z';
+            var localDate = new Date(utcDateString);
+            const options: Intl.DateTimeFormatOptions = { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: true
+            };
+            const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
+            return formattedDate;
+        } else {
+            return 'NA';
+        }
     }
 
     formatLocations(locations: any[]) {
