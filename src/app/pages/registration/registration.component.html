@@ -82,8 +82,7 @@
                         </div>
 
                         <div class="col-md-8 mb-3">
-                            <label for="integeronly">Business/Tax registration documents <span
-                                    class="p-error">*</span>:</label>
+                            <label for="integeronly">Business/Tax registration documents <span class="p-error">*</span>:</label>
                             <p-fileUpload name="file" [files]="fileList" [multiple]="true" accept="image/*"
                                 [customUpload]="true" (onSelect)="handleChange($event)" (onRemove)="removeFile($event)">
                                 <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
@@ -96,19 +95,7 @@
                                         </div>
                                     </div>
                                 </ng-template>
-                                <!-- <ng-template pTemplate="content">
-                                    <ul *ngIf="fileList.length">
-                                        <li *ngFor="let file of fileList" style="font-size: 12px !important;">
-                                            {{ file.name }} - {{ file.size | number }} bytes
-                                            <button pButton type="button" icon="pi pi-times"
-                                                (click)="removeFile(file)"></button>
-                                        </li>
-                                    </ul>
-                                </ng-template> -->
                             </p-fileUpload>
-                            <!-- <button pButton type="button" label="Upload" icon="pi pi-times"
-                                (click)="onUpload('asd')"></button> -->
-
                         </div>
 
                         <div class="col-md-8 mb-3">
