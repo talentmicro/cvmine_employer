@@ -181,14 +181,14 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         // console.log(requestBody);
         this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
-                // console.log(response);
+                console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
                         job_code: item.productCode,
                         applicant_name: item.fullName,
                         applicant_email: item.emailId,
-                        applicant_phone: item.mobileNumber,
+                        applicant_phone: item.mobileNumber ? item.mobileNumber : 'N/A',
                         application_date: item.crDate,
                         experience_in_years: item.totalExp,
                         location: item.presentLocation,
@@ -307,18 +307,22 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     formatAppliedDate(dateString: string): string {
-        const utcDateString = dateString.replace(' ', 'T') + 'Z';
-        var localDate = new Date(utcDateString);
-        const options: Intl.DateTimeFormatOptions = { 
-            day: 'numeric', 
-            month: 'short', 
-            year: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: true
-        };
-        const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
-        return formattedDate;
+        if(dateString) {
+            const utcDateString = dateString.replace(' ', 'T') + 'Z';
+            var localDate = new Date(utcDateString);
+            const options: Intl.DateTimeFormatOptions = { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: true
+            };
+            const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
+            return formattedDate;
+        } else {
+            return 'NA';
+        }
     }
 
     formatExperience(experience: string | number): string {

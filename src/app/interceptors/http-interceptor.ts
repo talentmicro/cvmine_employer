@@ -59,7 +59,6 @@ export const requestInterceptors: HttpInterceptorFn = (req, next) => {
                 // Check if response is of HttpResponse type
                 if (event instanceof HttpResponse) {
                     const encryptionKey = session?.secretKey || aKey;
-
                     // Decrypt 'data' field if it is a string
                     if (event.body?.['data'] && typeof event.body?.['data'] === 'string') {
                         event.body['data'] = decryptData(encryptionKey, event.body?.['data']);
@@ -79,7 +78,11 @@ export const requestInterceptors: HttpInterceptorFn = (req, next) => {
             },
             error: (error) => {
                 console.error("HTTP Request Error:", error);
-                handleError(error);
+                if(error.status === 401 || error.status === 0) {
+                    console.log('inside tru conditon')
+                    loginService.logout();
+                }
+                // handleError(error);
             }
         })
     );
@@ -170,9 +173,5 @@ export function handleUnauthorized(): void {
 }
 
 export function handleError(error: any): void {
-    const loginService = inject(LoginService);
     console.log("Error Handling:", error);
-    if(error.status === 401) {
-        loginService.logout();
-    }
 }

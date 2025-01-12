@@ -1,82 +1,138 @@
-::ng-deep .p-steps .p-steps-item.p-highlight .p-steps-number {
-  background-color: var(--primaryColor) !important;
-  color: #fff !important;
-}
+::ng-deep app-registration {
+  .p-steps .p-steps-item.p-highlight .p-steps-number {
+    background-color: var(--primaryColor) !important;
+    color: #fff !important;
+  }
 
-::ng-deep button {
-  border-radius: revert-layer;
-}
+  button {
+    border-radius: revert-layer;
+  }
 
-// ::ng-deep .p-inputgroup {
-//   width: 100% !important;
-// }
+  .p-fileupload-row>div {
+    width: 0% !important;
+  }
 
-::ng-deep .p-inputgroup-addon {
-  padding: 0rem 0.75rem;
-}
+  .p-fileupload .p-fileupload-row>div {
+    padding: 0.7rem 1rem !important;
+    font-size: smaller !important;
+  }
 
-::ng-deep .p-button {
-  padding: 0.55rem 1.25rem !important;
-}
+  .p-fileupload-row .p-button {
+    background-color: #fff !important;
+    color: red !important;
+    border: 1px solid red !important;
+    padding: 0.1rem 0 !important;
+  }
 
-::ng-deep .p-steps .p-steps-item .p-menuitem-link .p-steps-title {
-  margin-top: 0 !important;
-  font-size: 15px !important;
-}
+  .p-fileupload .p-fileupload-row>div:nth-of-type(2) {
+    width: 45% !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-::ng-deep .p-steps .p-steps-item.p-highlight .p-steps-title {
-  font-weight: 500 !important;
-  font-size: 15px !important;
-  color: var(--primaryColor) !important;
-}
+  // .p-fileupload .p-fileupload-row>div:nth-of-type(2):hover::after {
+  //   content: attr(title);
+  //   /* Use the 'title' attribute to show the full text */
+  //   position: absolute;
+  //   background-color: rgba(0, 0, 0, 0.8);
+  //   /* Background for tooltip */
+  //   color: white;
+  //   padding: 5px;
+  //   border-radius: 4px;
+  //   white-space: normal;
+  //   /* Allow wrapping in the tooltip */
+  //   z-index: 1000;
+  //   transform: translateY(-100%);
+  //   /* Position tooltip above */
+  // }
 
-::ng-deep .p-steps .p-steps-item .p-menuitem-link .p-steps-number {
-  min-width: 1.5rem !important;
-  height: 1.5rem !important;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  z-index: 0;
-}
+  .p-inputgroup-addon {
+    padding: 0rem 0.75rem;
+  }
 
-::ng-deep .p-datatable .p-datatable-thead>tr>th {
-  background-color: var(--primaryColor) !important;
-  color: #fff !important;
-  font-weight: 550 !important;
-  padding: 0.5rem 1rem !important;
-}
+  .p-button {
+    padding: 0.55rem 1.25rem !important;
+  }
 
-:ng-deep .p-datatable .p-datatable-tbody>tr>td {
-  padding: 0.8rem 1rem !important;
-  font-size: smaller !important;
-}
+  .p-steps .p-steps-item .p-menuitem-link .p-steps-title {
+    margin-top: 0 !important;
+    font-size: 15px !important;
+  }
 
-::ng-deep td {
-  border-color: var(--primaryColor) !important;
-  border-style: dashed !important;
-  border-width: 1px !important;
+  .p-steps .p-steps-item.p-highlight .p-steps-title {
+    font-weight: 500 !important;
+    font-size: 15px !important;
+    color: var(--primaryColor) !important;
+  }
 
-}
+  .p-steps .p-steps-item .p-menuitem-link .p-steps-number {
+    min-width: 1.5rem !important;
+    height: 1.5rem !important;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    z-index: 0;
+  }
 
+  .p-datatable .p-datatable-thead>tr>th {
+    background-color: var(--primaryColor) !important;
+    color: #fff !important;
+    font-weight: 550 !important;
+    padding: 0.5rem 1rem !important;
+  }
 
-::ng-deep .p-card .p-card-content {
-  padding: 0rem 0 !important;
-}
+  .p-datatable .p-datatable-tbody>tr>td {
+    padding: 0.8rem 1rem !important;
+    font-size: smaller !important;
+  }
 
+  td {
+    border-color: var(--primaryColor) !important;
+    border-style: dashed !important;
+    border-width: 1px !important;
+  }
 
-::ng-deep .p-password {
-  width: 100% !important;
-}
+  .p-card .p-card-content {
+    padding: 0rem 0 !important;
+  }
 
-::ng-deep .p-fileupload .p-fileupload-buttonbar{
-  padding: 0.7rem !important;
-}
+  .p-password {
+    width: 100% !important;
+  }
 
-::ng-deep .p-fileupload .p-fileupload-buttonbar .p-button{
-  margin-right: 8px;
-}
+  .p-fileupload .p-fileupload-buttonbar {
+    padding: 0.7rem !important;
+  }
 
+  .p-fileupload .p-fileupload-buttonbar .p-button {
+    margin-right: 8px;
+    font-size: smaller;
+    padding: 0.3rem 1rem !important;
+  }
 
-::ng-deep .p-fileupload .p-fileupload-content{
-  padding: 0 !important;
+  .p-fileupload .p-fileupload-content {
+    padding: 0 !important;
+  }
+
+  .p-inputtext {
+    padding: 0.4rem 0.5rem !important;
+  }
+
+  .p-card .p-card-title {
+    color: red !important;
+  }
+
+  .p-card .p-card-body {
+    padding: 1rem 1.25rem !important;
+  }
+
+  .p_border .p-card {
+    border: 1px solid var(--secondaryColor) !important;
+  }
+
+  .p-inputotp {
+    width: 50% !important;
+  }
+
 }
 
 
@@ -108,11 +164,11 @@
   bottom: 0;
 }
 
-:host ::ng-deep .upload-list-inline .ant-upload-animate-enter {
+:host ::ng-deep app-registration .upload-list-inline .ant-upload-animate-enter {
   animation-name: uploadAnimateInlineIn;
 }
 
-:host ::ng-deep .upload-list-inline .ant-upload-animate-leave {
+:host ::ng-deep app-registration .upload-list-inline .ant-upload-animate-leave {
   animation-name: uploadAnimateInlineOut;
 }
 
@@ -303,26 +359,26 @@
   margin-bottom: 1.2rem !important;
 }
 
-:host ::ng-deep.ant-upload-list {
+:host ::ng-deep app-registration .ant-upload-list {
   display: flex;
   flex-direction: column;
 }
 
-:host ::ng-deep.ant-upload,
+:host ::ng-deep app-registration .ant-upload,
 .ant-upload-select {
   display: flex;
   margin-bottom: 7px;
 }
 
-:host ::ng-deep.ant-upload-list-item-card-actions.picture .ant-upload-list-item-card-actions-btn {
+:host ::ng-deep app-registration .ant-upload-list-item-card-actions.picture .ant-upload-list-item-card-actions-btn {
   margin-left: -1rem;
 }
 
-:host ::ng-deep.ant-upload-list-item-card-actions.picture .ant-upload-list-item-card-actions-btn .anticon-download {
+:host ::ng-deep app-registration .ant-upload-list-item-card-actions.picture .ant-upload-list-item-card-actions-btn .anticon-download {
   display: none;
 }
 
-:host ::ng-deep.w-full {
+:host ::ng-deep app-registration .w-full {
   margin-right: 0px !important;
   margin-left: 0px !important;
 }
@@ -355,14 +411,6 @@
 .mapLink {
   cursor: pointer;
   color: var(--primaryColor);
-}
-
-nz-upload {
-  width: 100% !important;
-}
-
-nz-upload .ant-upload {
-  width: 100% !important;
 }
 
 
@@ -418,28 +466,28 @@ nz-upload .ant-upload {
     color: black;
   }
 
-  :host ::ng-deep.ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title {
+  :host ::ng-deep app-registration .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title {
     color: rgba(0, 0, 0, .85);
     font-size: 1rem;
   }
 
-  :host ::ng-deep.ant-input:placeholder-shown {
+  :host ::ng-deep app-registration .ant-input:placeholder-shown {
     text-overflow: ellipsis;
     font-size: 1rem;
   }
 
-  :host ::ng-deep.ant-input-affix-wrapper>.ant-input {
+  :host ::ng-deep app-registration .ant-input-affix-wrapper>.ant-input {
     font-size: 1rem;
     border: none;
     outline: 0;
   }
 
-  :host ::ng-deep.ant-table-content {
+  :host ::ng-deep app-registration .ant-table-content {
     font-size: 1rem;
   }
 
 
-  :host ::ng-deep.ant-form-item-feedback-icon-success {
+  :host ::ng-deep app-registration .ant-form-item-feedback-icon-success {
     color: #28a745;
     font-size: 1rem;
   }
@@ -465,7 +513,7 @@ nz-upload .ant-upload {
     font-size: 14px;
   }
 
-  :host ::ng-deep.ant-input-search>.ant-input-group>.ant-input-group-addon:last-child .ant-input-search-button {
+  :host ::ng-deep app-registration .ant-input-search>.ant-input-group>.ant-input-group-addon:last-child .ant-input-search-button {
     padding-top: 0;
     padding-bottom: 0;
     border-radius: 0 2px 2px 0;
@@ -488,7 +536,7 @@ nz-upload .ant-upload {
     background-color: #f0f4f9;
   }
 
-  :host ::ng-deep.ant-form-item-label>label {
+  :host ::ng-deep app-registration .ant-form-item-label>label {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -587,7 +635,7 @@ nz-upload .ant-upload {
     width: 85%;
   }
 
-  :host ::ng-deep.ant-form-item-label>label {
+  :host ::ng-deep app-registration .ant-form-item-label>label {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -600,7 +648,7 @@ nz-upload .ant-upload {
     text-wrap: wrap;
   }
 
-  :host ::ng-deep.ant-table.ant-table-bordered>.ant-table-container>.ant-table-content>table {
+  :host ::ng-deep app-registration .ant-table.ant-table-bordered>.ant-table-container>.ant-table-content>table {
     background-color: #f0f4f9;
   }
 
@@ -651,7 +699,7 @@ nz-upload .ant-upload {
     width: 70%;
   }
 
-  :host ::ng-deep.ant-form-item-label>label {
+  :host ::ng-deep app-registration .ant-form-item-label>label {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -662,7 +710,7 @@ nz-upload .ant-upload {
     text-wrap: wrap;
   }
 
-  :host ::ng-deep.ant-table.ant-table-bordered>.ant-table-container>.ant-table-content>table {
+  :host ::ng-deep app-registration .ant-table.ant-table-bordered>.ant-table-container>.ant-table-content>table {
     background-color: #f0f4f9;
   }
 
@@ -807,10 +855,6 @@ p-dropdown {
   width: 40%;
 }
 
-::ng-deep .p-inputtext {
-  padding: 0.4rem 0.5rem !important;
-}
-
 .phone_input {
   width: 100% !important;
 }
@@ -828,15 +872,6 @@ p-dropdown {
 }
 
 
-::ng-deep .p-card .p-card-title {
-  color: red !important;
-}
-
-
-::ng-deep .p-card .p-card-body {
-  padding: 1rem 1.25rem !important;
-}
-
 .employer_btn {
   color: #fff;
   background-color: var(--primaryColor);
@@ -850,15 +885,6 @@ p-dropdown {
     background-color: var(--secondaryColor);
   }
 }
-
-::ng-deep .p_border .p-card{
-  border: 1px solid var(--secondaryColor) !important;
-}
-
-::ng-deep .p-inputotp{
-  width: 50% !important;
-}
-
 
 
 
@@ -901,7 +927,6 @@ h1 {
 
 .plan--light {
   color: #4E4E4E;
-  // background: linear-gradient(-45deg, #E5E3E8, #FAFAFA);
   background-color: #fff;
 }
 
@@ -911,7 +936,6 @@ h1 {
 
 .plan--light .btn {
   color: #FFF;
-  // background: var(--primaryColor);
 }
 
 .plan--accent {
@@ -920,8 +944,8 @@ h1 {
   scale: 1.1;
   height: fit-content;
 
-  .plan-description{
-   color: #fff; 
+  .plan-description {
+    color: #fff;
   }
 }
 
@@ -947,7 +971,6 @@ h1 {
 }
 
 .plan-price span {
-  // display: block;
   font-size: 1rem;
   font-weight: 300;
 }
@@ -970,7 +993,6 @@ h1 {
 }
 
 .btn:hover {
-  // opacity: 0.7;
   background-color: var(--secondaryColor);
 }
 

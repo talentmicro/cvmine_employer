@@ -11,6 +11,7 @@ import { TransferState, makeStateKey } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import * as forge from 'node-forge';
 import { jsonParse } from '../../../functions/shared-functions';
+import { Router } from '@angular/router';
 
 const SECRET_KEY = 'T@MiCr097124!iCR'; // Encryption key
 const IV = '1234567891234567'; // Initialization vector
@@ -31,7 +32,7 @@ export class LoginService {
     constructor(
         private http: HttpClient,
         private store: Store<AppState>,
-        // private sharedService: SharedService,
+        public router: Router,
         private ngZone: NgZone,
         private transferState: TransferState,
         @Inject(PLATFORM_ID) private platformId: Object
@@ -91,6 +92,7 @@ export class LoginService {
         if (isPlatformBrowser(this.platformId)) {
             // Clear sessionStorage in the browser
             sessionStorage.clear();
+            
         } else {
             // Clear TransferState on the server
             this.transferState.set(AUTH_TOKEN_KEY, null);
@@ -104,6 +106,7 @@ export class LoginService {
         this.ngZone.run(() => {
             this.loginSubject.next(false);
         });
+        this.router.navigate(['/login']);
     }
 
     isLoggedIn(): boolean {
