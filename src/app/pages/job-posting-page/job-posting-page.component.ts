@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { jobTypeList } from '../data';
 import { QuillModule } from 'ngx-quill';
@@ -163,7 +163,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             fetchExisting: ['no'],
             existingJob: [''],
             jobTitle: ['', [Validators.required, Validators.maxLength(100)]],
-            jobDescription: ['', Validators.required],
+            jobDescription: ['', [Validators.required, this.quillRequiredValidator()]],
         });
         this.secondStepForm = this.fb.group({
             ...jobTypeControls,
@@ -174,7 +174,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             salaryFrom: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             salaryTo: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             currency: ['', Validators.required],
-            period: ['', Validators.required],
+            period: [4, Validators.required],
             noticePeriodType: ['Immediate', Validators.required],
             noticeFrom: [null],
             noticeTo: [null],
@@ -456,6 +456,23 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
 
     navigate() {
         this.router.navigate(['/job-listings']);
+    }
+    
+    quillRequiredValidator(): ValidatorFn {
+        return (control: AbstractControl) => {
+            if (control && control.value) {
+                const sanitizedContent = this.sanitizeHtmlContent(control.value);
+                return sanitizedContent ? null : { required: true };
+            }
+            return { required: true };
+        };
+    }
+    
+    sanitizeHtmlContent(html: string): string {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const textContent = div.textContent || div.innerText || '';
+        return textContent.trim();
     }
 
     experienceRangeValidator(control: AbstractControl): ValidationErrors | null {
