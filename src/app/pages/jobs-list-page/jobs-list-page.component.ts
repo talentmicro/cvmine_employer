@@ -150,6 +150,14 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         });
     }
 
+    clearSearch(): void {
+        this.searchedKeyword = '';
+    }
+
+    clearSelectedStatuses(): void {
+        this.selectedStatuses = [];
+    }
+
     onSearch(): void {
         const requestBody = {
             ...this.requestBody,

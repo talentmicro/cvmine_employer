@@ -181,7 +181,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         // console.log(requestBody);
         this.apiService.getApplicants(requestBody).subscribe({
             next: (response) => {
-                console.log(response);
+                // console.log(response);
                 if (response.status && response.data && response.data.list) {
                     this.applicantsList = response.data.list.map((item: any) => ({
                         application_id: item.prodResId,
@@ -229,6 +229,18 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
                 this.loadingSpinnerService.hide();
             },
         });
+    }
+
+    clearSearch(): void {
+        this.searchedKeyword = '';
+    }
+
+    clearSelectedJobs(): void {
+        this.selectedJobs = [];
+    }
+
+    clearSelectedStatuses(): void {
+        this.selectedStatuses = [];
     }
 
     onSearchFilter() {

@@ -66,7 +66,6 @@ export const requestInterceptors: HttpInterceptorFn = (req, next) => {
 
                     // Error notification handling (mocked function example)
                     if (event.body?.['message'] && !event.body?.['status']) {
-                        console.log(event);
                         showErrorNotification(event.body?.['message']);
                     }
 

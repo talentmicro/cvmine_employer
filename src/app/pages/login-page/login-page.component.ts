@@ -68,11 +68,18 @@ export class LoginPageComponent{
 
             this.loginService.login(employeeId, password).subscribe(
                 (response) => {
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                    this.router.navigate(['/job-listings']);
-                    this.isLoading = false;
+                    if(response.status) {
+                        this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+                        this.router.navigate(['/job-listings']);
+                        this.isLoading = false;
+                    } else {
+                        this.isLoading = false;
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+                    }
+                    
                 },
                 (error) => {
+                    console.log(error);
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
                     this.isLoading = false;
                 }

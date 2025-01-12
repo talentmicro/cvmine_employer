@@ -51,32 +51,35 @@ export class LoginService {
     login(employeeId: string, password: string): Observable<any> {
         return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
             map((response) => {
-                const token = response.data.userDetails.token;
-                // console.log(token);
-                const userDetails = JSON.stringify(response.data.userDetails);
-    
-                const encryptedToken = this.encrypt(token);
-                const encryptedUserDetails = this.encrypt(userDetails);
-    
-                if (isPlatformBrowser(this.platformId)) {
-                    // Store encrypted data in sessionStorage for the browser
-                    sessionStorage.setItem('authToken', encryptedToken);
-                    sessionStorage.setItem('userDetails', encryptedUserDetails);
+                if(response.status) {
+                    const token = response.data.userDetails.token;
+                    const userDetails = JSON.stringify(response.data.userDetails);
+        
+                    const encryptedToken = this.encrypt(token);
+                    const encryptedUserDetails = this.encrypt(userDetails);
+        
+                    if (isPlatformBrowser(this.platformId)) {
+                        // Store encrypted data in sessionStorage for the browser
+                        sessionStorage.setItem('authToken', encryptedToken);
+                        sessionStorage.setItem('userDetails', encryptedUserDetails);
+                    } else {
+                        // Store encrypted data in TransferState for the server
+                        this.transferState.set(AUTH_TOKEN_KEY, encryptedToken);
+                        this.transferState.set(USER_DETAILS_KEY, encryptedUserDetails);
+                    }
+        
+                    // Dispatch the login success action
+                    this.store.dispatch(loginSuccess({ token, user: response.data.userDetails }));
+        
+                    // Update the login state
+                    this.ngZone.run(() => {
+                        this.loginSubject.next(true);
+                    });
+                    return response;
                 } else {
-                    // Store encrypted data in TransferState for the server
-                    this.transferState.set(AUTH_TOKEN_KEY, encryptedToken);
-                    this.transferState.set(USER_DETAILS_KEY, encryptedUserDetails);
+                    return response;
                 }
-    
-                // Dispatch the login success action
-                this.store.dispatch(loginSuccess({ token, user: response.data.userDetails }));
-    
-                // Update the login state
-                this.ngZone.run(() => {
-                    this.loginSubject.next(true);
-                });
-    
-                return response;
+                
             }),
             catchError((error) => {
                 this.store.dispatch(loginFailure({ error }));
