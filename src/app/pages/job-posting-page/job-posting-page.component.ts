@@ -80,6 +80,8 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
     ];
     skills: any = [];
     active: number | undefined = 0;
+    defaultScaleDuration!: number;
+    defaultCurrency!: number;
     quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -120,9 +122,18 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             .filter((item: any) => item.scaleDurationId !== 7)
                             .map((item: any) => ({
                                 id: item.scaleDurationId,
-                                title: item.name
+                                title: item.name,
+                                isDefault: item.isDefault
                             }));
-                        this.currencies = data.data.alertMasterData.currencyList;
+                        this.defaultScaleDuration = this.period.find((item: any) => item.isDefault === 1) ? this.period.find((item: any) => item.isDefault === 1)['id'] : this.period.find((item: any) => item.name === "Per Annum")['id'];
+                        if(this.defaultScaleDuration) {
+                            this.secondStepForm?.get('period')?.setValue(this.defaultScaleDuration);
+                        }
+                        this.currencies = data.data.jobMasterData.currencyList;
+                        this.defaultCurrency = this.currencies.find((item: any) => item.isDefault === 1) ? this.currencies.find((item: any) => item.isDefault === 1)['currencyId'] : this.currencies.find((item: any) => item.currencyId === 2)['currencyId'];
+                        if(this.defaultCurrency) {
+                            this.secondStepForm?.get('currency')?.setValue(this.defaultCurrency);
+                        }
                         if (this.editMode) {
                             this.getAllJobs();
                             this.onJobSelected(params['id']);
@@ -173,8 +184,8 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             experienceTo: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             salaryFrom: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             salaryTo: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
-            currency: ['', Validators.required],
-            period: [4, Validators.required],
+            currency: [this.defaultCurrency, Validators.required],
+            period: [this.defaultScaleDuration, Validators.required],
             noticePeriodType: ['Immediate', Validators.required],
             noticeFrom: [null],
             noticeTo: [null],
