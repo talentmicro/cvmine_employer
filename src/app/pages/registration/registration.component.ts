@@ -290,7 +290,7 @@ export class RegistrationComponent {
         const country = this.getCountryFromPlace(place);
         const pincode = this.getPincodeFromPlace(place);
 
-        this.employer_form.controls['addressLine1'].patchValue(addressLine1);
+        // this.employer_form.controls['addressLine1'].patchValue(addressLine1);
         this.employer_form.controls['addressLine2'].patchValue(addressLine2);
         this.employer_form.controls['city'].patchValue(city);
         this.employer_form.controls['state'].patchValue(state);
@@ -316,7 +316,7 @@ export class RegistrationComponent {
   getAddressLine2FromPlace(place: any) {
     let addressLine2 = '';
     place.address_components.forEach((component: any) => {
-      
+
       if (component.types.includes('subpremise')) {
         addressLine2 = component.long_name;
       }
@@ -819,29 +819,50 @@ export class RegistrationComponent {
     }
   }
 
-  verifyEmailID() {
+  sending_otp = false;
+
+  verifyEmailID(): void {
+    if (this.sending_otp) {
+      return;
+    }
+
+    // Ensure that the emailId control is valid before proceeding
     if (this.employer_form.controls['emailId'].valid) {
-      let req = {
-        emailId: this.employer_form.value.emailId,
+      const emailId = this.employer_form.value.emailId;
+      const req = {
+        emailId,
         isRegistration: 1,
       };
-      console.log(req);
-      this.registration.sendOTP(req).subscribe((res: { [x: string]: any; }) => {
-        console.log(res)
-        if (res && res['status']) {
-          console.log(res)
-          this.otpLength = res['data'].otpLength;
-          this.viewOtpfield = true;
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: res['message'] });
 
-        } else {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: res['message'] });
+      console.log(req);
+      this.sending_otp = true;
+
+      // Sending OTP request
+      this.registration.sendOTP(req).subscribe({
+        next: (res: { status?: boolean; message?: string; data?: { otpLength?: number } }) => {
+          this.sending_otp = false;
+
+          if (res?.status) {
+            console.log(res);
+            this.otpLength = res.data?.otpLength ?? 6; // Default to 6 if otpLength is undefined
+            this.viewOtpfield = true;
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: res.message });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: res.message || 'An error occurred' });
+          }
+        },  
+        error: (err) => {
+          this.sending_otp = false;
+          console.error('Error sending OTP:', err);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to send OTP. Please try again later.' });
         }
       });
     } else {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Enter a valid Email ID to proceed' });
+      this.sending_otp = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please enter a valid Email ID to proceed' });
     }
   }
+
 
   otpLength: number = 6;
   optInputLength!: number;
@@ -1000,6 +1021,9 @@ export class RegistrationComponent {
   }
 
   executeSubmission() {
+    if (!this.employer_form.get('prepaidCode')?.value) {
+      this.showApply = false;
+    }
     if ((this.showApply ? (this.talliteProductId != null) && this.employer_form.get('terms')?.value && this.validCoupon : (this.talliteProductId != null) && this.employer_form.get('terms')?.value)) {
       this.onSubmit();
     } else {
