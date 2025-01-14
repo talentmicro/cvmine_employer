@@ -12,6 +12,7 @@ import { SharedService } from '../services/shared.service';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { Subject, takeUntil } from 'rxjs';
 import { jsonParse } from '../../functions/shared-functions';
+import { SharedModule } from '../../shared-module/shared/shared.module';
 
 interface Job {
     id: number;
@@ -39,7 +40,8 @@ interface Job {
         FormsModule,
         ReactiveFormsModule,
         ImportsModule,
-        FloatLabelModule
+        FloatLabelModule,
+        SharedModule
     ],
     providers: [MessageService]
 })
@@ -266,15 +268,15 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
     }
 
     formatPublishedDate(dateString: string): string {
-        if(dateString) {
+        if (dateString) {
             const utcDateString = dateString.replace(' ', 'T') + 'Z';
             var localDate = new Date(utcDateString);
-            const options: Intl.DateTimeFormatOptions = { 
-                day: 'numeric', 
-                month: 'short', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
+            const options: Intl.DateTimeFormatOptions = {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
                 hour12: true
             };
             const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');

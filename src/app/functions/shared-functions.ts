@@ -71,3 +71,126 @@ export function getIP(PLATFORM_ID: Object) {
 
 export const emailRegEx = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
 export const onlyNumbersRegX = "^[0-9]*$";
+
+
+export function formatTextareaContent(str: string) {
+    if (str) {
+        try {
+            return str.replace(/\\n/g, "\r\n")
+        }
+        catch (err) {
+            return str;
+        }
+
+    }
+    else {
+        return ''
+    }
+}
+
+import { PipeTransform, Pipe, Injector } from '@angular/core';
+import * as moment from "moment";
+import { DatePipe } from '@angular/common';
+
+
+@Pipe({
+    name: 'UtcToLocalTime'
+})
+export class UTCtoLocalPipe {
+    transform(val: any): any {
+        if (val && val != '') {
+            try {
+                const date = moment.utc(val).format();
+                const local = moment.utc(date).local().format();
+                return local.toString();
+            }
+            catch (e) {
+                return val;
+            }
+        }
+    }
+}
+
+
+
+@Pipe({
+    name: 'LocalDateTimePipe'
+})
+export class LocalDateTimePipe implements PipeTransform {
+    private datePipe: DatePipe;
+
+    constructor() {
+        this.datePipe = new DatePipe('en-US');
+    }
+
+
+    transform(val: any, format?: string, timezone?: string, locale?: string): any {
+        if (val && val != '') {
+            format = format || 'dd-MMM-yyyy hh:mm a';
+
+            try {
+                format = sessionStorage.getItem('defaultDateTimeFormatUI') || '';
+                if (!format || format == 'null') {
+                    format = format || 'dd-MMM-yyyy hh:mm a';
+                }
+            }
+            catch (err) {
+                console.log(err)
+                format = format || 'dd-MMM-yyyy hh:mm a';
+            }
+
+            try {
+                const date = moment.utc(val).format();
+                val = moment.utc(date).local().format();
+            }
+            catch (e) {
+            }
+        }
+        // Set the default format if not provided
+
+        // Convert UTC to local time
+
+        // Use the DatePipe instance to format the date
+        return this.datePipe.transform(val, format, timezone, locale);
+    }
+}
+
+@Pipe({
+    name: 'LocalDatePipe'
+})
+export class LocalDatePipe implements PipeTransform {
+    private datePipe: DatePipe;
+
+    constructor() {
+        this.datePipe = new DatePipe('en-US');
+    }
+
+
+    transform(val: any, format?: string, timezone?: string, locale?: string): any {
+        if (val && val != '') {
+            format = format || 'dd-MMM-yyyy';
+            try {
+                format = sessionStorage.getItem('defaultDateFormatUI') || ''
+                if (!format || format == 'null') {
+                    format = format || 'dd-MMM-yyyy';
+                }
+            }
+            catch (err) {
+                console.log(err)
+                format = format || 'dd-MMM-yyyy';
+            }
+            try {
+                const date = moment.utc(val).format();
+                val = moment.utc(date).local().format();
+            }
+            catch (e) {
+            }
+        }
+        // Set the default format if not provided
+
+        // Convert UTC to local time
+
+        // Use the DatePipe instance to format the date
+        return this.datePipe.transform(val, format, timezone, locale);
+    }
+}

@@ -167,7 +167,7 @@
                             </div>
                         </td>
                         <td class="p-1" style="font-size: 14px;">
-                            {{formatAppliedDate(applicant.application_date)}}
+                            {{applicant.application_date |LocalDateTimePipe}}
                         </td>
                         <td class="p-1" style="font-size: 14px;">
                             {{ formatExperience(applicant.experience_in_years) }}
