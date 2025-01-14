@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { jobTypeList } from '../data';
 import { QuillModule } from 'ngx-quill';
@@ -80,6 +80,8 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
     ];
     skills: any = [];
     active: number | undefined = 0;
+    defaultScaleDuration!: number;
+    defaultCurrency!: number;
     quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -120,9 +122,18 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
                             .filter((item: any) => item.scaleDurationId !== 7)
                             .map((item: any) => ({
                                 id: item.scaleDurationId,
-                                title: item.name
+                                title: item.name,
+                                isDefault: item.isDefault
                             }));
-                        this.currencies = data.data.alertMasterData.currencyList;
+                        this.defaultScaleDuration = this.period.find((item: any) => item.isDefault === 1) ? this.period.find((item: any) => item.isDefault === 1)['id'] : this.period.find((item: any) => item.name === "Per Annum")['id'];
+                        if(this.defaultScaleDuration) {
+                            this.secondStepForm?.get('period')?.setValue(this.defaultScaleDuration);
+                        }
+                        this.currencies = data.data.jobMasterData.currencyList;
+                        this.defaultCurrency = this.currencies.find((item: any) => item.isDefault === 1) ? this.currencies.find((item: any) => item.isDefault === 1)['currencyId'] : this.currencies.find((item: any) => item.currencyId === 2)['currencyId'];
+                        if(this.defaultCurrency) {
+                            this.secondStepForm?.get('currency')?.setValue(this.defaultCurrency);
+                        }
                         if (this.editMode) {
                             this.getAllJobs();
                             this.onJobSelected(params['id']);
@@ -163,7 +174,7 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             fetchExisting: ['no'],
             existingJob: [''],
             jobTitle: ['', [Validators.required, Validators.maxLength(100)]],
-            jobDescription: ['', Validators.required],
+            jobDescription: ['', [Validators.required, this.quillRequiredValidator()]],
         });
         this.secondStepForm = this.fb.group({
             ...jobTypeControls,
@@ -173,8 +184,8 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
             experienceTo: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             salaryFrom: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
             salaryTo: [null, [Validators.required, Validators.min(0), Validators.pattern('^\\d*(\\.\\d+)?$')]],
-            currency: ['', Validators.required],
-            period: ['', Validators.required],
+            currency: [this.defaultCurrency, Validators.required],
+            period: [this.defaultScaleDuration, Validators.required],
             noticePeriodType: ['Immediate', Validators.required],
             noticeFrom: [null],
             noticeTo: [null],
@@ -456,6 +467,23 @@ export class JobPostingPageComponent implements OnInit, OnDestroy {
 
     navigate() {
         this.router.navigate(['/job-listings']);
+    }
+    
+    quillRequiredValidator(): ValidatorFn {
+        return (control: AbstractControl) => {
+            if (control && control.value) {
+                const sanitizedContent = this.sanitizeHtmlContent(control.value);
+                return sanitizedContent ? null : { required: true };
+            }
+            return { required: true };
+        };
+    }
+    
+    sanitizeHtmlContent(html: string): string {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const textContent = div.textContent || div.innerText || '';
+        return textContent.trim();
     }
 
     experienceRangeValidator(control: AbstractControl): ValidationErrors | null {

@@ -67,7 +67,7 @@
                             <label for="integeronly">Provide your company as registered name <span
                                     class="p-error">*</span>:</label>
                             <input type="text" pInputText formControlName="sellerCompanyName"
-                                class="ng-invalid ng-dirty" placeholder="Enter Your Company Name" />
+                                class="ng-invalid ng-dirty" placeholder="Enter your company name" />
                             <div *ngIf="this.employer_form.get('sellerCompanyName')?.touched && this.employer_form.get('sellerCompanyName')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('sellerCompanyName')?.hasError('required')"
@@ -82,8 +82,7 @@
                         </div>
 
                         <div class="col-md-8 mb-3">
-                            <label for="integeronly">Business/Tax registration documents <span
-                                    class="p-error">*</span>:</label>
+                            <label for="integeronly">Business/Tax registration documents <span class="p-error">*</span>:</label>
                             <p-fileUpload name="file" [files]="fileList" [multiple]="true" accept="image/*"
                                 [customUpload]="true" (onSelect)="handleChange($event)" (onRemove)="removeFile($event)">
                                 <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
@@ -96,19 +95,7 @@
                                         </div>
                                     </div>
                                 </ng-template>
-                                <!-- <ng-template pTemplate="content">
-                                    <ul *ngIf="fileList.length">
-                                        <li *ngFor="let file of fileList" style="font-size: 12px !important;">
-                                            {{ file.name }} - {{ file.size | number }} bytes
-                                            <button pButton type="button" icon="pi pi-times"
-                                                (click)="removeFile(file)"></button>
-                                        </li>
-                                    </ul>
-                                </ng-template> -->
                             </p-fileUpload>
-                            <!-- <button pButton type="button" label="Upload" icon="pi pi-times"
-                                (click)="onUpload('asd')"></button> -->
-
                         </div>
 
                         <div class="col-md-8 mb-3">
@@ -154,10 +141,8 @@
                         <p-button (click)="pre()" *ngIf="current > 0" [disabled]="hide_flag" label="Previous"
                             [rounded]="true" icon="pi pi-arrow-left" />
 
-                        <p-button [disabled]="!(this.employer_form.get('sellerCompanyName')?.value &&
-                            verification_status && this.employer_form.get('websiteUrl')?.valid)" [rounded]="true"
-                            (click)="next(1)" *ngIf="current < 5" label="Next" icon="pi pi-arrow-right"
-                            iconPos="right" />
+                        <p-button [rounded]="true" (click)="next(1,current)" *ngIf="current < 5" label="Next"
+                            icon="pi pi-arrow-right" iconPos="right" />
                     </div>
                 </div>
             </div>
@@ -176,7 +161,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">First Name <span class="p-error">*</span>:</label>
                             <input type="text" pInputText formControlName="firstName" class="ng-invalid ng-dirty"
-                                placeholder="Enter First Name" />
+                                placeholder="Enter first name" />
                             <div *ngIf="this.employer_form.get('firstName')?.touched && this.employer_form.get('firstName')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('firstName')?.hasError('required')"
@@ -194,9 +179,9 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="integeronly">Last Name <span class="p-error">*</span>:</label>
+                            <label for="integeronly">Last Name :</label>
                             <input type="text" pInputText formControlName="lastName" class="ng-invalid ng-dirty"
-                                placeholder="Enter Last Name" />
+                                placeholder="Enter last name" />
                             <div *ngIf="this.employer_form.get('lastName')?.touched && this.employer_form.get('lastName')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('lastName')?.hasError('required')" class="p-error">
@@ -223,8 +208,9 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">Email ID <span class="p-error">*</span>:</label>
                             <p-inputGroup class="email_inputGroup">
-                                <input id="emailId" type="text" formControlName="emailId" pInputText
-                                    placeholder="Enter Email ID" [readonly]="email_verification.verification" />
+                                <input id="emailId" type="text" (blur)="verifyEmailID()" formControlName="emailId"
+                                    pInputText placeholder="Enter email ID"
+                                    [readonly]="email_verification.verification" />
 
                                 <span *ngIf="!email_verification.verification" class="p-inputgroup-addon"
                                     style="background-color: green; color: #fff; cursor: pointer;"
@@ -257,7 +243,7 @@
 
                                 <!-- Mobile Number Input -->
                                 <input id="phoneNumber" type="number" pInputText formControlName="mobileNumber"
-                                    [maxlength]="mob_max_length" placeholder="Enter Mobile Number" class="phone-input">
+                                    [maxlength]="mob_max_length" placeholder="Enter mobile number" class="phone-input">
                             </div>
                             <!-- Error Message -->
                             <small
@@ -294,12 +280,13 @@
                             [rounded]="true" icon="pi pi-arrow-left" />
 
 
-                        <p-button [disabled]="!(this.employer_form.get('firstName')?.valid &&
-                        this.employer_form.get('lastName')?.valid &&
-                        this.employer_form.get('mobileNumber')?.valid &&
-                        this.employer_form.get('emailId')?.valid 
-                        &&  email_verification.verification)" (click)="next(1)" *ngIf="current < 5" label="Next"
-                            icon="pi pi-arrow-right" [rounded]="true" iconPos="right" />
+
+                        <p-button *ngIf="!email_verification.verification"
+                             (click)="verifyEmailID()" icon="pi pi-arrow-right"
+                            label="Verify Email ID" [rounded]="true" iconPos="right" />
+
+                        <p-button (click)="next(1,current)" *ngIf="email_verification.verification && current < 5" label="Next" icon="pi pi-arrow-right"
+                            [rounded]="true" iconPos="right" />
                     </div>
                 </div>
             </div>
@@ -320,8 +307,8 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">Building number, Lane :</label>
-                            <input type="text" pInputText formControlName="addressLine1" class="ng-invalid ng-dirty"
-                                placeholder="Enter Building Number,Lane" />
+                            <input type="text" pInputText (input)="onCityInputChange($event)" formControlName="addressLine1" class="ng-invalid ng-dirty"
+                                placeholder="Enter building number,lane"  #cityInput />
                             <div *ngIf="this.employer_form.get('addressLine1')?.touched && this.employer_form.get('addressLine1')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('addressLine1')?.hasError('maxlength')"
@@ -334,7 +321,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">Street,Area <span class="p-error">*</span>:</label>
                             <input type="text" pInputText formControlName="addressLine2" class="ng-invalid ng-dirty"
-                                placeholder="Enter Street, Area" />
+                                placeholder="Enter street, area" />
                             <div *ngIf="this.employer_form.get('addressLine2')?.touched && this.employer_form.get('addressLine2')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('addressLine2')?.hasError('required')"
@@ -352,7 +339,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">City <span class="p-error">*</span>:</label>
                             <input type="text" pInputText formControlName="city" class="ng-invalid ng-dirty"
-                                placeholder="Enter City" />
+                                placeholder="Enter city" >
                             <div *ngIf="this.employer_form.get('city')?.touched && this.employer_form.get('city')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('city')?.hasError('required')" class="p-error">
@@ -368,7 +355,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">State <span class="p-error">*</span>:</label>
                             <input type="text" pInputText formControlName="state" class="ng-invalid ng-dirty"
-                                placeholder="Enter State" />
+                                placeholder="Enter state" />
                             <div *ngIf="this.employer_form.get('state')?.touched && this.employer_form.get('state')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('state')?.hasError('required')" class="p-error">
@@ -384,7 +371,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">Country <span class="p-error">*</span>:</label>
                             <input type="text" pInputText formControlName="country" class="ng-invalid ng-dirty"
-                                placeholder="Enter Country" />
+                                placeholder="Enter country" />
                             <div *ngIf="this.employer_form.get('country')?.touched && this.employer_form.get('country')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('country')?.hasError('required')" class="p-error">
@@ -400,7 +387,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">Postal code <span class="p-error">*</span>:</label>
                             <input type="number" pInputText formControlName="postalCode" class="ng-invalid ng-dirty"
-                                placeholder="Enter Postal Code" />
+                                placeholder="Enter postal code" />
                             <div *ngIf="this.employer_form.get('postalCode')?.touched && this.employer_form.get('postalCode')?.invalid"
                                 class="error">
                                 <small *ngIf="this.employer_form.get('postalCode')?.hasError('required')"
@@ -423,12 +410,7 @@
                         <p-button (click)="pre()" *ngIf="current > 0" [disabled]="hide_flag" label="Previous"
                             [rounded]="true" icon="pi pi-arrow-left" />
 
-                        <p-button [disabled]="!(this.employer_form.get('addressLine1')?.valid &&
-                        this.employer_form.get('addressLine2')?.valid &&
-                        this.employer_form.get('city')?.valid &&
-                        this.employer_form.get('state')?.valid &&
-                        this.employer_form.get('country')?.valid &&
-                        this.employer_form.get('postalCode')?.valid)" [rounded]="true" (click)="next(1)"
+                        <p-button [rounded]="true" (click)="next(1,current)"
                             *ngIf="current < 5" label="Next" icon="pi pi-arrow-right" iconPos="right" />
                     </div>
                 </div>
@@ -460,7 +442,7 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="integeronly">Re-Password <span class="p-error">*</span>:</label>
+                            <label for="integeronly">Re-enter Password <span class="p-error">*</span>:</label>
                             <p-password id="confirmpassword" [toggleMask]="true" placeholder="Re-enter password"
                                 formControlName="confirmpassword" />
 
@@ -479,8 +461,7 @@
 
 
                         <p-button
-                            [disabled]="!(checkPassword() != 'error' && this.employer_form.get('confirmpassword')?.valid)"
-                            [rounded]="true" (click)="next(1)" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                            [rounded]="true" (click)="next(1,current)" label="Next" icon="pi pi-arrow-right" iconPos="right" />
                     </div>
                 </div>
             </div>
@@ -521,7 +502,7 @@
                                         </p>
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <a class="btn" (click)="onSubscribeChange(card.id)">Subscribe</a>
+                                        <a class="btn" (click)="onSubscribeChange(card.id)">Select</a>
                                     </div>
                                 </div>
 
@@ -541,11 +522,14 @@
                                 <div>
                                     <p-inputGroup class="email_inputGroup">
                                         <input type="text" formControlName="prepaidCode" pInputText
-                                            placeholder="Enter Coupon Number"
+                                            placeholder="Enter coupon number"
                                             (keyup)="this.employer_form.get('prepaidCode')?.patchValue(this.employer_form.get('prepaidCode')?.value.toUpperCase())" />
-                                        <span class="p-inputgroup-addon"
+                                        <span *ngIf="!validCoupon" class="p-inputgroup-addon"
                                             style="background-color: green; color: #fff; cursor: pointer;"
                                             (click)="applyCoupon()">Apply</span>
+                                        <span *ngIf="validCoupon" class="p-inputgroup-addon"
+                                            style="background-color: #fff; color: green; cursor:not-allowed;"
+                                            ><i class="pi pi-verified me-2" style="color: green;"></i> Applied</span>
                                         <small *ngIf="" class="pass-status p-error">
                                             Passwords do not match.
                                         </small>
@@ -556,10 +540,12 @@
 
                             <div class="col-md-12">
                                 <div class="col-md-12">
-                                    <p-checkbox formControlName="terms" inputId="terms" value="true" class="me-2" />
-                                    <label for="terms">Agree with: <a href="javascript:void(0)" (click)="showModal()"
-                                            style="color: blue;" class="underline-on-hover">Terms and
-                                            Conditions</a></label>
+                                    <p-checkbox formControlName="terms" inputId="terms" [binary]="true" class="me-2"
+                                        [trueValue]="1" [falseValue]="0"></p-checkbox>
+                                    <label for="terms">Agree with:
+                                        <a href="javascript:void(0)" (click)="showModal()" style="color: blue;"
+                                            class="underline-on-hover">Terms and Conditions</a>
+                                    </label>
                                 </div>
                                 <div class="col-md-12">
                                     <!-- <app-tm-captch (validCaptch)="verifyCaptch($event)"></app-tm-captch> -->
@@ -585,7 +571,7 @@
 
                         <!-- <p-button (click)="next(1)" *ngIf="current < 7" label="Next" icon="pi pi-arrow-right"
                             [rounded]="true" iconPos="right" /> -->
-                        <p-button [disabled]="!((talliteProductId!=null) && this.employer_form.get('terms')?.value)"
+                        <p-button
                             [rounded]="true" (click)=" executeSubmission()" label="Proceed to Payment"
                             icon="pi pi-wallet" iconPos="right" />
                     </div>
@@ -687,18 +673,5 @@
         padding: 11px 0px;">
         <p-button label="Cancel" severity="secondary" (onClick)="isOpenMap = false" />
         <p-button label="Agree" (onClick)="isOpenMap = false" />
-    </div>
-</p-dialog>
-
-<p-dialog header="Terms and Conditions" [modal]="true" [(visible)]="isVisible" [style]="{ width: '50rem' }">
-    <app-terms></app-terms>
-    <div class="flex justify-content-end gap-2" style="
-        display: flex;
-        position: sticky;
-        bottom: -34px;
-        z-index: 4;
-        background-color: #fff;">
-        <p-button label="Cancel" severity="secondary" (onClick)="handleCancel()" />
-        <p-button label="Agree" (onClick)="handleOk()" />
     </div>
 </p-dialog>

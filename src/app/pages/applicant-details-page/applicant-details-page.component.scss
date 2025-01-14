@@ -473,8 +473,8 @@
 .applicant-card {
     padding: 2rem;
     border-radius: 1rem;
-    background: linear-gradient(135deg, #f9f9f9, #e4ecfa);
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    // background: linear-gradient(135deg, #f9f9f9, #e4ecfa);
+    // box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
@@ -636,4 +636,16 @@ p-accordionTab .p-accordion-header-content {
     .banner-content {
         gap: 0;
     }
+}
+
+.post-button {
+    background-color: rgb(255, 113, 18);
+    border-radius: 0.7rem;
+    padding: 0.1rem 1rem;
+    border: none;
+    color: white;
+    font-weight: 500;
+    height: 44px;
+    position: absolute;
+    top: -3rem;
 }

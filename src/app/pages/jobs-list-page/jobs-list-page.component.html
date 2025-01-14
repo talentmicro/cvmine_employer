@@ -8,7 +8,7 @@
                 [tableStyle]="{ 'min-width': '75rem' }" >
                 <ng-template pTemplate="caption">
                     <div class="row d-flex justify-content-between">
-                        <div class="col-12 col-md-6 col-lg-4 mb-3 mb-md-0">
+                        <div class="col-12 col-md-6 col-lg-4 mb-3 mb-md-0 p-inputgroup">
                             <!-- <p-iconField iconPosition="right" class="ml-auto">
                                 <p-inputIcon>
                                     <i class="pi pi-search"></i>
@@ -27,9 +27,16 @@
                                 placeholder="Search job title"
                                 styleClass="w-full"
                                 style="height: 53px;" 
-                                (keydown.enter)="onSearch()" />
+                                (keydown.enter)="onSearch()">
+                            <button
+                                type="button"
+                                pButton
+                                icon="pi pi-times"
+                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear"
+                                *ngIf="searchedKeyword"
+                                (click)="clearSearch()"></button>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-4">
+                        <div class="col-12 col-md-6 col-lg-4 p-inputgroup">
                             <p-multiSelect
                                 id="status"
                                 [options]="jobStatuses"
@@ -41,6 +48,13 @@
                                 display="chip"
                                 styleClass="w-full">
                             </p-multiSelect>
+                            <button type="button"
+                                pButton
+                                icon="pi pi-times"
+                                class="p-button-text p-button-clear"
+                                *ngIf="selectedStatuses?.length"
+                                (click)="clearSelectedStatuses()">
+                            </button>
                         </div>
                         <div class="col-12 col-lg-4 d-flex justify-content-end justify-content-lg-between mt-3 mt-lg-0">
                             <button type="button" class="search-button my-1 mx-3 mx-lg-0" (click)="onSearch()">Search</button>
