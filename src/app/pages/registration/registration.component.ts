@@ -40,6 +40,8 @@ import { BadgeModule } from 'primeng/badge';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { FilesService } from '../services/files/files.service';
 
+declare var google: any;
+
 @Component({
   selector: 'app-registration',
   standalone: true,
@@ -77,6 +79,7 @@ import { FilesService } from '../services/files/files.service';
 })
 export class RegistrationComponent {
 
+  @ViewChild('cityInput') cityInput: ElementRef | undefined;
   // stepItems = [
   //   { label: 'Select a Product', command: (event: any) => this.messageService.add({ severity: 'info', summary: 'First Step', detail: event.item.label }) },
   //   { label: 'Registration details' },
@@ -146,7 +149,7 @@ export class RegistrationComponent {
     this.isVisible = false;
   }
   handleOk(): void {
-    this.employer_form.get('terms')?.patchValue(true);
+    this.employer_form.get('terms')?.patchValue(1);
     this.isVisible = false;
   }
   beforeUpload = (file: any, fileList: any[]): boolean | Observable<boolean> => {
@@ -227,57 +230,6 @@ export class RegistrationComponent {
 
   }
 
-  // async uploadAttachments(): Promise<boolean> {
-  //   return new Promise(async (resolve, reject) => {
-  //     console.log(this.fileList);
-  //     console.log(this.storedFiles);
-
-  //     if (this.fileList.length) {
-  //       for (const item of this.fileList) {
-  //         try {
-  //           console.log(item);
-
-  //           let fileList_final = {
-  //             FileName: item.fileName,
-  //             // FileSize: this.mediaService.getFileSize(item.FileSize) + ' ' + this.mediaService.getFileSizeUnit(item.FileSize),
-  //             FileType: item.FileType,
-  //             content: item.url,
-  //           };
-  //           console.log(fileList_final);
-
-  //           // let f = this.mediaService.makeFormDataFile(fileList_final);
-  //           let form_data = new FormData();
-  //           // console.log(f);
-  //           // form_data.append('attachment', f, item.fileName);
-  //           console.log(form_data);
-
-  //           // const res:any = await this.mediaService.uploadAttachment(form_data).toPromise();
-
-  //           if (res && res['status']) {
-  //             console.log(res);
-  //             this.form_control.push(res['data']);
-  //             console.log(this.form_control);
-  //           } else {
-  //             // Handle the case where the upload fails but continue processing the remaining files
-  //             this.router.navigate(['/reg-failed'], { queryParams: { message: res['message'] } });
-  //             this.loader_flag = false;
-  //             console.log('Failed to upload');
-  //             // (await this.router.navigate(['/paye'])).valueOf
-  //           }
-  //         } catch (error) {
-  //           console.error('Error uploading file', item.fileName, error);
-  //           // Optionally, you could reject here if you want to stop processing on error
-  //           // reject(error);
-  //         }
-  //       }
-  //       resolve(true);
-  //     } else {
-  //       resolve(false);
-  //     }
-  //   });
-  // }
-
-
   ngOnChanges(changes: SimpleChanges): void {
 
   }
@@ -299,21 +251,6 @@ export class RegistrationComponent {
     console.log(this.current_ip);
 
     if (isPlatformBrowser(this.platform_id)) {
-      // Safe to use navigator here
-      // navigator.permissions.query({ name: 'geolocation' })
-      //   .then((res) => {
-      //     if (res['state'] === 'granted') {
-      //       // Permission granted
-      //     } else {
-      //       navigator.geolocation.getCurrentPosition((res) => {
-      //         console.log(res.coords)
-      //         this.employer_form.get('latitude')?.patchValue(res.coords.latitude);
-      //         this.employer_form.get('longitude')?.patchValue(res.coords.longitude);
-      //         console.log(this.employer_form)
-      //       });
-      //     }
-      //   });
-
       this.createForm();
       this.getMasters();
       this.queryParams = this.activated_route.snapshot.queryParams;
@@ -331,8 +268,107 @@ export class RegistrationComponent {
     }
 
 
-
   }
+
+
+  initializeAutocomplete() {
+    const autocomplete = new google.maps.places.Autocomplete(
+      this.cityInput?.nativeElement, {
+
+    });
+    types: ['address']
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+
+      if (place.geometry) {
+        console.log(place);
+        const addressLine1 = this.getAddressLine1FromPlace(place);
+        const addressLine2 = this.getAddressLine2FromPlace(place);
+        const city = this.getCityFromPlace(place);
+        const state = this.getStateFromPlace(place);
+        const country = this.getCountryFromPlace(place);
+        const pincode = this.getPincodeFromPlace(place);
+
+        this.employer_form.controls['addressLine1'].patchValue(addressLine1);
+        this.employer_form.controls['addressLine2'].patchValue(addressLine2);
+        this.employer_form.controls['city'].patchValue(city);
+        this.employer_form.controls['state'].patchValue(state);
+        this.employer_form.controls['country'].patchValue(country);
+        this.employer_form.controls['postalCode'].patchValue(pincode);
+
+      }
+    });
+  }
+
+  getAddressLine1FromPlace(place: any) {
+    let addressLine1 = '';
+    place.address_components.forEach((component: any) => {
+      if (component.types.includes('street_number')) {
+        addressLine1 = component.long_name;
+      } else if (component.types.includes('route')) {
+        addressLine1 += ' ' + component.long_name;
+      }
+    });
+    return addressLine1.trim();
+  }
+
+  getAddressLine2FromPlace(place: any) {
+    let addressLine2 = '';
+    place.address_components.forEach((component: any) => {
+      
+      if (component.types.includes('subpremise')) {
+        addressLine2 = component.long_name;
+      }
+    });
+    return addressLine2;
+  }
+
+  getCityFromPlace(place: any) {
+    let city = '';
+    place.address_components.forEach((component: any) => {
+      if (component.types.includes('locality')) {
+        city = component.long_name;
+      }
+    });
+    return city;
+  }
+
+  getStateFromPlace(place: any) {
+    let state = '';
+    place.address_components.forEach((component: any) => {
+      if (component.types.includes('administrative_area_level_1')) {
+        state = component.long_name;
+      }
+    });
+    return state;
+  }
+
+  getCountryFromPlace(place: any) {
+    let country = '';
+    place.address_components.forEach((component: any) => {
+      if (component.types.includes('country')) {
+        country = component.long_name;
+      }
+    });
+    return country;
+  }
+
+  getPincodeFromPlace(place: any) {
+    let pincode = '';
+    place.address_components.forEach((component: any) => {
+      if (component.types.includes('postal_code')) {
+        pincode = component.long_name;
+      }
+    });
+    return pincode;
+  }
+
+  onCityInputChange(event: any) {
+    this.initializeAutocomplete();
+  }
+
+
 
   isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -404,7 +440,7 @@ export class RegistrationComponent {
         annualSubscription: [0],
         paymentOptions: [null],
         prepaidCode: [null, Validators.required],
-        terms: [null, Validators.required],
+        terms: [1, Validators.required],
         isEmailVerified: [null, Validators.required],
       },
 
@@ -412,6 +448,7 @@ export class RegistrationComponent {
   }
 
   showApply = false;
+  validCoupon = false;
 
   isCoupon() {
     this.showApply = !this.showApply
@@ -429,10 +466,13 @@ export class RegistrationComponent {
         if (res && res['data']) {
           console.log(res['data'].list);
           this.couponCardList = jsonDeepParse(res['data'].list);
+          this.validCoupon = true;
+          this.talliteProductId = res['data'].list[0].id;
         } else {
           const obj = this.masters.talliteBusinessProductList.find((ele: any) => ele.shortCode === "TM199");
           this.couponCardList = jsonDeepParse(obj.childProductList);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: res['message'] });
+          this.validCoupon = false;
         }
 
         window.scrollTo({
@@ -526,24 +566,135 @@ export class RegistrationComponent {
   }
 
 
-  next(val: number, step?: number): void {
+  next(val: number, type?: number): void {
 
-    if (step) {
-      this.step_valid = step;
-    }
-    if (val == 1) {
-      if (!this.is_uploaded) {
-        this.onUpload(1)
+    if (type === 0) {
+      if ((this.employer_form.get('sellerCompanyName')?.value && this.fileList.length &&
+        this.verification_status && this.employer_form.get('websiteUrl')?.valid)) {
+        if (val == 1) {
+          if (!this.is_uploaded) {
+            this.onUpload(1)
+          }
+        }
+        console.log(this.employer_form.get('productTypeId')?.value);
+        this.current += val;
+        console.log(this.current)
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      } else {
+        if (!this.employer_form.get('sellerCompanyName')?.value) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Company name is required' });
+        } else if (!this.fileList.length) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Registration documentation is required' });
+        } else if (!this.verification_status) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'ShortCode is required' });
+        } else if (!this.employer_form.get('websiteUrl')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Website url is incorect' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Form is invalid' });
+        }
+
+      }
+    } else if (type === 1) {
+      if ((this.employer_form.get('firstName')?.valid &&
+        this.employer_form.get('lastName')?.valid &&
+        this.employer_form.get('mobileNumber')?.valid &&
+        this.employer_form.get('emailId')?.valid
+        && this.email_verification.verification)) {
+        if (val == 1) {
+          if (!this.is_uploaded) {
+            this.onUpload(1)
+          }
+        }
+        console.log(this.employer_form.get('productTypeId')?.value);
+        this.current += val;
+        console.log(this.current)
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      } else {
+        if (!this.employer_form.get('firstName')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'First name is required' });
+        } else if (!this.employer_form.get('mobileNumber')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Mobile number is required' });
+        } else if (!this.employer_form.get('emailId')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Email ID is required' });
+        } else if (!this.email_verification.verification) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Email ID Verification required' });
+        } else if (!this.employer_form.get('lastName')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Last name is not valid' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Form is invalid' });
+        }
+      }
+    } else if (type === 2) {
+      if ((this.employer_form.get('addressLine1')?.valid &&
+        this.employer_form.get('addressLine2')?.valid &&
+        this.employer_form.get('city')?.valid &&
+        this.employer_form.get('state')?.valid &&
+        this.employer_form.get('country')?.valid &&
+        this.employer_form.get('postalCode')?.valid)) {
+        if (val == 1) {
+          if (!this.is_uploaded) {
+            this.onUpload(1)
+          }
+        }
+        console.log(this.employer_form.get('productTypeId')?.value);
+        this.current += val;
+        console.log(this.current)
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      } else {
+        if (!this.employer_form.get('addressLine2')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Address is required' });
+        } else if (!this.employer_form.get('city')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'City is required' });
+        } else if (!this.employer_form.get('state')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'State is required' });
+        } else if (!this.employer_form.get('country')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Country is required' });
+        } else if (!this.employer_form.get('postalCode')?.valid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Postal code is required' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Form is invalid' });
+        }
+      }
+    } else if (type === 3) {
+      if ((this.checkPassword() != 'error' && this.employer_form.get('confirmpassword')?.valid)) {
+        if (val == 1) {
+          if (!this.is_uploaded) {
+            this.onUpload(1)
+          }
+        }
+        console.log(this.employer_form.get('productTypeId')?.value);
+        this.current += val;
+        console.log(this.current)
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      } else {
+        if (!(this.employer_form.get('password')?.valid)) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Pasword is required' });
+        }
+        else if (!(this.checkPassword() != 'error')) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Password and Re-enter Pasword does not match' });
+        }
+        else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Form is invalid' });
+        }
       }
     }
-    console.log(this.employer_form.get('productTypeId')?.value);
-    this.current += val;
-    console.log(this.current)
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    })
   }
+
+  // nextAddress(){
+  //   this.initializeAutocomplete();
+  // }
 
   done(): void {
     console.log('done');
@@ -718,6 +869,7 @@ export class RegistrationComponent {
           this.email_verification.verification = true;
 
           this.messageService.add({ severity: 'success', summary: 'Success', detail: res['message'] });
+          this.next(1, this.current);
 
           this.viewOtpfield = false;
         } else {
@@ -847,31 +999,32 @@ export class RegistrationComponent {
     }
   }
 
-  async executeSubmission(): Promise<void> {
-    this.loader_flag = true;
-    this.loader_msg = 'please  wait while attachments are being uploaded !!'
-    try {
-      // const flag = await this.uploadAttachments();
-      // if (flag) {
-
-      //   if (this.documentUploaded) {
-      //     this.loader_msg = 'please  wait while form is being submitted !!'
-      //     console.log(this.form_control);
-      //     if (this.form_control) {
-      //       this.employer_form.get('registrationDocuments')?.setValue(this.form_control)
-      //       this.onSubmit();
-      //     }
-      //   }
-
-
-      //   this.loader_flag = false;
-      // }
+  executeSubmission() {
+    if ((this.showApply ? (this.talliteProductId != null) && this.employer_form.get('terms')?.value && this.validCoupon : (this.talliteProductId != null) && this.employer_form.get('terms')?.value)) {
       this.onSubmit();
+    } else {
+      if (this.showApply) {
+        if (this.talliteProductId === null) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please select a plan to proceed' });
+        } else if (!this.employer_form.get('terms')?.value) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please accept the the term and condition' });
+        } else if (!this.validCoupon) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please apply any coupon' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Form is invalid' });
+        }
 
-    } catch (error) {
-      console.error('Error in first function', error);
-      this.loader_flag = false;
+      } else {
+        if (!this.employer_form.get('terms')?.value) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please accept the the term and condition ' });
+        } else if (this.talliteProductId === null) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please select a plan to proceed' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please select plan and accept terms and conditions' });
+        }
+      }
     }
+
   }
 
   onSubmit() {
@@ -1057,10 +1210,9 @@ export class RegistrationComponent {
   }
 
 
-
   // Handles file removal
-  removeFile(file: any) {
-    this.fileList = this.fileList.filter((f: any) => f !== file);
+  removeFile(ev: any) {
+    this.fileList = this.fileList.filter((f: any) => f !== ev.file);
   }
 
   // Handles the upload process
