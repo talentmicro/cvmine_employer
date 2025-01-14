@@ -7,7 +7,7 @@
                 [tableStyle]="{ 'min-width': '75rem' }" >
                 <ng-template pTemplate="caption">
                     <div class="row d-flex justify-content-between">
-                        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+                        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0 p-inputgroup">
                             <!-- <p-iconField iconPosition="right" class="ml-auto">
                                 <p-inputIcon>
                                     <i class="pi pi-search"></i>
@@ -27,8 +27,15 @@
                                 styleClass="w-full"
                                 style="height: 53px;" 
                                 (keydown.enter)="onSearchFilter()" />
+                            <button type="button"
+                                pButton
+                                icon="pi pi-times"
+                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear"
+                                *ngIf="searchedKeyword"
+                                (click)="clearSearch()">
+                            </button>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+                        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0 p-inputgroup">
                             <p-multiSelect
                                 id="jobs"
                                 [options]="jobsList"
@@ -40,8 +47,15 @@
                                 display="chip"
                                 styleClass="w-full">
                             </p-multiSelect>
+                            <button type="button"
+                                pButton
+                                icon="pi pi-times"
+                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear"
+                                *ngIf="selectedJobs?.length"
+                                (click)="clearSelectedJobs()">
+                            </button>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-3 mt-1 mt-lg-0 mb-lg-0">
+                        <div class="col-12 col-md-6 col-lg-3 mt-1 mt-lg-0 mb-lg-0 p-inputgroup">
                             <p-multiSelect
                                 id="status"
                                 [options]="applicationStatus"
@@ -53,6 +67,13 @@
                                 display="chip"
                                 styleClass="w-full">
                             </p-multiSelect>
+                            <button type="button"
+                                pButton
+                                icon="pi pi-times"
+                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear"
+                                *ngIf="selectedStatuses?.length"
+                                (click)="clearSelectedStatuses()">
+                            </button>
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 text-end mt-3 mt-lg-0">
                             <button type="button" class="search-button mt-lg-2" (click)="onSearchFilter()">Search</button>
@@ -152,24 +173,35 @@
                             {{ formatExperience(applicant.experience_in_years) }}
                         </td>
                         <td class="p-1" >
-                            <div pTooltip="{{applicant.skills.join(', ')}}" tooltipPosition="top" [autoHide]="false">
-                                <ng-container *ngFor="let skill of applicant.skills.slice(0, 3)">
-                                    <span  style="display: inline-block; 
-                                        padding: 4px 8px; 
-                                        margin: 2px; 
-                                        background-color: #e0f7fa; 
-                                        color: #006064; 
-                                        border-radius: 12px; 
-                                        font-size: 12px;">
-                                        {{ skill }}
-                                    </span>
-                                </ng-container>
-                            </div>
-
+                            <ng-container *ngIf="applicant.skills != ''; else noSkills">
+                                <div pTooltip="{{applicant.skills.join(', ')}}" tooltipPosition="top" [autoHide]="false">
+                                    <ng-container *ngFor="let skill of applicant.skills.slice(0, 3)">
+                                        <span  style="display: inline-block; 
+                                            padding: 4px 8px; 
+                                            margin: 2px; 
+                                            background-color: #e0f7fa; 
+                                            color: #006064; 
+                                            border-radius: 12px; 
+                                            font-size: 12px;">
+                                            {{ skill }}
+                                        </span>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                            <ng-template #noSkills>
+                                <span style="display: inline-block; 
+                                    padding: 4px 8px; 
+                                    margin: 2px; 
+                                    background-color: #e0f7fa; 
+                                    color: #006064; 
+                                    border-radius: 12px; 
+                                    font-size: 12px;">
+                                    N/A
+                                </span>
+                            </ng-template>
                         </td>
-
                         <td class="p-1 text-center" style="font-size: 14px;">
-                            {{applicant.location}}
+                            {{applicant.location ? applicant.location : 'N/A'}}
                         </td>
                         <td class="p-1 text-center">
                             <p-dropdown [options]="applicationStatus"

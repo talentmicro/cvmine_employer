@@ -24,6 +24,10 @@
             "dom"
         ]
     },
+    "ts-node": {
+        "experimentalSpecifierResolution": "node",
+        "esm": true
+    },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,
         "strictInjectionParameters": true,

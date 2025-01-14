@@ -11,6 +11,7 @@ import { TransferState, makeStateKey } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import * as forge from 'node-forge';
 import { jsonParse } from '../../../functions/shared-functions';
+import { Router } from '@angular/router';
 
 const SECRET_KEY = 'T@MiCr097124!iCR'; // Encryption key
 const IV = '1234567891234567'; // Initialization vector
@@ -31,7 +32,7 @@ export class LoginService {
     constructor(
         private http: HttpClient,
         private store: Store<AppState>,
-        // private sharedService: SharedService,
+        public router: Router,
         private ngZone: NgZone,
         private transferState: TransferState,
         @Inject(PLATFORM_ID) private platformId: Object
@@ -50,32 +51,35 @@ export class LoginService {
     login(employeeId: string, password: string): Observable<any> {
         return this.http.post<any>(this.apiUrl, { employeeId, password }).pipe(
             map((response) => {
-                const token = response.data.userDetails.token;
-                // console.log(token);
-                const userDetails = JSON.stringify(response.data.userDetails);
-    
-                const encryptedToken = this.encrypt(token);
-                const encryptedUserDetails = this.encrypt(userDetails);
-    
-                if (isPlatformBrowser(this.platformId)) {
-                    // Store encrypted data in sessionStorage for the browser
-                    sessionStorage.setItem('authToken', encryptedToken);
-                    sessionStorage.setItem('userDetails', encryptedUserDetails);
+                if(response.status) {
+                    const token = response.data.userDetails.token;
+                    const userDetails = JSON.stringify(response.data.userDetails);
+        
+                    const encryptedToken = this.encrypt(token);
+                    const encryptedUserDetails = this.encrypt(userDetails);
+        
+                    if (isPlatformBrowser(this.platformId)) {
+                        // Store encrypted data in sessionStorage for the browser
+                        sessionStorage.setItem('authToken', encryptedToken);
+                        sessionStorage.setItem('userDetails', encryptedUserDetails);
+                    } else {
+                        // Store encrypted data in TransferState for the server
+                        this.transferState.set(AUTH_TOKEN_KEY, encryptedToken);
+                        this.transferState.set(USER_DETAILS_KEY, encryptedUserDetails);
+                    }
+        
+                    // Dispatch the login success action
+                    this.store.dispatch(loginSuccess({ token, user: response.data.userDetails }));
+        
+                    // Update the login state
+                    this.ngZone.run(() => {
+                        this.loginSubject.next(true);
+                    });
+                    return response;
                 } else {
-                    // Store encrypted data in TransferState for the server
-                    this.transferState.set(AUTH_TOKEN_KEY, encryptedToken);
-                    this.transferState.set(USER_DETAILS_KEY, encryptedUserDetails);
+                    return response;
                 }
-    
-                // Dispatch the login success action
-                this.store.dispatch(loginSuccess({ token, user: response.data.userDetails }));
-    
-                // Update the login state
-                this.ngZone.run(() => {
-                    this.loginSubject.next(true);
-                });
-    
-                return response;
+                
             }),
             catchError((error) => {
                 this.store.dispatch(loginFailure({ error }));
@@ -91,6 +95,7 @@ export class LoginService {
         if (isPlatformBrowser(this.platformId)) {
             // Clear sessionStorage in the browser
             sessionStorage.clear();
+            
         } else {
             // Clear TransferState on the server
             this.transferState.set(AUTH_TOKEN_KEY, null);
@@ -104,6 +109,7 @@ export class LoginService {
         this.ngZone.run(() => {
             this.loginSubject.next(false);
         });
+        this.router.navigate(['/login']);
     }
 
     isLoggedIn(): boolean {
