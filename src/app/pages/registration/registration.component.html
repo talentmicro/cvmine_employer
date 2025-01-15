@@ -3,10 +3,10 @@
 
 }
 @else {
-<div class="container m-auto p-5">
+<div class="container m-auto p-md-5">
     <div class="row">
         <p-toast />
-        <p-steps [model]="stepItem2" [(activeIndex)]="current"></p-steps>
+        <p-steps [model]="stepItem2" [(activeIndex)]="current" [styleClass]="isMobile ? 'vertical-steps' : ''"></p-steps>
 
         <form [formGroup]="employer_form">
 
@@ -116,7 +116,7 @@
                                 alphabetic characters in length and as unique prefix to generate Login IDs <span
                                     class="p-error">*</span>:</label>
 
-                            <div class="col-md-4">
+                            <div class="col-md-5 short">
                                 <p-inputGroup>
                                     <input style="width: 50%;" id="shortCode" type="text" maxlength="5"
                                         formControlName="shortCode" pInputText placeholder="Enter Code"
@@ -208,13 +208,16 @@
                         <div class="col-md-6 mb-3">
                             <label for="integeronly">Email ID <span class="p-error">*</span>:</label>
                             <p-inputGroup class="email_inputGroup">
-                                <input id="emailId" type="text" (blur)="verifyEmailID()" formControlName="emailId"
+                                <input id="emailId" type="text" (blur)="(email_verification.verification)? null:verifyEmailID()" formControlName="emailId"
                                     pInputText placeholder="Enter email ID"
                                     [readonly]="email_verification.verification" />
 
-                                <span *ngIf="!email_verification.verification" class="p-inputgroup-addon"
+                                <span *ngIf="!(email_verification.verification) && !viewOtpfield" class="p-inputgroup-addon"
                                     style="background-color: green; color: #fff; cursor: pointer;"
                                     (click)="verifyEmailID()">Verify</span>
+                                <span *ngIf="(!email_verification.verification) && viewOtpfield" class="p-inputgroup-addon"
+                                    style="background-color: green; color: #fff; cursor: pointer;"
+                                    (click)="VerifyOTP()">Verify</span>
                                 <span *ngIf="email_verification.verification" class="p-inputgroup-addon"
                                     style="cursor: not-allowed;"> Verified</span>
 
@@ -555,7 +558,7 @@
 
                     </div>
 
-                    <div class="steps-action stick "
+                    <div class="steps-action stick payment "
                         style="display: flex; justify-content: space-between; padding: 12px 0px;">
 
                         <p-button (click)="pre()" *ngIf="current > 0" [disabled]="hide_flag" label="Previous"
@@ -573,7 +576,7 @@
                             [rounded]="true" iconPos="right" /> -->
                         <p-button
                             [rounded]="true" (click)=" executeSubmission()" label="Proceed to Payment"
-                            icon="pi pi-wallet" iconPos="right" />
+                             />
                     </div>
                 </div>
             </div>
@@ -642,7 +645,7 @@
 
                     </div>
 
-                    <div class="steps-action stick "
+                    <div class="steps-action stick"
                         style="display: flex; justify-content: space-between; padding: 12px 0px;">
 
                         <p-button (click)="pre()" *ngIf="current > 0" [disabled]="hide_flag" label="Previous"
@@ -673,5 +676,18 @@
         padding: 11px 0px;">
         <p-button label="Cancel" severity="secondary" (onClick)="isOpenMap = false" />
         <p-button label="Agree" (onClick)="isOpenMap = false" />
+    </div>
+</p-dialog>
+
+<p-dialog header="Terms and Conditions" [modal]="true" [(visible)]="isVisible" [style]="{ width: '50rem' }">
+    <app-terms></app-terms>
+    <div class="flex justify-content-end gap-2" style="
+        display: flex;
+        position: sticky;
+        bottom: -34px;
+        z-index: 4;
+        background-color: #fff;">
+        <p-button label="Cancel" severity="secondary" (onClick)="handleCancel()" />
+        <p-button label="Agree" (onClick)="handleOk()" />
     </div>
 </p-dialog>

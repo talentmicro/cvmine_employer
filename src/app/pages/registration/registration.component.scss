@@ -4,6 +4,10 @@
     color: #fff !important;
   }
 
+  ul{
+    padding-left: 0;
+  }
+
   button {
     border-radius: revert-layer;
   }
@@ -133,7 +137,106 @@
     width: 50% !important;
   }
 
+  .short .p-inputgroup-addon {
+    padding: 0rem 0.75rem;
+  }
+
+
+  @media only screen and (max-width: 767px) {
+    .p-fileupload .p-fileupload-row>div:nth-of-type(1) {
+      display: none !important;
+    }
+
+    .p-fileupload .p-fileupload-row>div:nth-of-type(3) {
+      display: none !important;
+    }
+
+    .p-fileupload .p-fileupload-row>div:nth-of-type(4) {
+      width: 0% !important;
+    }
+
+    .short .p-inputgroup-addon {
+      width: 50% !important;
+    }
+
+    .short .pi {
+      margin: 0px 15px !important;
+    }
+
+    ul{
+      display: grid;
+    }
+
+    li{
+      display: block;
+      margin-bottom: 18px;
+    }
+
+    .p-steps-item .p-menuitem-link{
+      flex-direction: row !important;
+    }
+
+    .p-steps .p-steps-item .p-menuitem-link .p-steps-number{
+      margin: 0px 8px;
+    }
+
+    .payment{
+      flex-direction: column !important;
+    }
+
+    .payment .p-button{
+      width: 100% !important;
+      margin: 5px 0px !important;
+    }
+
+  }
+
+  @media only screen and (min-width: 768px) and (max-width:991px) {
+    .col-md-5 {
+      width: 50% !important;
+    }
+
+    .short .pi {
+      margin: 0px 15px !important;
+    }
+  }
+
+  @media only screen and (min-width:992px) and (max-width: 1199px) {
+    .short .p-inputgroup-addon {
+      padding: 0rem 0.68rem;
+    }
+  }
+
+
 }
+
+.btn{
+  z-index: 0 !important;
+}
+
+
+@media only screen and (max-width: 767px) {
+  .container {
+    padding: 18px !important;
+  }
+}
+
+
+.vertical-steps .p-steps {
+  flex-direction: column !important;
+  /* Make steps stack vertically */
+}
+
+.vertical-steps .p-step {
+  width: 100% !important;
+  /* Ensure each step takes full width */
+}
+
+/* Mobile landscape and up */
+
+
+/* Tablet portrait and up */
+
 
 
 .product-card {
@@ -943,7 +1046,8 @@ h1 {
   background: linear-gradient(180deg, #8ab7ff, #336395);
   scale: 1.1;
   height: fit-content;
-
+  margin-bottom: 2rem !important;
+  margin-top: 1rem !important;
   .plan-description {
     color: #fff;
   }

@@ -108,6 +108,10 @@ export class RegistrationComponent {
   ]
 
 
+  onStepChange(event:any) {
+    console.log('Step changed:', event);
+  }
+
   couponCardList: any;
   query_param_flag: boolean = false;
   passwordVisible = false;
@@ -127,7 +131,7 @@ export class RegistrationComponent {
   otp: any = null;
   loading = false;
   setOfCheckedId = new Set<number>();
-  current = 0;
+  current = 4;
   stepsLength!: number;
   current_product: any = null;
   index = 'First-content';
@@ -301,27 +305,19 @@ export class RegistrationComponent {
     });
   }
 
-  getAddressLine1FromPlace(place: any) {
-    let addressLine1 = '';
-    place.address_components.forEach((component: any) => {
-      if (component.types.includes('street_number')) {
-        addressLine1 = component.long_name;
-      } else if (component.types.includes('route')) {
-        addressLine1 += ' ' + component.long_name;
-      }
-    });
-    return addressLine1.trim();
+  getAddressLine1FromPlace(place:any) {
+    // Typically, the first component can be the 'premise' or street address
+    const premise = place.address_components.find((component:any) => component.types.includes('premise'));
+    return premise ? premise.long_name : '';
   }
-
-  getAddressLine2FromPlace(place: any) {
-    let addressLine2 = '';
-    place.address_components.forEach((component: any) => {
-      
-      if (component.types.includes('subpremise')) {
-        addressLine2 = component.long_name;
-      }
-    });
-    return addressLine2;
+  
+  getAddressLine2FromPlace(place:any) {
+    // This might be the sublocality or locality component
+    const sublocality = place.address_components.find((component:any) => component.types.includes('sublocality'));
+    const locality = place.address_components.find((component:any) => component.types.includes('locality'));
+    
+    // Concatenate sublocality and locality for a detailed address line 2
+    return (sublocality ? sublocality.long_name : '') + (locality ? ', ' + locality.long_name : '');
   }
 
   getCityFromPlace(place: any) {
@@ -759,7 +755,7 @@ export class RegistrationComponent {
       this.optInputLength = event.value.length;
       this.otp = event.value;
       console.log(this.otp);
-      this.verifyOtp();
+      this.VerifyOTP();
     }
 
   }
@@ -846,11 +842,13 @@ export class RegistrationComponent {
   otpLength: number = 6;
   optInputLength!: number;
 
-  VerifyOTP(event: any) {
+  VerifyOTP() {
     console.log(this.otpLength);
     console.log(this.optInputLength);
     if (this.optInputLength == this.otpLength) {
       this.verifyOtp();
+    }else{
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Enter a valid OTP' });
     }
 
   }
