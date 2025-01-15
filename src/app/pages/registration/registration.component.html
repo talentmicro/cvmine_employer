@@ -284,8 +284,12 @@
 
 
 
-                        <p-button *ngIf="!email_verification.verification"
+                        <p-button *ngIf="!(email_verification.verification) && !viewOtpfield"
                              (click)="verifyEmailID()" icon="pi pi-arrow-right"
+                            label="Verify Email ID" [rounded]="true" iconPos="right" />
+
+                        <p-button *ngIf="(!email_verification.verification) && viewOtpfield"
+                             (click)="VerifyOTP()" icon="pi pi-arrow-right"
                             label="Verify Email ID" [rounded]="true" iconPos="right" />
 
                         <p-button (click)="next(1,current)" *ngIf="email_verification.verification && current < 5" label="Next" icon="pi pi-arrow-right"

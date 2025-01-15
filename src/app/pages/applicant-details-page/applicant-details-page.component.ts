@@ -7,7 +7,8 @@ import { SharedService } from '../services/shared.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
-import { jsonParse } from '../../functions/shared-functions';
+import { formatTextareaContent, jsonParse } from '../../functions/shared-functions';
+import { SharedModule } from '../../shared-module/shared/shared.module';
 
 @Component({
     selector: 'app-applicant-details-page',
@@ -16,7 +17,9 @@ import { jsonParse } from '../../functions/shared-functions';
     standalone: true,
     imports: [
         ImportsModule,
-        NgxDocViewerModule
+        NgxDocViewerModule,
+        SharedModule
+
     ],
     providers: [MessageService]
 })
@@ -45,7 +48,7 @@ export class ApplicantDetailsPageComponent {
         private loadingSpinnerService: LoadingService,
         private apiService: ApiService,
         private messageService: MessageService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
@@ -54,7 +57,7 @@ export class ApplicantDetailsPageComponent {
             this.alertId = params['alertId'];
             this.productCode = params['productCode'];
             this.encryptedQueryParamsString = params['q'];
-            if(this.encryptedQueryParamsString) {
+            if (this.encryptedQueryParamsString) {
                 this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
                 const queryParams = jsonParse(this.queryParamsString);
                 this.resId = Number(queryParams?.resId);
@@ -65,10 +68,10 @@ export class ApplicantDetailsPageComponent {
                 next: (data) => {
                     if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
                         this.applicationStatuses = data.data.atsViewMasterData.wfList
-                        .map((item: any) => ({
-                            statusCode: item.id,
-                            status: item.title.split(' - ')[0],
-                        }));
+                            .map((item: any) => ({
+                                statusCode: item.id,
+                                status: item.title.split(' - ')[0],
+                            }));
                         this.jobTypes = data?.data && data?.data?.resumeMasterData?.jobTypeList;
                         this.getApplicantDetails();
                     }
@@ -115,10 +118,10 @@ export class ApplicantDetailsPageComponent {
                         "keySkills": this.getSkills(response?.data?.resumeDetails?.keySkills),
                         "originalCVPath": response?.data?.resumeDetails?.originalCVPath
                     };
-                    this.currentStatus =this.applicantDetails.statusCode;
+                    this.currentStatus = this.applicantDetails.statusCode;
                     this.fileUrl = 'https://storage.googleapis.com/ezeone/icanrefer/' + this.applicantDetails.originalCVPath;
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-                    this.getNotes({type: 401, refId: this.alertId});
+                    this.getNotes({ type: 401, refId: this.alertId });
                 }
             },
             error: (error: any) => {
@@ -132,7 +135,12 @@ export class ApplicantDetailsPageComponent {
         this.loadingSpinnerService.show();
         this.apiService.getNotes(body).subscribe({
             next: (response) => {
-                if(response.status) {
+                if (response.status) {
+                    if (response?.data?.list?.length) {
+                        response?.data?.list.forEach((item: any) => {
+                            item.notes = formatTextareaContent(item.notes)
+                        })
+                    }
                     this.notes = response?.data?.list;
                     this.loadingSpinnerService.hide();
                     // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
@@ -140,7 +148,7 @@ export class ApplicantDetailsPageComponent {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
                     this.loadingSpinnerService.hide();
                 }
-                
+
             },
             error: (error: any) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
@@ -217,7 +225,7 @@ export class ApplicantDetailsPageComponent {
             this.apiService.changeApplicantionStatus(body).subscribe({
                 next: (response: any) => {
                     this.loadingSpinnerService.hide();
-                    if(this.note) {
+                    if (this.note) {
                         const notebody = {
                             "type": 401,
                             "refId": this.alertId,
@@ -229,7 +237,7 @@ export class ApplicantDetailsPageComponent {
                         }
                         this.apiService.saveNotes(notebody).subscribe({
                             next: (response) => {
-                                if(response.status) {
+                                if (response.status) {
                                     this.note = '';
                                     this.showConfirmation = false;
                                     this.getApplicantDetails();
@@ -242,7 +250,7 @@ export class ApplicantDetailsPageComponent {
                                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
                                 this.loadingSpinnerService.hide();
                             }
-                        }) 
+                        })
                     } else {
                         this.getApplicantDetails();
                     }
@@ -260,7 +268,7 @@ export class ApplicantDetailsPageComponent {
     isSubmitDisabled(): boolean {
         return this.note.trim() === '';
     }
-    
+
     submitNote(): void {
         this.loadingSpinnerService.show();
         const body = {
@@ -274,9 +282,9 @@ export class ApplicantDetailsPageComponent {
         }
         this.apiService.saveNotes(body).subscribe({
             next: (response) => {
-                if(response.status) {
+                if (response.status) {
                     this.note = '';
-                    this.getNotes({type: 401, refId: this.alertId});
+                    this.getNotes({ type: 401, refId: this.alertId });
                 } else {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
                     this.loadingSpinnerService.hide();
@@ -291,7 +299,7 @@ export class ApplicantDetailsPageComponent {
 
     formatExperience(experience: string | number): string {
         const experienceNum = parseFloat(experience.toString());
-        if(experienceNum == 0) {
+        if (experienceNum == 0) {
             return 'Fresher'
         }
         return experienceNum % 1 === 0 ? experienceNum.toFixed(0) + ' years' : experienceNum.toString() + ' years';
@@ -304,7 +312,7 @@ export class ApplicantDetailsPageComponent {
 
     getJobTypes(jobTypesString: string) {
         const jobTypesArray = jsonParse(jobTypesString);
-        if(jobTypesArray?.length > 0) {
+        if (jobTypesArray?.length > 0) {
             const jobTypeTitles = this.jobTypes.filter(item => jobTypesArray.includes(item.jobType)).map(item => item.title);
             return jobTypeTitles.join(', ')
         } else {

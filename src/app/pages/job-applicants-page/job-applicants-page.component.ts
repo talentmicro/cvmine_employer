@@ -10,6 +10,7 @@ import { ImportsModule } from '../../imports';
 import { Table } from 'primeng/table';
 import { SharedService } from '../services/shared.service';
 import { jsonParse } from '../../functions/shared-functions';
+import { SharedModule } from '../../shared-module/shared/shared.module';
 
 interface Applicant {
     application_id: number;
@@ -37,7 +38,8 @@ interface Applicant {
         RouterLink,
         FormsModule,
         ReactiveFormsModule,
-        ImportsModule
+        ImportsModule,
+        SharedModule
     ],
     providers: [MessageService]
 })
@@ -64,7 +66,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         "sellerCode": [],
         "search": null,
         "productCode": [
-            
+
         ],
         "statusCode": [],
         "startPage": 1,
@@ -123,27 +125,27 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
         private apiService: ApiService,
         private messageService: MessageService,
         private sharedService: SharedService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
             this.loadingSpinnerService.show()
             this.encryptedQueryParamsString = params['q'];
-            if(this.encryptedQueryParamsString) {
+            if (this.encryptedQueryParamsString) {
                 this.queryParamsString = this.sharedService.decrypt(this.encryptedQueryParamsString);
                 const queryParams = jsonParse(this.queryParamsString);
                 this.jobCode = queryParams?.jobCode;
                 this.status = queryParams?.status;
             }
-            
+
             this.sharedService.masterDropdowns$.pipe(takeUntil(this.destroy$)).subscribe({
                 next: (data) => {
                     if (data?.status && data?.data && data?.data?.atsViewMasterData?.wfList) {
                         this.applicationStatus = data.data.atsViewMasterData.wfList
-                        .map((item: any) => ({
-                            statusCode: item.id,
-                            label: item.title.split(' - ')[0],
-                        }));
+                            .map((item: any) => ({
+                                statusCode: item.id,
+                                label: item.title.split(' - ')[0],
+                            }));
                         // this.getAllJobs();
                     }
                 },
@@ -162,13 +164,13 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     getApplicants(): void {
-        if(!this.onSearch && this.jobCode) {
+        if (!this.onSearch && this.jobCode) {
             this.selectedJobs.push(Number(this.jobCode));
         }
-        if(!this.onSearch && this.status) {
+        if (!this.onSearch && this.status) {
             this.selectedStatuses = this.applicationStatus
                 .filter(status => status.label.toLowerCase() === this.status?.toLowerCase())
-                .map(status => status.statusCode); 
+                .map(status => status.statusCode);
         }
         const requestBody = {
             ...this.requestBody,
@@ -298,7 +300,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
             }
         })
     }
-    
+
     getStatusClass(status: string): string {
         switch (status.toLowerCase()) {
             case 'applied':
@@ -319,15 +321,15 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
     }
 
     formatAppliedDate(dateString: string): string {
-        if(dateString) {
+        if (dateString) {
             const utcDateString = dateString.replace(' ', 'T') + 'Z';
             var localDate = new Date(utcDateString);
-            const options: Intl.DateTimeFormatOptions = { 
-                day: 'numeric', 
-                month: 'short', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
+            const options: Intl.DateTimeFormatOptions = {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
                 hour12: true
             };
             const formattedDate = localDate.toLocaleString('en-GB', options).replace(',', '');
@@ -339,7 +341,7 @@ export class JobApplicantsPageComponent implements OnInit, OnDestroy {
 
     formatExperience(experience: string | number): string {
         const experienceNum = parseFloat(experience.toString());
-        if(experienceNum == 0) {
+        if (experienceNum == 0) {
             return 'Fresher'
         }
         return experienceNum % 1 === 0 ? experienceNum.toFixed(0) + ' years' : experienceNum.toString() + ' years';

@@ -7,8 +7,6 @@ import { JobApplicantsPageComponent } from './pages/job-applicants-page/job-appl
 import { JobPostingPageComponent } from './pages/job-posting-page/job-posting-page.component';
 import { authGuard, redirectIfAuthenticatedGuard } from './guards/auth.guard';
 import { ApplicantDetailsPageComponent } from './pages/applicant-details-page/applicant-details-page.component';
-import { RegisterPageComponent } from './pages/register-page/register-page.component';
-import { AuthResolver } from './guards/auth.resolver';
 import { RegistrationComponent } from './pages/registration/registration.component';
 import { RegistrationSuccessComponent } from './pages/registration-success/registration-success.component';
 import { RegistrationFailedComponent } from './pages/registration-failed/registration-failed.component';
