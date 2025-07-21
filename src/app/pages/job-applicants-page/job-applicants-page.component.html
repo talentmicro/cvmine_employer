@@ -12,10 +12,10 @@
                                 <p-inputIcon>
                                     <i class="pi pi-search"></i>
                                 </p-inputIcon>
-                                <input 
-                                    pInputText 
-                                    type="text" 
-                                    (input)="onGlobalFilter($event)" 
+                                <input
+                                    pInputText
+                                    type="text"
+                                    (input)="onGlobalFilter($event)"
                                     placeholder="Search keyword" />
                             </p-iconField> -->
                             <input
@@ -25,12 +25,12 @@
                                 [(ngModel)]="searchedKeyword"
                                 placeholder="Search Applicant"
                                 styleClass="w-full"
-                                style="height: 53px;" 
+                                style="height: 53px;"
                                 (keydown.enter)="onSearchFilter()" />
                             <button type="button"
                                 pButton
                                 icon="pi pi-times"
-                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear"
+                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear rounded-clear-btn"
                                 *ngIf="searchedKeyword"
                                 (click)="clearSearch()">
                             </button>
@@ -50,7 +50,7 @@
                             <button type="button"
                                 pButton
                                 icon="pi pi-times"
-                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear"
+                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear rounded-clear-btn"
                                 *ngIf="selectedJobs?.length"
                                 (click)="clearSelectedJobs()">
                             </button>
@@ -70,7 +70,7 @@
                             <button type="button"
                                 pButton
                                 icon="pi pi-times"
-                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear"
+                                class="p-button-text p-button-plain p-inputgroup-addon p-button-clear rounded-clear-btn"
                                 *ngIf="selectedStatuses?.length"
                                 (click)="clearSelectedStatuses()">
                             </button>
@@ -97,36 +97,36 @@
                     <tr>
                         <!-- <th></th> -->
                         <th class="table-filter-row">
-                            <p-columnFilter 
+                            <p-columnFilter
                                 type="text"
-                                field="applicant_name" 
-                                placeholder="Search by Applicant" 
+                                field="applicant_name"
+                                placeholder="Search by Applicant"
                                 ariaLabel="Filter Applicant" />
                         </th>
                         <th class="table-filter-row"></th>
                         <th class="table-filter-row"></th>
                         <th class="table-filter-row"></th>
                         <th class="table-filter-row">
-                            <p-columnFilter 
+                            <p-columnFilter
                                 type="text"
-                                field="location" 
-                                placeholder="Search by Location" 
+                                field="location"
+                                placeholder="Search by Location"
                                 ariaLabel="Filter Location" />
                         </th>
                         <th class="text-center table-filter-row">
                             <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown 
-                                        [ngModel]="value" 
+                                    <p-dropdown
+                                        [ngModel]="value"
                                         [options]="applicationStatus"
                                         optionValue="statusCode"
-                                        (onChange)="filter($event.value)" 
-                                        placeholder="Find by Status" 
+                                        (onChange)="filter($event.value)"
+                                        placeholder="Find by Status"
                                         appendTo="body"
                                         [showClear]="true">
                                             <ng-template let-option pTemplate="item">
-                                                <p-tag 
-                                                    [value]="option.label" 
+                                                <p-tag
+                                                    [value]="option.label"
                                                     [severity]="getSeverity(option.label)" />
                                             </ng-template>
                                     </p-dropdown>
@@ -176,12 +176,12 @@
                             <ng-container *ngIf="applicant.skills != ''; else noSkills">
                                 <div pTooltip="{{applicant.skills.join(', ')}}" tooltipPosition="top" [autoHide]="false">
                                     <ng-container *ngFor="let skill of applicant.skills.slice(0, 3)">
-                                        <span  style="display: inline-block; 
-                                            padding: 4px 8px; 
-                                            margin: 2px; 
-                                            background-color: #e0f7fa; 
-                                            color: #006064; 
-                                            border-radius: 12px; 
+                                        <span  style="display: inline-block;
+                                            padding: 4px 8px;
+                                            margin: 2px;
+                                            background-color: #e0f7fa;
+                                            color: #006064;
+                                            border-radius: 12px;
                                             font-size: 12px;">
                                             {{ skill }}
                                         </span>
@@ -189,12 +189,12 @@
                                 </div>
                             </ng-container>
                             <ng-template #noSkills>
-                                <span style="display: inline-block; 
-                                    padding: 4px 8px; 
-                                    margin: 2px; 
-                                    background-color: #e0f7fa; 
-                                    color: #006064; 
-                                    border-radius: 12px; 
+                                <span style="display: inline-block;
+                                    padding: 4px 8px;
+                                    margin: 2px;
+                                    background-color: #e0f7fa;
+                                    color: #006064;
+                                    border-radius: 12px;
                                     font-size: 12px;">
                                     N/A
                                 </span>
@@ -205,15 +205,15 @@
                         </td>
                         <td class="p-1 text-center">
                             <p-dropdown [options]="applicationStatus"
-                                [(ngModel)]="applicant.status" 
+                                [(ngModel)]="applicant.status"
                                 optionLabel="label"
                                 optionValue="statusCode"
                                 placeholder="Select Status"
                                 appendTo="body"
                                 (onChange)="onStatusChange(applicant)">
                                 <ng-template let-option pTemplate="item">
-                                    <p-tag 
-                                        [value]="option.label" 
+                                    <p-tag
+                                        [value]="option.label"
                                         [severity]="getSeverity(option.label)" />
                                 </ng-template>
                             </p-dropdown>
@@ -247,6 +247,6 @@
                     ></p-paginator>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>

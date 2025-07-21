@@ -291,6 +291,33 @@ export class JobsListPageComponent implements OnInit, OnDestroy {
         return allLocations.length > 0 ? allLocations : ['Unknown'];
     }
 
+    // Get only first 2 locations for display
+    getDisplayLocations(locations: any[]) {
+        const allLocations = this.formatLocations(locations);
+        return allLocations.slice(0, 2);
+    }
+
+    // Get remaining locations for tooltip
+    getRemainingLocations(locations: any[]) {
+        const allLocations = this.formatLocations(locations);
+        return allLocations.slice(2);
+    }
+
+    // Check if there are more than 2 locations
+    hasMoreLocations(locations: any[]) {
+        const allLocations = this.formatLocations(locations);
+        return allLocations.length > 2;
+    }
+
+    // Get tooltip text for remaining locations
+    getLocationTooltip(locations: any[]) {
+        const remaining = this.getRemainingLocations(locations);
+        if (remaining.length > 0) {
+            return `${remaining.join(', ')}`;
+        }
+        return '';
+    }
+
     encryptQueryParams(queryParams: any) {
         const queryParamsString = JSON.stringify(queryParams);
         const encryptedQueryParamsString = this.sharedService.encrypt(queryParamsString);

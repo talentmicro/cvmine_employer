@@ -1,12 +1,12 @@
 // Navbar
 .navbar-area {
-    z-index: 10;
-    
+    z-index: 1050;
+
     &.sticky {
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 99;
+        z-index: 1050;
         position: sticky !important;
     }
     .navbar {
@@ -63,11 +63,13 @@
                         weight: 500;
                     };
                 }
-                &:has(.active) > .nav-link { 
-                    color: var(--primaryColor);
+                &:has(.active) > .nav-link {
+                    color: white !important;
+                    text-decoration: underline;
 
                     &:before {
-                        color: var(--primaryColor) !important;
+                        color: white !important;
+                          text-decoration: underline;
                     }
                 }
                 &:hover {
@@ -127,7 +129,7 @@
                                         family: remixicon !important;
                                     };
                                 }
-                                &.active, &:hover {    
+                                &.active, &:hover {
                                     &:before {
                                         color: var(--primaryColor);
                                     }
@@ -146,7 +148,7 @@
                                 transition: var(--transition);
                                 background-color: var(--primaryColor);
                             }
-                            &.active, &:hover {   
+                            &.active, &:hover {
                                 color: var(--primaryColor);
 
                                 &:after {
@@ -359,7 +361,7 @@
             }
             .btn {
                 margin-left: 30px;
-            } 
+            }
             .link {
                 margin-left: 22px;
             }
@@ -514,7 +516,7 @@
                         color: var(--primaryColor);
                     }
                 }
-                &:has(.active) > .accordion-button { 
+                &:has(.active) > .accordion-button {
                     color: var(--primaryColor);
                 }
                 .accordion-collapse {
@@ -527,7 +529,7 @@
                         .sidebar-sub-menu {
                             .sidemenu-item {
                                 border-top: 1px solid rgba(255, 255, 255, 0.10);
-                                
+
                                 .sidemenu-link {
                                     font-size: 15px;
                                     color: var(--whiteColor);
@@ -646,14 +648,14 @@
     .responsive-navbar {
         .offcanvas-header {
             padding: 20px;
-    
+
             .close-btn {
                 font-size: 22px;
             }
         }
         .offcanvas-body {
             padding: 8px 20px 20px;
-    
+
             .accordion {
                 .accordion-item {
                     .accordion-button {
@@ -663,7 +665,7 @@
                     .accordion-collapse {
                         .accordion-body {
                             padding: 12px;
-    
+
                             .sidebar-sub-menu {
                                 .sidemenu-item {
                                     .sidemenu-link {
@@ -705,7 +707,7 @@
             }
             .other-options {
                 margin-top: 20px;
-    
+
                 .link {
                     margin-right: 15px;
                 }
@@ -845,7 +847,7 @@
                         & > .nav-link {
                             &.dropdown-toggle {
                                 padding-right: 15px;
-                                
+
                                 &:before {
                                     font-size: 15px;
                                     right: -3px;
@@ -890,7 +892,7 @@
         }
         .category-menu {
             margin-left: 30px;
-    
+
             .category-menu-title {
                 padding: 0;
                 width: 40px;
@@ -996,7 +998,7 @@
             max-width: 1725px;
         }
         .container-fluid {
-            max-width: 1920px;    
+            max-width: 1920px;
         }
         &.style-one {
             .navbar {
