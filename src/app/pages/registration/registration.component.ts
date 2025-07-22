@@ -242,9 +242,11 @@ export class RegistrationComponent {
     this.employer_form.get('shortCode')?.valueChanges.subscribe(res => {
       console.log(res)
       console.log(res.length)
-      if (res.length <= 4) {
+      if (res?.length > 5) {
         this.verification_message = '';
         this.verification_status = false;
+      }else{
+        this.verification_status = true;
       }
     }
     )
@@ -310,12 +312,12 @@ export class RegistrationComponent {
     const premise = place.address_components.find((component:any) => component.types.includes('premise'));
     return premise ? premise.long_name : '';
   }
-  
+
   getAddressLine2FromPlace(place:any) {
     // This might be the sublocality or locality component
     const sublocality = place.address_components.find((component:any) => component.types.includes('sublocality'));
     const locality = place.address_components.find((component:any) => component.types.includes('locality'));
-    
+
     // Concatenate sublocality and locality for a detailed address line 2
     return (sublocality ? sublocality.long_name : '') + (locality ? ', ' + locality.long_name : '');
   }
@@ -846,7 +848,7 @@ export class RegistrationComponent {
           } else {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: res.message || 'An error occurred' });
           }
-        },  
+        },
         error: (err) => {
           this.sending_otp = false;
           console.error('Error sending OTP:', err);

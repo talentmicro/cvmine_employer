@@ -25,12 +25,47 @@
                     color: #858F97;
                 }
             }
-            .pwd_open {
-                top: 50px;
-                right: 20px;
-                cursor: pointer;
-                color: #858F97;
-            }
+        }
+    }
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+    position: relative;
+    display: block;
+    width: 100%;
+
+    input {
+        width: 100%;
+        padding-right: 45px; /* Space for the toggle button */
+    }
+
+    .password-toggle-btn {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        color: #858F97;
+        transition: color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+
+        &:hover {
+            color: #374151;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        i {
+            font-size: 16px;
         }
     }
 }
@@ -86,17 +121,26 @@
     .login-form {
         .form-group {
             input {
-                // height: 56px;
                 padding: 12px 16px;
+                font-size: 16px; /* Prevents zoom on iOS */
             }
             &.style-two {
-                .pwd_open {
-                    top: 45px;
+                input {
+                    padding-right: 45px; /* Maintain space for icon inside field */
                 }
             }
         }
     }
 
+    .password-input-wrapper {
+        .password-toggle-btn {
+            right: 10px;
+
+            i {
+                font-size: 18px;
+            }
+        }
+    }
 }
 
 /* Min width 1400px */
@@ -148,16 +192,99 @@
         width: 100%;
         max-width: 100%;
     }
+
+    .creative-card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .creative-card h5 {
+        font-size: 1rem;
+    }
+
+    .upgrade-card {
+        padding: 15px;
+    }
+
+    .upgrade-card h5 {
+        font-size: 1rem;
+    }
+}
+
+/* Extra small devices (phones, 576px and down) */
+@media (max-width: 576px) {
+    .content-wrap {
+        padding: 15px !important;
+    }
+
+    .login-form-wrap {
+        padding: 20px !important;
+    }
+
+    .creative-card {
+        padding: 12px;
+    }
+
+    .creative-card h5 {
+        font-size: 0.9rem;
+    }
+
+    .upgrade-card {
+        padding: 12px;
+    }
+
+    .upgrade-card h5 {
+        font-size: 0.9rem;
+    }
+
+    .login-form {
+        .form-group {
+            input {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            &.style-two {
+                .pwd_open {
+                    top: 42px;
+                    right: 15px;
+                }
+            }
+        }
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .creative-card h5 {
+        font-size: 1.1rem;
+    }
+
+    .upgrade-card h5 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .content-wrap {
+        padding: 30px !important;
+    }
+
+    .login-form-wrap {
+        padding: 30px !important;
+    }
 }
 
 .sign-up {
-    color: #0d63ae; 
+    color: #0d63ae;
     text-decoration: none;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    text-decoration: underline;
 }
 
 .sign-up:hover {
     text-decoration: underline;
+    color: #ff7112;
 }
 
 .creative-card {

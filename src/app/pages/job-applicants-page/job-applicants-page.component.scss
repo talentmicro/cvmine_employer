@@ -184,3 +184,13 @@
 .p-button-clear:active {
     background-color: #d0d0d0;
 }
+
+.rounded-clear-btn {
+  border-radius: 0.7rem !important;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e0e0e0 !important;
+    color: #222 !important;
+  }
+}

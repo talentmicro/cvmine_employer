@@ -1,182 +1,285 @@
 <p-toast />
-<div class="container my-3">
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="content-left">
-                <div class="applicant-banner">
-                    <!-- Job Name Header -->
-                    <button class="post-button my-1" routerLink="/job-applicants">
-                        <i class="pi pi-angle-left me-1"></i>Back
-                    </button>
-                    <div class="job-name-header my-3">
-                        <h3 class="m-0">{{ applicantDetails?.position }}</h3>
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-12 col-lg-8">
+            <div class="applicant-details-container">
+                <!-- Header Section -->
+                <div class="header-section mb-4">
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <button class="btn btn-outline-primary d-flex align-items-center gap-2" routerLink="/job-applicants">
+                            <i class="pi pi-arrow-left"></i>
+                            <span class="d-none d-sm-inline">Back to Applicants</span>
+                        </button>
+                        <div class="job-title-badge">
+                            <span class="badge bg-primary fs-6 px-3 py-2">{{ applicantDetails?.position }}</span>
+                        </div>
                     </div>
-                    <!-- Applicant Card -->
-                    <p-card class="applicant-card">
-                        <!-- Card Header -->
-                        <ng-template pTemplate="header">
-                            <div class="card-header">
-                                <p-tag [value]="applicantDetails?.status"
-                                    [severity]="getSeverity(applicantDetails?.status)" class="status-tag">
-                                </p-tag>
-                            </div>
-                        </ng-template>
-                        <!-- Card Body -->
-                        <div class="banner-content row">
-                            <!-- Left Section -->
-                            <div class="left-section col-12 col-md-4">
-                                <!-- Avatar -->
-                                <p-avatar [label]="applicantDetails?.nameInitials" size="xlarge" shape="circle"
-                                    styleClass="applicant-avatar">
-                                </p-avatar>
-                                <h2 class="applicant-name">{{ applicantDetails?.fullName }}</h2>
-                            </div>
+                </div>
 
-                            <!-- Right Section -->
-                            <div class="right-section col-12 col-md-8">
-                                <div class="details-row">
-                                    <i class="pi pi-envelope"></i>
-                                    <span><strong class="me-2">Email: </strong> {{ applicantDetails?.emailId }}</span>
-                                    <i class="pi pi-copy copy-icon"
-                                        (click)="copyToClipboard(applicantDetails?.resumeDetails?.emailId)">
-                                    </i>
-                                </div>
-                                <div class="details-row">
-                                    <i class="pi pi-phone"></i>
-                                    <span><strong class="me-2">Phone: </strong> {{ applicantDetails?.mobile ?
-                                        applicantDetails?.mobile : 'N/A' }}</span>
-                                    <i class="pi pi-copy copy-icon" (click)="copyToClipboard(applicantDetails?.mobile)">
-                                    </i>
-                                </div>
-                                <div class="details-row">
-                                    <i class="pi pi-map-marker"></i>
-                                    <span><strong class="me-2">Location: </strong> {{ applicantDetails?.location ?
-                                        applicantDetails?.location : 'N/A' }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Bottom Section -->
-                        <div class="bottom-section row">
-                            <!-- Job Details -->
-                            <div class="job-details col-12 col-md-5">
-                                <p><strong class="me-2">Job Type: </strong> {{ applicantDetails?.jobTypes }}</p>
-                                <p><strong class="me-2">Experience: </strong> {{ applicantDetails?.experience }}</p>
-                                <p><strong class="me-2">Notice Period: </strong> {{ applicantDetails?.noticePeriod }}
-                                </p>
-                            </div>
-
-                            <!-- Skills -->
-                            <div class="skills-container col-12 col-md-6">
-                                <h5>Key Skills</h5>
-                                <div class="skills-list">
-                                    <span *ngFor="let skill of applicantDetails?.keySkills" class="skill-chip">{{ skill
-                                        }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </p-card>
-
-                    <div class="mt-5">
-                        <p-accordion [activeIndex]="0">
-                            <!-- Outer Accordion for Questions Section -->
-                            <p-accordionTab header="Resume">
-                                <p-accordion>
-                                    <div *ngIf="applicantDetails.originalCVPath === ''"
-                                        class="no-notes-message text-center">
-                                        <i class="fa-solid fa-file-circle-exclamation"></i> Resume not found.
-                                    </div>
-                                    <ng-container *ngIf="applicantDetails.originalCVPath != ''">
-                                        <ngx-doc-viewer [url]="fileUrl" [viewer]="getViewerType(fileUrl)"
-                                            style="width: 100%; height: 600px;">
-                                        </ngx-doc-viewer>
-                                    </ng-container>
-                                </p-accordion>
-                            </p-accordionTab>
-                        </p-accordion>
+                <!-- Applicant Profile Card -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                        <h4 class="mb-0 text-dark fw-semibold">Applicant Profile</h4>
+                        <p-tag [value]="applicantDetails?.status"
+                            [severity]="getSeverity(applicantDetails?.status)"
+                            class="status-badge">
+                        </p-tag>
                     </div>
 
-                    <!--Questions-->
-                    <!-- <div class="mt-5">
-                        <p-accordion [activeIndex]="0">
-                            <p-accordionTab header="Questions">
-                                <p-accordion>
-                                    <p-accordionTab *ngFor="let question of questions; let i = index" [header]="question.title">
-                                        <div class="question-details">
-                                            <div class="question-text">
-                                                <p><strong>Question:</strong> {{ question.text }}</p>
-                                            </div>
-                                            <div class="expected-answer">
-                                                <p><strong>Expected Answer:</strong> {{ question.expectedAnswer }}</p>
-                                            </div>
-                                            <div class="response">
-                                                <p><strong>Response:</strong> {{ question.response || 'No response yet' }}</p>
-                                            </div>
-                                            <div class="assessment-score">
-                                                <p><strong>Assessment Score:</strong> {{ question.assessmentScore || 'Not available' }}</p>
+                    <div class="card-body p-4">
+                        <!-- Profile Section -->
+                        <div class="row g-4 mb-4">
+                            <!-- Avatar & Name -->
+                            <div class="col-12 col-md-4 text-center text-md-start">
+                                <div class="profile-avatar-section">
+                                    <p-avatar [label]="applicantDetails?.nameInitials"
+                                        size="xlarge"
+                                        shape="circle"
+                                        styleClass="profile-avatar">
+                                    </p-avatar>
+                                    <h3 class="applicant-name mt-3 mb-2">{{ applicantDetails?.fullName }}</h3>
+                                    <p class="text-muted mb-0">Applicant</p>
+                                </div>
+                            </div>
+
+                            <!-- Contact Details -->
+                            <div class="col-12 col-md-8">
+                                <div class="contact-details">
+                                    <h5 class="section-title mb-3">Contact Information</h5>
+                                    <div class="row g-3">
+                                        <div class="col-12 col-sm-6">
+                                            <div class="contact-item">
+                                                <div class="contact-icon">
+                                                    <i class="pi pi-envelope"></i>
+                                                </div>
+                                                <div class="contact-info">
+                                                    <label class="contact-label">Email</label>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="contact-value">{{ applicantDetails?.emailId }}</span>
+                                                        <button class="btn btn-sm btn-outline-secondary copy-btn"
+                                                            (click)="copyToClipboard(applicantDetails?.resumeDetails?.emailId)"
+                                                            title="Copy Email">
+                                                            <i class="pi pi-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </p-accordionTab>
-                                </p-accordion>
-                            </p-accordionTab>
-                        </p-accordion>
-                    </div> -->
+
+                                        <div class="col-12 col-sm-6">
+                                            <div class="contact-item">
+                                                <div class="contact-icon">
+                                                    <i class="pi pi-phone"></i>
+                                                </div>
+                                                <div class="contact-info">
+                                                    <label class="contact-label">Phone</label>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="contact-value">{{ applicantDetails?.mobile || 'N/A' }}</span>
+                                                        <button class="btn btn-sm btn-outline-secondary copy-btn"
+                                                            (click)="copyToClipboard(applicantDetails?.mobile)"
+                                                            title="Copy Phone"
+                                                            *ngIf="applicantDetails?.mobile">
+                                                            <i class="pi pi-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class="contact-item">
+                                                <div class="contact-icon">
+                                                    <i class="pi pi-map-marker"></i>
+                                                </div>
+                                                <div class="contact-info">
+                                                    <label class="contact-label">Location</label>
+                                                    <span class="contact-value">{{ applicantDetails?.location || 'N/A' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Details & Skills -->
+                        <div class="row g-4">
+                            <div class="col-12 col-lg-6">
+                                <div class="job-details-section">
+                                    <h5 class="section-title mb-3">Job Details</h5>
+                                    <div class="job-details-grid">
+                                        <div class="detail-item">
+                                            <span class="detail-label">Job Type:</span>
+                                            <span class="detail-value">{{ applicantDetails?.jobTypes }}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Experience:</span>
+                                            <span class="detail-value">{{ applicantDetails?.experience }}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Notice Period:</span>
+                                            <span class="detail-value">{{ applicantDetails?.noticePeriod }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                <div class="skills-section">
+                                    <h5 class="section-title mb-3">Key Skills</h5>
+                                    <div class="skills-container">
+                                        <span *ngFor="let skill of applicantDetails?.keySkills"
+                                            class="skill-tag">
+                                            {{ skill }}
+                                        </span>
+                                        <div *ngIf="!applicantDetails?.keySkills?.length" class="no-skills">
+                                            <i class="pi pi-info-circle me-2"></i>
+                                            No skills listed
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resume Section -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="mb-0 text-dark fw-semibold">
+                            <i class="pi pi-file me-2"></i>
+                            Resume
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div *ngIf="applicantDetails.originalCVPath === ''" class="no-resume-message">
+                            <div class="text-center py-5">
+                                <i class="pi pi-file-excel text-muted" style="font-size: 3rem;"></i>
+                                <p class="text-muted mt-3 mb-0">Resume not available</p>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="applicantDetails.originalCVPath != ''">
+                            <ngx-doc-viewer [url]="fileUrl"
+                                [viewer]="getViewerType(fileUrl)"
+                                style="width: 100%; height: 600px;">
+                            </ngx-doc-viewer>
+                        </ng-container>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="sidebar style-one sidebar-right bg-aqua round-10 ms-auto">
-                <div class="sidebar-widget mt-3">
-                    <h3 class="sidebar-widget-title mb-3 fs-18 fw-semibold">
-                        Application Status
-                    </h3>
-                    <p-dropdown [options]="applicationStatuses" [(ngModel)]="applicantDetails.statusCode"
-                        optionLabel="status" optionValue="statusCode" placeholder="Select Status"
-                        (onChange)="onStatusChange($event)">
-                    </p-dropdown>
-                </div>
-                <p-dialog header="Change Applicant Status" [(visible)]="showConfirmation" [closable]="false"
-                    [modal]="true" [style]="{width: '400px'}">
-                    <div class="mb-3">
-                        <label for="note" class="form-label">Add Note</label>
-                        <textarea id="note" rows="3" class="w-100 p-2 border rounded" [(ngModel)]="note"
-                            placeholder="Enter a note for this change..."></textarea>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button pButton type="button" label="Cancel" class="p-button-secondary me-2"
-                            (click)="cancelStatusChange()"></button>
-                        <button pButton type="button" label="Submit" class="p-button-success"
-                            (click)="confirmStatusChange()"></button>
-                    </div>
-                </p-dialog>
 
-                <div class="mt-3">
-                    <textarea id="noteInput" rows="3" pInputText class="w-100 p-2 border rounded" [(ngModel)]="note"
-                        placeholder="Enter note" style="background-color: white;">
-                    </textarea>
-                    <div class="my-2 d-flex justify-content-end">
-                        <button pButton type="button" label="Submit" [disabled]="isSubmitDisabled()"
-                            class="p-button-primary" (click)="submitNote()">
+        <!-- Sidebar -->
+        <div class="col-12 col-lg-4">
+            <div class="sidebar-container">
+                <!-- Status Management -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="mb-0 text-dark fw-semibold">
+                            <i class="pi pi-cog me-2"></i>
+                            Application Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p-dropdown [options]="applicationStatuses"
+                            [(ngModel)]="applicantDetails.statusCode"
+                            optionLabel="status"
+                            optionValue="statusCode"
+                            placeholder="Select Status"
+                            (onChange)="onStatusChange($event)"
+                            styleClass="w-100">
+                        </p-dropdown>
+                    </div>
+                </div>
+
+                <!-- Add Note -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="mb-0 text-dark fw-semibold">
+                            <i class="pi pi-plus me-2"></i>
+                            Add Note
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <textarea
+                            rows="4"
+                            class="form-control mb-3"
+                            [(ngModel)]="note"
+                            placeholder="Enter your note here..."
+                            style="resize: none;">
+                        </textarea>
+                        <button class="btn btn-primary w-100"
+                            [disabled]="isSubmitDisabled()"
+                            (click)="submitNote()">
+                            <i class="pi pi-send me-2"></i>
+                            Submit Note
                         </button>
                     </div>
                 </div>
 
-                <div class="note-section">
-                    <h5 class="section-title">Notes</h5>
-                    <p-scrollPanel [style]="{ 'height': '300px' }">
-                        <div *ngIf="notes.length === 0" class="no-notes-message">
-                            No notes available.
+                <!-- Notes History -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="mb-0 text-dark fw-semibold">
+                            <i class="pi pi-comments me-2"></i>
+                            Notes History
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="notes-container">
+                            <div *ngIf="notes.length === 0" class="no-notes-message">
+                                <div class="text-center py-4">
+                                    <i class="pi pi-inbox text-muted" style="font-size: 2rem;"></i>
+                                    <p class="text-muted mt-2 mb-0">No notes available</p>
+                                </div>
+                            </div>
+                            <div *ngFor="let note of notes" class="note-item">
+                                <div class="note-content">
+                                    <p class="note-text mb-2">{{ note.notes }}</p>
+                                    <div class="note-meta">
+                                        <small class="text-muted">
+                                            <i class="pi pi-calendar me-1"></i>
+                                            {{ note.crDate |LocalDateTimePipe }}
+                                        </small>
+                                        <small class="text-muted ms-3">
+                                            <i class="pi pi-user me-1"></i>
+                                            {{ note.createdBy }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div *ngFor="let note of notes" class="note-entry">
-                            <p style="font-size: 1rem;">{{ note.notes }}</p>
-                            <p class="d-flex justify-content-between m-0">
-                                <small class="note-timestamp">{{ note.crDate |LocalDateTimePipe }}</small>
-                                <small class="note-timestamp">- {{ note.createdBy }}</small>
-                            </p>
-                        </div>
-                    </p-scrollPanel>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Status Change Confirmation Dialog -->
+<p-dialog header="Change Applicant Status"
+    [(visible)]="showConfirmation"
+    [closable]="false"
+    [modal]="true"
+    [style]="{width: '400px'}"
+    styleClass="status-dialog">
+    <div class="mb-3">
+        <label for="note" class="form-label fw-semibold">Add Note</label>
+        <textarea
+            id="note"
+            rows="3"
+            class="form-control"
+            [(ngModel)]="note"
+            placeholder="Enter a note for this change...">
+        </textarea>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-outline-secondary" (click)="cancelStatusChange()">
+            Cancel
+        </button>
+        <button class="btn btn-success" (click)="confirmStatusChange()">
+            Confirm
+        </button>
+    </div>
+</p-dialog>
