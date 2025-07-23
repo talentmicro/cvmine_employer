@@ -12,10 +12,10 @@
                                 <p-inputIcon>
                                     <i class="pi pi-search"></i>
                                 </p-inputIcon>
-                                <input 
-                                    pInputText 
-                                    type="text" 
-                                    (input)="onGlobalFilter($event)" 
+                                <input
+                                    pInputText
+                                    type="text"
+                                    (input)="onGlobalFilter($event)"
                                     placeholder="Search keyword" />
                             </p-iconField> -->
                             <input id="job-title" type="text" pInputText [(ngModel)]="searchedKeyword"
@@ -120,9 +120,13 @@
                                     <i class="fa-solid fa-location-dot pe-2 align-content-center"
                                         style="color: gray"></i>
                                     <div class="pills-container d-flex">
-                                        <span class="pill" *ngFor="let item of formatLocations(job.location)"
+                                        <span class="pill" *ngFor="let item of getDisplayLocations(job.location)"
                                             pTooltip="{{item}}" tooltipPosition="bottom" [autoHide]="false">
                                             {{ item }}
+                                        </span>
+                                        <span class="pill pill-more" *ngIf="hasMoreLocations(job.location)"
+                                            pTooltip="{{getLocationTooltip(job.location)}}" tooltipPosition="bottom" [autoHide]="false">
+                                            +{{getRemainingLocations(job.location).length}}
                                         </span>
                                     </div>
                                 </span>
@@ -190,10 +194,10 @@
                             </p-dropdown>
                         </td>
                         <td class="p-1 text-center">
-                            <p-button [rounded]="true" [text]="true" [raised]="true" class="p-2"
-                                [routerLink]="['/job/edit', job.job_code]">
-                                <i class="fa-solid fa-lg fa-pen-to-square"></i>
-                            </p-button>
+                            <a class="edit-button" [routerLink]="['/job/edit', job.job_code]"
+                               pTooltip="Edit Job" tooltipPosition="top">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
                         </td>
                     </tr>
                 </ng-template>
@@ -222,7 +226,7 @@
                     <span class="ms-auto ms-md-0">Total Records: {{ totalRecords }}</span>
                 </div>
                 <div class="col-12 col-md-9">
-                    <p-paginator [rows]="limit" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5, 10, 20]"
+                    <p-paginator [rows]="limit" [totalRecords]="totalRecords"  [pageLinkSize]="3" [rowsPerPageOptions]="[5, 10, 20]"
                         (onPageChange)="onPageChange($event)"></p-paginator>
                 </div>
             </div>

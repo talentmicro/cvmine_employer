@@ -32,7 +32,7 @@
                         }
                     }
                 }
-            }  
+            }
         }
     }
     &.style-two {
@@ -67,7 +67,7 @@
                 input {
                     background-color: rgba(255, 255, 255, 0.2) !important;
                     color: var(--whiteColor);
-                    
+
                     &::placeholder {
                         color: rgba(255, 255, 255, 0.7);
                         opacity: 1;
@@ -86,7 +86,7 @@
                         }
                     }
                 }
-            } 
+            }
             .social-profile {
                 li {
                     a {
@@ -99,8 +99,8 @@
                             }
                         }
                     }
-                }    
-            }   
+                }
+            }
         }
     }
     .footer-widget {
@@ -176,7 +176,7 @@
 }
 
 .right-content {
-    color: #1890ff; 
+    color: #1890ff;
     font-size: 14px;
 }
 
@@ -189,7 +189,7 @@
         .footer-bottom {
             padding: 3px 0;
         }
-    } 
+    }
 }
 /* Max width 991px */
 @media only screen and (max-width: 576px) {
@@ -197,13 +197,27 @@
         .footer-bottom {
             padding: 3px 0;
         }
-    }  
+    }
 
     .right-content {
         font-size: 11px;
     }
 
     .left-content {
+        font-size: 9px;
+    }
+
+    .copyright {
+        font-size: 10px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .left-content {
+        font-size: 8px;
+    }
+
+    .right-content {
         font-size: 10px;
     }
 

@@ -118,7 +118,7 @@
                     content: "";
                     border-radius: 50%;
                     position: absolute;
-                    background-color: var(--purpleColor);    
+                    background-color: var(--purpleColor);
                 }
                 &:last-child {
                     margin-bottom: 0;
@@ -159,7 +159,7 @@
                 }
             }
         }
-       
+
     }
 }
 .wp-blockquote {
@@ -234,14 +234,14 @@
     .prev-post {
         span {
             img {
-                margin-right: 7px;    
+                margin-right: 7px;
             }
         }
     }
     .next-post {
         span {
             img {
-                margin-left: 7px;    
+                margin-left: 7px;
             }
         }
         .pp-post-item {
@@ -649,3 +649,434 @@ p-accordionTab .p-accordion-header-content {
     position: absolute;
     top: -3rem;
 }
+
+// Modern Applicant Details Page Styles
+.applicant-details-container {
+    .header-section {
+        .btn-outline-primary {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+            }
+        }
+
+        .job-title-badge {
+            .badge {
+                border-radius: 8px;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+// Profile Avatar Section
+.profile-avatar-section {
+    .avatar-wrapper {
+        padding: 1.5rem 0 !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .profile-avatar {
+        width: 120px !important;
+        height: 120px !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 3rem;
+        font-weight: 600;
+        border: 4px solid #fff;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    // Add internal padding to the avatar text
+    ::ng-deep .profile-avatar .p-avatar-text {
+        padding: 0.25em 0.3em !important;
+        font-size: 2.2rem !important;
+        line-height: 1 !important;
+        box-sizing: border-box;
+    }
+    .applicant-name {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+}
+
+// Contact Details Section
+.contact-details {
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+
+            .contact-label {
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: #6c757d;
+                margin-bottom: 0.25rem;
+                display: block;
+            }
+
+            .contact-value {
+                font-size: 1rem;
+                color: #2c3e50;
+                font-weight: 500;
+                word-break: break-word;
+            }
+
+            .copy-btn {
+                padding: 0.25rem 0.5rem;
+                border-radius: 6px;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background-color: #007bff;
+                    color: white;
+                    transform: scale(1.05);
+                }
+            }
+        }
+    }
+}
+
+// Job Details Section
+.job-details-section {
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+
+    .job-details-grid {
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f3f4;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .detail-label {
+                font-weight: 600;
+                color: #6c757d;
+                font-size: 0.9rem;
+            }
+
+            .detail-value {
+                font-weight: 500;
+                color: #2c3e50;
+                text-align: right;
+            }
+        }
+    }
+}
+
+// Skills Section
+.skills-section {
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            }
+        }
+
+        .no-skills {
+            color: #6c757d;
+            font-style: italic;
+            padding: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+    }
+}
+
+// Sidebar Container
+.sidebar-container {
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #dee2e6;
+
+            h5 {
+                color: #2c3e50;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+// Notes Container
+.notes-container {
+    max-height: 400px;
+    overflow-y: auto;
+
+    .no-notes-message {
+        padding: 2rem;
+    }
+
+    .note-item {
+        padding: 1rem;
+        border-bottom: 1px solid #f1f3f4;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background-color: #f8f9fa;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .note-content {
+            .note-text {
+                color: #2c3e50;
+                line-height: 1.5;
+                margin-bottom: 0.5rem;
+            }
+
+            .note-meta {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                flex-wrap: wrap;
+
+                small {
+                    font-size: 0.8rem;
+                }
+            }
+        }
+    }
+}
+
+// Status Badge
+.status-badge {
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+// Resume Section
+.no-resume-message {
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+// Dialog Styles
+.status-dialog {
+    .p-dialog-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .p-dialog-content {
+        padding: 1.5rem;
+    }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .applicant-details-container {
+        .header-section {
+            .d-flex {
+                align-items: stretch ;
+                gap: 1rem;
+            }
+        }
+    }
+
+    .contact-details {
+        .contact-item {
+            flex-direction: column;
+            text-align: center;
+
+            .contact-icon {
+                align-self: center;
+            }
+
+        }
+    }
+
+    .job-details-grid {
+        .detail-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+
+            .detail-value {
+                text-align: left;
+            }
+        }
+    }
+
+    .skills-container {
+        justify-content: center;
+    }
+
+    .sidebar-container {
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-avatar-section {
+        .profile-avatar {
+            width: 100px !important;
+            height: 100px !important;
+            font-size: 2.5rem;
+        }
+
+        .applicant-name {
+            font-size: 1.5rem;
+        }
+    }
+
+    .contact-details {
+        .contact-item {
+            padding: 0.75rem;
+
+            .contact-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+    }
+
+    .skills-container {
+        .skill-tag {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+    }
+}
+
+// Scrollbar Styling
+.notes-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notes-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.notes-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+
+    &:hover {
+        background: #a8a8a8;
+    }
+}
+
+// Animation Classes
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Loading States
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+

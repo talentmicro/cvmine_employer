@@ -16,9 +16,9 @@
                                             <div class="col-12 col-lg-5 d-flex justify-content-md-start justify-content-lg-around">
                                                 <div *ngFor="let category of existing">
                                                     <div class="col-6 mx-3 d-flex">
-                                                        <p-radioButton 
-                                                            [inputId]="category.key" 
-                                                            [value]="category.key" 
+                                                        <p-radioButton
+                                                            [inputId]="category.key"
+                                                            [value]="category.key"
                                                             formControlName="fetchExisting" />
                                                         <label [for]="category.key" class="ms-2 fw-bold">
                                                             {{ category.name }}
@@ -45,11 +45,11 @@
                                         <div class="col-12">
                                             <label for="existingJob" class="form-label fw-bold">Job Title<span class="required">*</span></label>
                                             <input type="text" pInputText placeholder="Enter job title" formControlName="jobTitle" />
-                                            <small class="error-text" 
+                                            <small class="error-text"
                                                 *ngIf="firstStepForm.get('jobTitle')?.hasError('required') && firstStepForm.get('jobTitle')?.touched">
                                                 Job title is required.
                                             </small>
-                                            <small class="error-text" 
+                                            <small class="error-text"
                                                 *ngIf="firstStepForm.get('jobTitle')?.hasError('maxlength') && firstStepForm.get('jobTitle')?.touched">
                                                 Job title cannot exceed 100 characters.
                                             </small>
@@ -58,16 +58,16 @@
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
                                             <label for="jobDescription" class="form-label fw-bold">Job Description<span class="required">*</span></label>
-                                            <!-- <textarea rows="5" 
-                                                cols="30" 
-                                                pInputTextarea 
+                                            <!-- <textarea rows="5"
+                                                cols="30"
+                                                pInputTextarea
                                                 placeholder="Enter job description"
                                                 formControlName="jobDescription">
                                             </textarea> -->
                                             <quill-editor formControlName="jobDescription"
                                                 [styles]="{ height: '200px', width: '100%' }" [modules]="quillModules">
                                             </quill-editor>
-                                            <small class="error-text" 
+                                            <small class="error-text"
                                                 *ngIf="firstStepForm.get('jobDescription')?.hasError('required') && firstStepForm.get('jobDescription')?.touched">
                                                 Job description is required.
                                             </small>
@@ -78,6 +78,7 @@
                             <div class="row flex pt-4 justify-content-between">
                                 <div class="col-6">
                                     <p-button label="Back" icon="pi pi-arrow-left" iconPos="left" (onClick)="navigate()" styleClass="back-button"/>
+
                                 </div>
                                 <div class="col-6 text-end">
                                     <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" [disabled]="firstStepForm.invalid" (onClick)="nextCallback.emit()" styleClass="next-button" />
@@ -96,9 +97,9 @@
                                         </div>
                                         <div class="checkbox-container flex-container">
                                             <div *ngFor="let job of jobTypes" class="checkbox-item">
-                                                <p-checkbox 
-                                                    [binary]="true" 
-                                                    [formControlName]="job.title" 
+                                                <p-checkbox
+                                                    [binary]="true"
+                                                    [formControlName]="job.title"
                                                     [label]="job.title">
                                                 </p-checkbox>
                                             </div>
@@ -107,29 +108,29 @@
                                             At least one job type must be selected.
                                         </small>
                                     </div>
-                        
+
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
                                             <label for="jobLocation" class="form-label fw-bold">Job Location<span class="required">*</span></label>
                                         </div>
-                                        <p-multiSelect [options]="cityList" 
+                                        <p-multiSelect [options]="cityList"
                                             optionLabel="title"
                                             optionValue="id"
-                                            placeholder="Select job locations" 
-                                            formControlName="jobLocation" 
+                                            placeholder="Select job locations"
+                                            formControlName="jobLocation"
                                             display="chip">
                                         </p-multiSelect>
                                         <small class="error-text" *ngIf="secondStepForm.get('jobLocation')?.hasError('required') && secondStepForm.get('jobLocation')?.touched">
                                             Job location is required.
                                         </small>
                                     </div>
-                        
+
                                     <div class="col-12 mb-3">
                                         <div class="col-12">
                                             <label for="skills" class="form-label fw-bold">Skills<span class="required">*</span></label>
                                         </div>
-                                        <p-chips 
-                                            formControlName="skills" 
+                                        <p-chips
+                                            formControlName="skills"
                                             placeholder="Enter a skill and press Enter"
                                             (onAdd)="onSkillAdd($event)">
                                         </p-chips>
@@ -137,7 +138,7 @@
                                             Skills are required.
                                         </small>
                                     </div>
-                        
+
                                     <div class="row">
                                         <div class="col-12 col-lg-6 mb-3">
                                             <div class="col-12">
@@ -145,13 +146,13 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-                                                    <p-inputNumber 
-                                                        formControlName="experienceFrom" 
-                                                        [min]="0" 
-                                                        [step]="0.1" 
-                                                        [showButtons]="false" 
-                                                        class="w-75" 
-                                                        placeholder="From (years)" 
+                                                    <p-inputNumber
+                                                        formControlName="experienceFrom"
+                                                        [min]="0"
+                                                        [step]="0.1"
+                                                        [showButtons]="false"
+                                                        class="w-100"
+                                                        placeholder="From (years)"
                                                         mode="decimal"
                                                         [maxFractionDigits]="2">
                                                     </p-inputNumber>
@@ -162,13 +163,13 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-                                                    <p-inputNumber 
-                                                        formControlName="experienceTo" 
-                                                        [min]="0" 
-                                                        [step]="0.1" 
-                                                        [showButtons]="false" 
-                                                        class="w-75" 
-                                                        placeholder="To (years)" 
+                                                    <p-inputNumber
+                                                        formControlName="experienceTo"
+                                                        [min]="0"
+                                                        [step]="0.1"
+                                                        [showButtons]="false"
+                                                        class="w-100"
+                                                        placeholder="To (years)"
                                                         mode="decimal"
                                                         [maxFractionDigits]="2">
                                                     </p-inputNumber>
@@ -183,63 +184,65 @@
                                                 "From" experience must be less than "To" experience.
                                             </small>
                                         </div>
-                            
+
                                         <div class="col-12 col-lg-6 mb-3">
                                             <div class="col-12">
-                                                <label for="experience" class="form-label fw-bold">Expected Salary<span class="required">*</span></label>
+                                                <label for="experience" class="form-label fw-bold">Salary Compensation<span class="required">*</span></label>
                                             </div>
-                                            <div class="col-12 d-flex align-items-center">
-                                                <div class="col-3">
+                                            <div class="col-12 d-flex align-items-center gap-1 flex-nowrap overflow-auto overflow-md-visible">
+                                                <div class="flex-1 flex-md-shrink-0" style="min-width: 120px;">
                                                     <p-dropdown formControlName="currency"
                                                         [options]="currencies"
                                                         optionLabel="currencySymbol"
                                                         optionValue="currencyId"
                                                         [filter]="true"
-                                                        placeholder="Currency">
+                                                        placeholder="Currency"
+                                                        styleClass="w-100">
                                                     </p-dropdown>
                                                 </div>
-                                                <div class="col-6">
-                                                    <p-inputNumber 
-                                                        formControlName="salaryFrom" 
-                                                        [min]="0" 
-                                                        [step]="0.1" 
-                                                        [showButtons]="false" 
-                                                        class="w-50" 
-                                                        placeholder="From" 
-                                                        mode="decimal">
+                                                <div class="flex-2 d-flex gap-1 flex-md-shrink-0" style="min-width: 200px;">
+                                                    <p-inputNumber
+                                                        formControlName="salaryFrom"
+                                                        [min]="0"
+                                                        [step]="0.1"
+                                                        [showButtons]="false"
+                                                        placeholder="From"
+                                                        mode="decimal"
+                                                        styleClass="w-100">
                                                     </p-inputNumber>
-                                                    <p-inputNumber 
-                                                        formControlName="salaryTo" 
-                                                        [min]="0" 
-                                                        [step]="0.1" 
-                                                        [showButtons]="false" 
-                                                        class="w-50" 
-                                                        placeholder="To" 
-                                                        mode="decimal">
+                                                    <p-inputNumber
+                                                        formControlName="salaryTo"
+                                                        [min]="0"
+                                                        [step]="0.1"
+                                                        [showButtons]="false"
+                                                        placeholder="To"
+                                                        mode="decimal"
+                                                        styleClass="w-100">
                                                     </p-inputNumber>
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="flex-1 flex-md-shrink-0" style="min-width: 120px;">
                                                     <p-dropdown formControlName="period"
                                                         [options]="period"
                                                         optionLabel="title"
                                                         optionValue="id"
-                                                        placeholder="Duration">
+                                                        placeholder="Duration"
+                                                        styleClass="w-100">
                                                     </p-dropdown>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="col-12">
-                                                    <small class="error-text mx-1" 
+                                                    <small class="error-text mx-1"
                                                         *ngIf="secondStepForm.get('currency')?.hasError('required') && secondStepForm.get('currency')?.touched">
                                                         Currency is required.
                                                     </small>
                                                 </div>
                                                 <div class="col-12">
-                                                    <small class="error-text mx-1" 
+                                                    <small class="error-text mx-1"
                                                         *ngIf="secondStepForm.get('salaryFrom')?.hasError('required') && secondStepForm.get('salaryTo')?.touched">
                                                         Salary from is required.
                                                     </small>
-                                                    <small class="error-text mx-1" 
+                                                    <small class="error-text mx-1"
                                                         *ngIf="secondStepForm.get('salaryTo')?.hasError('required') && secondStepForm.get('salaryTo')?.touched">
                                                         Salary to is required.
                                                     </small>
@@ -248,7 +251,7 @@
                                                     </small>
                                                 </div>
                                                 <div class="col-12">
-                                                    <small class="error-text mx-1" 
+                                                    <small class="error-text mx-1"
                                                         *ngIf="secondStepForm.get('period')?.hasError('required') && secondStepForm.get('period')?.touched">
                                                         Duration period is required.
                                                     </small>
@@ -256,22 +259,22 @@
                                             </div>
                                         </div>
                                     </div>
-                        
+
                                     <div class="row mt-2">
-                                        <div class="col-12 col-lg-6 mb-3 justify-content-around">
+                                        <div class="col-12 col-lg-6 mb-3">
                                             <label for="noticePeriod" class="form-label fw-bold">Notice Period<span class="required">*</span></label>
-                                            <div class="d-flex align-items-center justify-content-around">
-                                                <p-radioButton 
-                                                    formControlName="noticePeriodType" 
-                                                    value="Immediate" 
-                                                    inputId="immediate" 
-                                                    label="Immediate" 
-                                                    class="mr-3">
+                                            <div class="d-flex align-items-center justify-content-start">
+                                                <p-radioButton
+                                                    formControlName="noticePeriodType"
+                                                    value="Immediate"
+                                                    inputId="immediate"
+                                                    label="Immediate"
+                                                    class="me-3">
                                                 </p-radioButton>
-                                                <p-radioButton 
-                                                    formControlName="noticePeriodType" 
-                                                    value="Other" 
-                                                    inputId="other" 
+                                                <p-radioButton
+                                                    formControlName="noticePeriodType"
+                                                    value="Other"
+                                                    inputId="other"
                                                     label="Other">
                                                 </p-radioButton>
                                             </div>
@@ -279,17 +282,17 @@
                                                 Notice period is required.
                                             </small>
                                         </div>
-                                    
+
                                         <div class="col-12 col-lg-6 mb-3" *ngIf="secondStepForm.get('noticePeriodType')?.value === 'Other'">
                                             <label for="noticePeriodRange" class="form-label fw-bold">Notice Period Range (in Days)<span class="required">*</span></label>
                                             <div class="d-flex align-items-center">
                                                 <div class="row">
                                                     <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-                                                        <p-inputNumber 
-                                                            formControlName="noticeFrom" 
-                                                            [min]="0" 
-                                                            [showButtons]="false" 
-                                                            class="w-75 mr-2" 
+                                                        <p-inputNumber
+                                                            formControlName="noticeFrom"
+                                                            [min]="0"
+                                                            [showButtons]="false"
+                                                            class="w-75 mr-2"
                                                             placeholder="From (days)">
                                                         </p-inputNumber>
                                                         <div class="col-12">
@@ -299,11 +302,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-                                                        <p-inputNumber 
-                                                            formControlName="noticeTo" 
-                                                            [min]="0" 
-                                                            [showButtons]="false" 
-                                                            class="w-75" 
+                                                        <p-inputNumber
+                                                            formControlName="noticeTo"
+                                                            [min]="0"
+                                                            [showButtons]="false"
+                                                            class="w-75"
                                                             placeholder="To (days)">
                                                         </p-inputNumber>
                                                         <div class="col-12">
@@ -357,9 +360,9 @@
                                                 </div>
                                                 <ng-container *ngFor="let answer of expectedAnswer">
                                                     <div class="col-6 d-flex mx-2">
-                                                        <p-radioButton 
-                                                            [inputId]="answer.name" 
-                                                            [value]="answer.name" 
+                                                        <p-radioButton
+                                                            [inputId]="answer.name"
+                                                            [value]="answer.name"
                                                             formControlName="deciderResponse" />
                                                         <label [for]="answer.key" class="ms-2 fw-bold">
                                                             {{ answer.name }}
@@ -373,9 +376,9 @@
                                                 </div>
                                                 <ng-container *ngFor="let input of responseInput">
                                                     <div class="col-12 d-flex mx-2">
-                                                        <p-radioButton 
-                                                            [inputId]="input.name" 
-                                                            [value]="input.name" 
+                                                        <p-radioButton
+                                                            [inputId]="input.name"
+                                                            [value]="input.name"
                                                             formControlName="additionalResponse" />
                                                         <label [for]="input.key" class="ms-2 fw-bold">
                                                             {{ input.name }}
@@ -383,7 +386,7 @@
                                                     </div>
                                                 </ng-container>
                                             </div>
-                                            
+
                                         </div>
                                         <div class="row justify-content-end mb-3">
                                             <div class="col-md-2 text-end text-lg-center">
@@ -391,7 +394,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                
+
                                     <p-accordion *ngIf="questionFormArray?.length && questionFormArray.length > 0">
                                         <p-accordionTab header="{{questionFormArray.length > 0 ? 'Questions (' + questionFormArray.length + ')' : 'Questions'}}">
                                             <p-table [value]="questionFormArray.controls" class="p-datatable-gridlines">
@@ -409,15 +412,15 @@
                                                         <td>{{ question.get('deciderResponse')?.value }}</td>
                                                         <td>{{ question.get('additionalResponse')?.value }}</td>
                                                         <td>
-                                                            <p-button 
-                                                                icon="pi pi-pencil" 
+                                                            <p-button
+                                                                icon="pi pi-pencil"
                                                                 size="small"
                                                                 class="mx-1"
                                                                 styleClass="action-button"
                                                                 (onClick)="editQuestion(i)">
                                                             </p-button>
-                                                            <p-button 
-                                                                icon="pi pi-trash" 
+                                                            <p-button
+                                                                icon="pi pi-trash"
                                                                 size="small"
                                                                 severity="danger"
                                                                 class="mx-1"
@@ -440,7 +443,7 @@
                                             class="fw-bold">
                                         </p-checkbox>
                                     </div>
-                                
+
                                     <div *ngIf="thirdStepForm.get('useTalliteGPT')?.value" class="mt-3">
                                         <div class="row">
                                             <div class="col-12 col-md-4">
@@ -448,11 +451,11 @@
                                                     <label for="noOfQuestion" class="fw-bold">Number of Questions<span class="required">*</span></label>
                                                 </div>
                                                 <div class="col-12">
-                                                    <p-inputNumber 
-                                                        formControlName="noOfQuestion" 
-                                                        [min]="0" 
+                                                    <p-inputNumber
+                                                        formControlName="noOfQuestion"
+                                                        [min]="0"
                                                         [max]="10"
-                                                        [showButtons]="false" 
+                                                        [showButtons]="false"
                                                         placeholder="Enter number of questions">
                                                     </p-inputNumber>                                                </div>
                                                 <div class="col-12">
@@ -479,13 +482,13 @@
                                                     <label for="requiredAssessmentScore" class="fw-bold">Cut-off Score<span class="required">*</span></label>
                                                 </div>
                                                 <div class="col-12">
-                                                    <p-inputNumber 
-                                                        formControlName="requiredAssessmentScore" 
-                                                        [min]="1" 
+                                                    <p-inputNumber
+                                                        formControlName="requiredAssessmentScore"
+                                                        [min]="1"
                                                         [max]="100"
-                                                        [step]="0.1" 
-                                                        [showButtons]="false" 
-                                                        placeholder="Enter cut-off score" 
+                                                        [step]="0.1"
+                                                        [showButtons]="false"
+                                                        placeholder="Enter cut-off score"
                                                         mode="decimal">
                                                     </p-inputNumber>
                                                 </div>
